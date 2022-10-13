@@ -43,7 +43,7 @@ func main() {
 		Get("/api/user/balance", mux.GetAccountBalance)
 	mux.With(Auth.CheckAuthInfo).
 		With(compress.Gzip).
-		Post("/api/user/balance/withdrawn", mux.AddWithdraw)
+		Post("/api/user/balance/withdraw", mux.AddWithdraw)
 	mux.With(Auth.CheckAuthInfo).
 		With(compress.Gzip).
 		Get("/api/user/withdrawals", mux.ListWithdraws)
