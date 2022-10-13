@@ -1,6 +1,6 @@
 module github.com/aligang/go-musthave-diploma
 
-go 1.17
+go 1.18
 
 require (
 	github.com/caarlos0/env/v6 v6.10.1
@@ -8,7 +8,6 @@ require (
 	github.com/jackc/pgx/v4 v4.17.2
 	github.com/rs/zerolog v1.28.0
 	github.com/stretchr/testify v1.8.0
-	golang.org/x/exp v0.0.0-20221011201855-a3968a42eed6
 )
 
 require (

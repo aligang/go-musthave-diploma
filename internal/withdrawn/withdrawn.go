@@ -1,7 +1,6 @@
 package withdrawn
 
 import (
-	"sort"
 	"time"
 )
 
@@ -24,8 +23,22 @@ func NewRecord(withdrawn *Withdrawn) *WithdrawnRecord {
 	}
 }
 
-func Sort(withdraws []WithdrawnRecord) {
-	sort.Slice(withdraws, func(i, j int) bool {
-		return withdraws[i].ProcessedAt.After(withdraws[j].ProcessedAt)
-	})
+//func Sort(withdraws []WithdrawnRecord) {
+//	sort.Slice(withdraws, func(i, j int) bool {
+//		return withdraws[i].ProcessedAt.After(withdraws[j].ProcessedAt)
+//	})
+//}
+
+type WithdrawnSlice []WithdrawnRecord
+
+func (s WithdrawnSlice) Len() int {
+	return len(s)
+}
+
+func (s WithdrawnSlice) Less(i, j int) bool {
+	return s[i].ProcessedAt.After(s[j].ProcessedAt)
+}
+
+func (s WithdrawnSlice) Swap(i, j int) {
+	s[i], s[j] = s[j], s[i]
 }

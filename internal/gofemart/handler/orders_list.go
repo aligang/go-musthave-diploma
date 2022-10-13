@@ -6,6 +6,7 @@ import (
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/order"
 	"github.com/aligang/go-musthave-diploma/internal/logging"
 	"net/http"
+	"sort"
 )
 
 func (h *ApiHandler) ListOrders(w http.ResponseWriter, r *http.Request) {
@@ -36,7 +37,7 @@ func (h *ApiHandler) ListOrders(w http.ResponseWriter, r *http.Request) {
 	}
 
 	logging.Debug("user %s, has registered orders: %+v", userId, orders)
-	order.Sort(orders)
+	sort.Sort(order.OrderSlice(orders))
 	ordersPayload, err := json.Marshal(orders)
 	logging.Debug("forming response %s", string(ordersPayload))
 	w.Header().Set("Content-Type", "Application/Json")

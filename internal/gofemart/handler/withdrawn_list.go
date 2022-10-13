@@ -6,6 +6,7 @@ import (
 	"github.com/aligang/go-musthave-diploma/internal/logging"
 	"github.com/aligang/go-musthave-diploma/internal/withdrawn"
 	"net/http"
+	"sort"
 )
 
 func (h *ApiHandler) ListWithdraws(w http.ResponseWriter, r *http.Request) {
@@ -35,7 +36,7 @@ func (h *ApiHandler) ListWithdraws(w http.ResponseWriter, r *http.Request) {
 	}
 
 	logging.Debug("user %s, has registered orders: %+v", userId, withdrawns)
-	withdrawn.Sort(withdrawns)
+	sort.Sort(withdrawn.WithdrawnSlice(withdrawns))
 	withdrawsPayload, err := json.Marshal(withdrawns)
 	logging.Debug("forming response %s", string(withdrawsPayload))
 	w.Header().Set("Content-Type", "Application/Json")
