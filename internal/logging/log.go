@@ -12,7 +12,7 @@ func Configure(dst io.Writer, level zerolog.Level) {
 	zerolog.SetGlobalLevel(level)
 }
 
-func Crit(msg string, args ...any) {
+func Crit(msg string, args ...interface{}) {
 	if len(args) > 0 {
 		Logger.Error().Msgf(msg, args...)
 	} else {
@@ -20,7 +20,7 @@ func Crit(msg string, args ...any) {
 	}
 }
 
-func Warn(msg string, args ...any) {
+func Warn(msg string, args ...interface{}) {
 	if len(args) > 0 {
 		Logger.Warn().Msgf(msg, args...)
 	} else {
@@ -28,7 +28,7 @@ func Warn(msg string, args ...any) {
 	}
 }
 
-func Debug(msg string, args ...any) {
+func Debug(msg string, args ...interface{}) {
 	if len(args) > 0 {
 		Logger.Debug().Msgf(msg, args...)
 	} else {
