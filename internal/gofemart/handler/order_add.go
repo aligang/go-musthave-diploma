@@ -117,7 +117,7 @@ func (h *ApiHandler) AddOrder(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "error during add accural to balance", http.StatusInternalServerError)
 			return
 		}
-		accountData.Balance += order.Accural
+		accountData.Current += order.Accural
 		err = h.storage.UpdateCustomerAccount(accountData)
 		if err != nil {
 			logging.Warn("error during fetching account info: %s", err.Error())

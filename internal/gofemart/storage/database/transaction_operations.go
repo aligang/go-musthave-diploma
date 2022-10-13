@@ -1,6 +1,8 @@
 package database
 
-import "github.com/aligang/go-musthave-diploma/internal/logging"
+import (
+	"github.com/aligang/go-musthave-diploma/internal/logging"
+)
 
 func (s *Storage) StartTransaction() {
 	tx, err := s.DB.Begin()

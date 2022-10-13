@@ -90,12 +90,12 @@ func (h *ApiHandler) AddWithdraw(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	logging.Debug("Fetched account info=%+v", accountData)
-	if accountData.Balance < withdrawRequest.Sum {
+	if accountData.Current < withdrawRequest.Sum {
 		logging.Warn("error during using balance of: %s, unsufficent balance", userId)
 		http.Error(w, "unsufficent balance", http.StatusPaymentRequired)
 		return
 	}
-	accountData.Balance -= withdrawRequest.Sum
+	accountData.Current -= withdrawRequest.Sum
 	accountData.Withdraw += withdrawRequest.Sum
 	err = h.storage.UpdateCustomerAccount(accountData)
 	if err != nil {

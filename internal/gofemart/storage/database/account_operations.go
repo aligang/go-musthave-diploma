@@ -10,16 +10,16 @@ import (
 )
 
 func (s *Storage) AddCustomerAccount(customerAccount *customer_account.CustomerAccount) error {
-	query := "INSERT INTO accounts (Login, Password, Balance, Withdraw) VALUES($1, $2, $3, $4)"
-	balance := strconv.FormatFloat(customerAccount.Balance, 'f', -1, 64)
+	query := "INSERT INTO accounts (Login, Password, Current, Withdraw) VALUES($1, $2, $3, $4)"
+	balance := strconv.FormatFloat(customerAccount.Current, 'f', -1, 64)
 	withdraw := strconv.FormatFloat(customerAccount.Withdraw, 'f', -1, 64)
 	var args = []interface{}{customerAccount.Login, customerAccount.Password, balance, withdraw}
 	return s.modifyCustomerAccount(customerAccount, query, args)
 }
 
 func (s *Storage) UpdateCustomerAccount(customerAccount *customer_account.CustomerAccount) error {
-	query := "UPDATE accounts SET Login = $1, Password = $2, Balance = $3, Withdraw = $4 WHERE Login = $5"
-	balance := strconv.FormatFloat(customerAccount.Balance, 'f', -1, 64)
+	query := "UPDATE accounts SET Login = $1, Password = $2, Current = $3, Withdraw = $4 WHERE Login = $5"
+	balance := strconv.FormatFloat(customerAccount.Current, 'f', -1, 64)
 	withdraw := strconv.FormatFloat(customerAccount.Withdraw, 'f', -1, 64)
 	var args = []interface{}{customerAccount.Login, customerAccount.Password, balance, withdraw, customerAccount.Login}
 	return s.modifyCustomerAccount(customerAccount, query, args)
@@ -67,7 +67,7 @@ func (s *Storage) getCustomerAccountCommon(login string, prepareFunc func(query 
 		return nil, err
 	}
 	a := &customer_account.CustomerAccount{}
-	err = row.Scan(&a.Login, &a.Password, &a.Balance, &a.Withdraw)
+	err = row.Scan(&a.Login, &a.Password, &a.Current, &a.Withdraw)
 
 	switch {
 	case errors.Is(err, sql.ErrNoRows):

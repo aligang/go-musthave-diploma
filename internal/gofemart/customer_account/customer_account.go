@@ -1,7 +1,7 @@
 package customer_account
 
 type AccountBalance struct {
-	Balance  float64 `json:"balance"`
+	Current  float64 `json:"current"`
 	Withdraw float64 `json:"withdrawn"`
 }
 

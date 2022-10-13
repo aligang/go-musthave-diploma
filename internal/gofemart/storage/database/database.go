@@ -5,12 +5,14 @@ import (
 	"fmt"
 	"github.com/aligang/go-musthave-diploma/internal/config"
 	"github.com/aligang/go-musthave-diploma/internal/logging"
+	"sync"
 )
 import _ "github.com/jackc/pgx/v4/stdlib"
 
 type Storage struct {
-	DB *sql.DB
-	Tx *sql.Tx
+	DB   *sql.DB
+	Tx   *sql.Tx
+	Lock sync.Mutex
 }
 
 func New(conf *config.Config) *Storage {
