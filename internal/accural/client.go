@@ -18,7 +18,7 @@ func FetchOrderInfo(orderId string, config *config.Config) (*message.AccuralMess
 		Timeout: 5 * time.Second,
 	}
 	buf := &bytes.Buffer{}
-	URI := fmt.Sprintf("http://%s/api/orders/%s", config.AccuralSystemAddress, orderId)
+	URI := fmt.Sprintf("%s/api/orders/%s", config.AccuralSystemAddress, orderId)
 	request, err := http.NewRequest("GET", URI, buf)
 	if err != nil {
 		logging.Warn("Error During Request preparation: %s", err.Error())
