@@ -11,7 +11,7 @@ import (
 func (s *Storage) RegisterWithdrawn(userId string, withdraw *withdrawn.WithdrawnRecord) error {
 	logging.Debug("Preparing statement to add withdraw to Repository: %+v for user %s", withdraw, userId)
 	query := "INSERT INTO withdrawns (Order_Id, Sum, Processed_at, Owner) VALUES($1, $2, $3, $4)"
-	var args = []any{withdraw.Order, withdraw.Sum, withdraw.ProcessedAt, userId}
+	var args = []interface{}{withdraw.Order, withdraw.Sum, withdraw.ProcessedAt, userId}
 	statement, err := s.Tx.Prepare(query)
 	if err != nil {
 		logging.Warn("Error During statement creation %s", query)
@@ -31,7 +31,7 @@ func (s *Storage) RegisterWithdrawn(userId string, withdraw *withdrawn.Withdrawn
 
 func (s *Storage) GetWithdrawnWithinTransaction(orderId string) (*withdrawn.WithdrawnRecord, error) {
 	query := "SELECT Order_Id, Sum, Processed_at FROM withdrawns WHERE Order_Id = $1"
-	var args = []any{orderId}
+	var args = []interface{}{orderId}
 	logging.Debug("Preparing statement to fetch order from Repository: %s", query)
 	statement, err := s.Tx.Prepare(query)
 	if err != nil {
@@ -65,7 +65,7 @@ func (s *Storage) GetWithdrawnWithinTransaction(orderId string) (*withdrawn.With
 func (s *Storage) ListWithdrawns(userId string) ([]withdrawn.WithdrawnRecord, error) {
 	logging.Debug("Preparing statement to fetch orders from Repository")
 	query := "SELECT Order_Id, Sum, Processed_at FROM withdrawns WHERE Owner = $1"
-	args := []any{userId}
+	args := []interface{}{userId}
 	var wthdrawns []withdrawn.WithdrawnRecord
 
 	statement, err := s.DB.Prepare(query)

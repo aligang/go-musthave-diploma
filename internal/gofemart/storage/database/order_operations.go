@@ -11,18 +11,18 @@ import (
 func (s *Storage) AddOrder(userId string, order *order.Order) error {
 	logging.Debug("Preparing statement to add order to Repository: %+v for user %s", order, userId)
 	query := "INSERT INTO orders (Number, Status, Accural, UploadedAt, Owner) VALUES($1, $2, $3, $4, $5)"
-	var args = []any{order.Number, order.Status, order.Accural, order.UploadedAt, userId}
+	var args = []interface{}{order.Number, order.Status, order.Accural, order.UploadedAt, userId}
 	return s.modifyOrder(order, query, args)
 }
 
 func (s *Storage) UpdateOrder(order *order.Order) error {
 	logging.Debug("Preparing statement to update order to Repository: %+v", order)
 	query := "UPDATE orders SET number = $1, status = $2, accural = $3, uploadedat = $4 WHERE number = $5"
-	var args = []any{order.Number, order.Status, order.Accural, order.UploadedAt, order.Number}
+	var args = []interface{}{order.Number, order.Status, order.Accural, order.UploadedAt, order.Number}
 	return s.modifyOrder(order, query, args)
 }
 
-func (s *Storage) modifyOrder(order *order.Order, query string, args []any) error {
+func (s *Storage) modifyOrder(order *order.Order, query string, args []interface{}) error {
 
 	statement, err := s.Tx.Prepare(query)
 	if err != nil {
@@ -50,7 +50,7 @@ func (s *Storage) GetOrderWithinTransaction(orderId string) (*order.Order, error
 
 func (s *Storage) getOrderCommon(orderId string, prepareFunc func(query string) (*sql.Stmt, error)) (*order.Order, error) {
 	query := "SELECT number, status, accural, uploadedat FROM orders WHERE Number = $1"
-	var args = []any{orderId}
+	var args = []interface{}{orderId}
 	logging.Debug("Preparing statement to fetch order from Repository: %s", query)
 	statement, err := prepareFunc(query)
 	if err != nil {
@@ -82,7 +82,7 @@ func (s *Storage) getOrderCommon(orderId string, prepareFunc func(query string) 
 func (s *Storage) ListOrders(userId string) ([]order.Order, error) {
 	logging.Debug("Preparing statement to fetch orders from Repository")
 	query := "SELECT number, status, accural, uploadedat  FROM orders where owner = $1"
-	args := []any{userId}
+	args := []interface{}{userId}
 	var orders []order.Order
 
 	statement, err := s.DB.Prepare(query)
@@ -117,7 +117,7 @@ func (s *Storage) ListOrders(userId string) ([]order.Order, error) {
 func (s *Storage) AddOrderToPendingList(orderId string) error {
 	logging.Debug("Preparing statement to delete pending order From Repository:  %s", orderId)
 	query := "INSERT INTO pending_orders (order_id) VALUES($1)"
-	var args = []any{orderId}
+	var args = []interface{}{orderId}
 
 	statement, err := s.Tx.Prepare(query)
 	if err != nil {
@@ -135,7 +135,7 @@ func (s *Storage) AddOrderToPendingList(orderId string) error {
 func (s *Storage) RemoveOrderFromPendingList(orderId string) error {
 	logging.Debug("Preparing statement to delete pending order to Repository:  %s", orderId)
 	query := "DELETE FROM pending_orders WHERE order_id = $1"
-	var args = []any{orderId}
+	var args = []interface{}{orderId}
 
 	statement, err := s.Tx.Prepare(query)
 	if err != nil {
@@ -154,7 +154,7 @@ func (s *Storage) RemoveOrderFromPendingList(orderId string) error {
 func (s *Storage) GetPendingOrders() ([]string, error) {
 	logging.Debug("Preparing statement to fetch pending order from Repository")
 	query := "SELECT * FROM pending_orders"
-	var args []any
+	var args []interface{}
 	var orders []string
 
 	statement, err := s.Tx.Prepare(query)
