@@ -99,7 +99,7 @@ func (t *Tracker) Sync() {
 				logging.Warn("Tracker failed to remove order from pending list : %s", orderId)
 				return
 			}
-			accountInfo.Balance += order.Accural
+			accountInfo.Current += order.Accural
 			dbErr = t.storage.UpdateCustomerAccount(accountInfo)
 			if dbErr != nil {
 				logging.Warn("Tracker failed to update account info : %s", userId)

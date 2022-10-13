@@ -38,7 +38,7 @@ func TestGetBalanceAccount(t *testing.T) {
 							Login:    "user1",
 							Password: "pass1",
 							AccountBalance: customer_account.AccountBalance{
-								Balance:  100.5,
+								Current:  100.5,
 								Withdraw: 200.9,
 							},
 						},
@@ -61,7 +61,7 @@ func TestGetBalanceAccount(t *testing.T) {
 				Login:    "user1",
 				Password: "pass1",
 				AccountBalance: customer_account.AccountBalance{
-					Balance:  100.5,
+					Current:  100.5,
 					Withdraw: 200.9,
 				},
 			},

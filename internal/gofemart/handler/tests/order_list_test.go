@@ -42,7 +42,7 @@ func TestListOrders(t *testing.T) {
 							Login:    "user1",
 							Password: "pass1",
 							AccountBalance: customer_account.AccountBalance{
-								Balance:  10.5,
+								Current:  10.5,
 								Withdraw: 0,
 							},
 						},
@@ -50,7 +50,7 @@ func TestListOrders(t *testing.T) {
 							Login:    "user2",
 							Password: "pass2",
 							AccountBalance: customer_account.AccountBalance{
-								Balance:  0,
+								Current:  0,
 								Withdraw: 0,
 							},
 						},
@@ -101,7 +101,7 @@ func TestListOrders(t *testing.T) {
 				Login:    "user1",
 				Password: "pass1",
 				AccountBalance: customer_account.AccountBalance{
-					Balance:  0,
+					Current:  0,
 					Withdraw: 0,
 				},
 			},
@@ -109,7 +109,7 @@ func TestListOrders(t *testing.T) {
 				Login:    "user2",
 				Password: "pass2",
 				AccountBalance: customer_account.AccountBalance{
-					Balance:  0,
+					Current:  0,
 					Withdraw: 0,
 				},
 			},
@@ -199,7 +199,7 @@ func TestListEmptyOrders(t *testing.T) {
 							Login:    "user1",
 							Password: "pass1",
 							AccountBalance: customer_account.AccountBalance{
-								Balance:  10.5,
+								Current:  10.5,
 								Withdraw: 0,
 							},
 						},
@@ -207,7 +207,7 @@ func TestListEmptyOrders(t *testing.T) {
 							Login:    "user2",
 							Password: "pass2",
 							AccountBalance: customer_account.AccountBalance{
-								Balance:  0,
+								Current:  0,
 								Withdraw: 0,
 							},
 						},
@@ -230,7 +230,7 @@ func TestListEmptyOrders(t *testing.T) {
 				Login:    "user1",
 				Password: "pass1",
 				AccountBalance: customer_account.AccountBalance{
-					Balance:  0,
+					Current:  0,
 					Withdraw: 0,
 				},
 			},
@@ -238,7 +238,7 @@ func TestListEmptyOrders(t *testing.T) {
 				Login:    "user2",
 				Password: "pass2",
 				AccountBalance: customer_account.AccountBalance{
-					Balance:  0,
+					Current:  0,
 					Withdraw: 0,
 				},
 			},

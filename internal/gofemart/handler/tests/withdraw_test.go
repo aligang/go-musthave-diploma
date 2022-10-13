@@ -39,7 +39,7 @@ func TestAddWithdraw(t *testing.T) {
 							Login:    "user1",
 							Password: "pass1",
 							AccountBalance: customer_account.AccountBalance{
-								Balance:  99,
+								Current:  99,
 								Withdraw: 0,
 							},
 						},
@@ -83,7 +83,7 @@ func TestAddWithdraw(t *testing.T) {
 							Login:    "user1",
 							Password: "pass1",
 							AccountBalance: customer_account.AccountBalance{
-								Balance:  99,
+								Current:  99,
 								Withdraw: 0,
 							},
 						},
@@ -127,7 +127,7 @@ func TestAddWithdraw(t *testing.T) {
 							Login:    "user1",
 							Password: "pass1",
 							AccountBalance: customer_account.AccountBalance{
-								Balance:  99,
+								Current:  99,
 								Withdraw: 0,
 							},
 						},
@@ -167,7 +167,7 @@ func TestAddWithdraw(t *testing.T) {
 				Login:    "user1",
 				Password: "pass1",
 				AccountBalance: customer_account.AccountBalance{
-					Balance:  100,
+					Current:  100,
 					Withdraw: 0,
 				},
 			},

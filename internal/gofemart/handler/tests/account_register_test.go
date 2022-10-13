@@ -37,7 +37,7 @@ func TestRegisterAccount(t *testing.T) {
 							Login:    "user1",
 							Password: "pass1",
 							AccountBalance: customer_account.AccountBalance{
-								Balance:  0,
+								Current:  0,
 								Withdraw: 0,
 							},
 						},
@@ -80,7 +80,7 @@ func TestRegisterAccount(t *testing.T) {
 							Login:    "user1",
 							Password: "pass1",
 							AccountBalance: customer_account.AccountBalance{
-								Balance:  0,
+								Current:  0,
 								Withdraw: 0,
 							},
 						},

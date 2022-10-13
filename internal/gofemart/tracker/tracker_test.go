@@ -36,7 +36,7 @@ func TestTracking(t *testing.T) {
 							Login:    "user1",
 							Password: "pass1",
 							AccountBalance: customer_account.AccountBalance{
-								Balance:  21,
+								Current:  21,
 								Withdraw: 0,
 							},
 						},
@@ -128,7 +128,7 @@ func TestTracking(t *testing.T) {
 				Login:    "user1",
 				Password: "pass1",
 				AccountBalance: customer_account.AccountBalance{
-					Balance:  0,
+					Current:  0,
 					Withdraw: 0,
 				},
 			},
