@@ -64,3 +64,5 @@ func (h *ApiHandler) RegisterCustomerAccount(w http.ResponseWriter, r *http.Requ
 	w.WriteHeader(http.StatusOK)
 	logging.Debug("account for %s is created", accountInfo.Login)
 }
+
+//
