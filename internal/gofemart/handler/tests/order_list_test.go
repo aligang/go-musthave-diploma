@@ -9,6 +9,7 @@ import (
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/order"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/memory"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/memory/internal_order"
+	"github.com/aligang/go-musthave-diploma/internal/gofemart/tests_common"
 	"github.com/aligang/go-musthave-diploma/internal/withdrawn"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -21,21 +22,21 @@ import (
 func TestListOrders(t *testing.T) {
 	tests := []struct {
 		name     string
-		input    input
-		expected expected
+		input    tests_common.Input
+		expected tests_common.Expected
 	}{
 		{
 			name: "ORDER LIST CORRECT",
-			input: input{method: http.MethodGet, path: "/api/user/orders", contentType: "text/plain",
-				payload: "1", account: "user1"},
-			expected: expected{
-				payload: "[" +
+			input: tests_common.Input{Method: http.MethodGet, Path: "/api/user/orders", ContentType: "text/plain",
+				Payload: "1", Account: "user1"},
+			expected: tests_common.Expected{
+				Payload: "[" +
 					"{\"number\":\"3\",\"status\":\"NEW\",\"accural\":20.5,\"uploaded_at\":\"2021-09-19T15:59:43+03:00\"}," +
 					"{\"number\":\"2\",\"status\":\"PROCESSING\",\"accural\":25.5,\"uploaded_at\":\"2021-09-19T15:59:42+03:00\"}," +
 					"{\"number\":\"1\",\"status\":\"PROCESSED\",\"accural\":10.5,\"uploaded_at\":\"2021-09-19T15:59:41+03:00\"}]",
-				code:        200,
-				contentType: "Application/Json",
-				dbDump: memory.Init(
+				Code:        200,
+				ContentType: "Application/Json",
+				DbDump: memory.Init(
 					customer_account.CustomerAccounts{
 						"user1": customer_account.CustomerAccount{
 							Login:    "user1",
@@ -60,7 +61,7 @@ func TestListOrders(t *testing.T) {
 								Number:     "1",
 								Accural:    10.5,
 								Status:     "PROCESSED",
-								UploadedAt: genTimeStamps()[0],
+								UploadedAt: tests_common.GenTimeStamps()[0],
 							},
 							Owner: "user1",
 						},
@@ -69,7 +70,7 @@ func TestListOrders(t *testing.T) {
 								Number:     "2",
 								Accural:    10.5,
 								Status:     "PROCESSING",
-								UploadedAt: genTimeStamps()[1],
+								UploadedAt: tests_common.GenTimeStamps()[1],
 							},
 							Owner: "user1",
 						},
@@ -78,7 +79,7 @@ func TestListOrders(t *testing.T) {
 								Number:     "3",
 								Accural:    10.5,
 								Status:     "NEW",
-								UploadedAt: genTimeStamps()[2],
+								UploadedAt: tests_common.GenTimeStamps()[2],
 							},
 							Owner: "user1",
 						},
@@ -119,7 +120,7 @@ func TestListOrders(t *testing.T) {
 					Number:     "1",
 					Accural:    10.5,
 					Status:     "PROCESSED",
-					UploadedAt: genTimeStamps()[0],
+					UploadedAt: tests_common.GenTimeStamps()[0],
 				},
 				Owner: "user1",
 			},
@@ -128,7 +129,7 @@ func TestListOrders(t *testing.T) {
 					Number:     "2",
 					Accural:    25.5,
 					Status:     "PROCESSING",
-					UploadedAt: genTimeStamps()[1],
+					UploadedAt: tests_common.GenTimeStamps()[1],
 				},
 				Owner: "user1",
 			},
@@ -137,7 +138,7 @@ func TestListOrders(t *testing.T) {
 					Number:     "3",
 					Accural:    20.5,
 					Status:     "NEW",
-					UploadedAt: genTimeStamps()[2],
+					UploadedAt: tests_common.GenTimeStamps()[2],
 				},
 				Owner: "user1",
 			},
@@ -156,23 +157,23 @@ func TestListOrders(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 
-			request, err := http.NewRequest(test.input.method, ts.URL+test.input.path,
-				bytes.NewBuffer([]byte(test.input.payload)))
+			request, err := http.NewRequest(test.input.Method, ts.URL+test.input.Path,
+				bytes.NewBuffer([]byte(test.input.Payload)))
 			require.NoError(t, err)
-			request.AddCookie(&http.Cookie{Name: "username", Value: test.input.account, MaxAge: 1000})
-			request.Header.Add("Content-Type", test.input.contentType)
+			request.AddCookie(&http.Cookie{Name: "username", Value: test.input.Account, MaxAge: 1000})
+			request.Header.Add("Content-Type", test.input.ContentType)
 			res, err := http.DefaultClient.Do(request)
 			if err != nil {
 				fmt.Println(err)
 			}
 			defer res.Body.Close()
 			require.NoError(t, err)
-			assert.Equal(t, test.expected.code, res.StatusCode)
+			assert.Equal(t, test.expected.Code, res.StatusCode)
 			if res.StatusCode == http.StatusOK {
 				payload, _ := io.ReadAll(res.Body)
 				fmt.Println(string(payload))
-				assert.Equal(t, test.expected.contentType, res.Header.Get("Content-Type"))
-				assert.JSONEq(t, test.expected.payload, string(payload))
+				assert.Equal(t, test.expected.ContentType, res.Header.Get("Content-Type"))
+				assert.JSONEq(t, test.expected.Payload, string(payload))
 			}
 		})
 	}
@@ -181,18 +182,18 @@ func TestListOrders(t *testing.T) {
 func TestListEmptyOrders(t *testing.T) {
 	tests := []struct {
 		name     string
-		input    input
-		expected expected
+		input    tests_common.Input
+		expected tests_common.Expected
 	}{
 		{
 			name: "EMPTY ORDER LIST CORRECT",
-			input: input{method: http.MethodGet, path: "/api/user/orders", contentType: "text/plain",
-				payload: "1", account: "user1"},
-			expected: expected{
-				payload:     "",
-				code:        204,
-				contentType: "Application/Json",
-				dbDump: memory.Init(
+			input: tests_common.Input{Method: http.MethodGet, Path: "/api/user/orders", ContentType: "text/plain",
+				Payload: "1", Account: "user1"},
+			expected: tests_common.Expected{
+				Payload:     "",
+				Code:        204,
+				ContentType: "Application/Json",
+				DbDump: memory.Init(
 					customer_account.CustomerAccounts{
 						"user1": customer_account.CustomerAccount{
 							Login:    "user1",
@@ -257,18 +258,18 @@ func TestListEmptyOrders(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 
-			request, err := http.NewRequest(test.input.method, ts.URL+test.input.path,
-				bytes.NewBuffer([]byte(test.input.payload)))
+			request, err := http.NewRequest(test.input.Method, ts.URL+test.input.Path,
+				bytes.NewBuffer([]byte(test.input.Payload)))
 			require.NoError(t, err)
-			request.AddCookie(&http.Cookie{Name: "username", Value: test.input.account, MaxAge: 1000})
-			request.Header.Add("Content-Type", test.input.contentType)
+			request.AddCookie(&http.Cookie{Name: "username", Value: test.input.Account, MaxAge: 1000})
+			request.Header.Add("Content-Type", test.input.ContentType)
 			res, err := http.DefaultClient.Do(request)
 			if err != nil {
 				fmt.Println(err)
 			}
 			defer res.Body.Close()
 			require.NoError(t, err)
-			assert.Equal(t, test.expected.code, res.StatusCode)
+			assert.Equal(t, test.expected.Code, res.StatusCode)
 		})
 	}
 }

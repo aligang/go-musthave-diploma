@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/aligang/go-musthave-diploma/internal/config"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/auth"
+	"github.com/aligang/go-musthave-diploma/internal/gofemart/compress"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/handler"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/tracker"
@@ -20,24 +21,31 @@ func main() {
 	cfg := config.Init()
 	Storage := storage.New(cfg)
 	Auth := auth.New()
-	tracker.New(Storage, cfg)
+	Tracker := tracker.New(Storage, cfg)
+	Tracker.RunInBackground()
 	mux := handler.New(Storage, Auth, cfg)
-
 	mux.Use(middleware.RequestID)
 	mux.Use(middleware.RealIP)
 	mux.Use(middleware.Recoverer)
 	//user api
-	mux.Post("/api/user/register", mux.RegisterCustomerAccount)
-	mux.Post("/api/user/login", mux.Login)
+	mux.With(compress.Gzip).
+		Post("/api/user/register", mux.RegisterCustomerAccount)
+	mux.With(compress.Gzip).
+		Post("/api/user/login", mux.Login)
 	mux.With(Auth.CheckAuthInfo).
+		With(compress.Gzip).
 		Post("/api/user/orders", mux.AddOrder)
 	mux.With(Auth.CheckAuthInfo).
+		With(compress.Gzip).
 		Get("/api/user/orders", mux.ListOrders)
 	mux.With(Auth.CheckAuthInfo).
+		With(compress.Gzip).
 		Get("/api/user/balance", mux.GetAccountBalance)
 	mux.With(Auth.CheckAuthInfo).
+		With(compress.Gzip).
 		Post("/api/user/balance/withdrawn", mux.AddWithdraw)
 	mux.With(Auth.CheckAuthInfo).
+		With(compress.Gzip).
 		Get("/api/user/withdrawals", mux.ListWithdraws)
 
 	//internal api

@@ -3,6 +3,7 @@ package accural
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/aligang/go-musthave-diploma/internal/accural/message"
 	"github.com/aligang/go-musthave-diploma/internal/config"
@@ -32,7 +33,7 @@ func FetchOrderInfo(orderId string, config *config.Config) (*message.AccuralMess
 	}
 	if response.StatusCode != http.StatusOK {
 		logging.Warn("Got response from  with code: %d, Could not fetch order info", response.StatusCode)
-		return nil, err
+		return nil, errors.New("problem during fetching order info")
 	}
 
 	responsePayload, err := io.ReadAll(response.Body)

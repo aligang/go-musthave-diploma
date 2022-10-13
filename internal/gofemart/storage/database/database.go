@@ -2,34 +2,54 @@ package database
 
 import (
 	"database/sql"
+	"fmt"
 	"github.com/aligang/go-musthave-diploma/internal/config"
 	"github.com/aligang/go-musthave-diploma/internal/logging"
 )
 import _ "github.com/jackc/pgx/v4/stdlib"
 
-type DBStorage struct {
+type Storage struct {
 	DB *sql.DB
+	Tx *sql.Tx
 }
 
-func New(conf *config.Config) *DBStorage {
+func New(conf *config.Config) *Storage {
 	logging.Debug("Initialisating SQL Repository")
 	db, err := sql.Open("pgx", conf.DatabaseURI)
 	if err != nil {
 		panic(err)
 	}
-	s := &DBStorage{
+	s := &Storage{
 		DB: db,
 	}
-	rows, err := s.DB.Query(
-		"create table if not exists metrics(ID text , MType text, Delta bigint, Value double precision, Hash text)",
+	_, err = s.DB.Exec(
+		"create table if not exists accounts(Login text, Password text, Balance double precision, Withdraw double precision)",
 	)
 	if err != nil {
-
-		panic(err.Error())
+		msg, _ := fmt.Printf("Failure during initialisation of accounts table: %s\n", err.Error())
+		panic(msg)
 	}
-	if err = rows.Err(); err != nil {
-		panic(err.Error())
+	_, err = s.DB.Exec(
+		"create table if not exists orders(Number bigint, Status text, Accural double precision, UploadedAt TIMESTAMP WITH TIME ZONE, Owner text)",
+	)
+	if err != nil {
+		msg, _ := fmt.Printf("Failure during initialisation of orders table: %s\n", err.Error())
+		panic(msg)
 	}
-	logging.Debug(" SQL Repository initialisation succesadead")
+	_, err = s.DB.Exec(
+		"create table if not exists pending_orders(order_id text)",
+	)
+	if err != nil {
+		msg, _ := fmt.Printf("Failure during initialisation of pending orders table: %s\n", err.Error())
+		panic(msg)
+	}
+	_, err = s.DB.Exec(
+		"create table if not exists withdrawns(Order_id bigint, Sum double precision, Processed_At TIMESTAMP WITH TIME ZONE, owner text)",
+	)
+	if err != nil {
+		msg, _ := fmt.Printf("Failure during initialisation of withdrawns table: %s\n", err.Error())
+		panic(msg)
+	}
+	logging.Debug(" SQL Repository initialisation successeeded")
 	return s
 }

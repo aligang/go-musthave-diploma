@@ -13,6 +13,7 @@ import (
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/order"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/memory"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/memory/internal_order"
+	"github.com/aligang/go-musthave-diploma/internal/gofemart/tests_common"
 	"github.com/aligang/go-musthave-diploma/internal/withdrawn"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -27,17 +28,17 @@ import (
 func TestAddOrder(t *testing.T) {
 	tests := []struct {
 		name     string
-		input    input
-		expected expected
+		input    tests_common.Input
+		expected tests_common.Expected
 	}{
 		{
 			name: "PROCESSED ORDER REGISTRATION CORRECT",
-			input: input{method: http.MethodPost, path: "/api/user/orders", contentType: "application/json",
-				payload: "19", account: "user1"},
-			expected: expected{
-				code:        202,
-				contentType: "text/plain",
-				dbDump: memory.Init(
+			input: tests_common.Input{Method: http.MethodPost, Path: "/api/user/orders", ContentType: "application/json",
+				Payload: "19", Account: "user1"},
+			expected: tests_common.Expected{
+				Code:        202,
+				ContentType: "text/plain",
+				DbDump: memory.Init(
 					customer_account.CustomerAccounts{
 						"user1": customer_account.CustomerAccount{
 							Login:    "user1",
@@ -77,12 +78,12 @@ func TestAddOrder(t *testing.T) {
 
 		{
 			name: "PROCESSING ORDER REGISTRATION CORRECT",
-			input: input{method: http.MethodPost, path: "/api/user/orders", contentType: "application/json",
-				payload: "24", account: "user1"},
-			expected: expected{
-				code:        202,
-				contentType: "text/plain",
-				dbDump: memory.Init(
+			input: tests_common.Input{Method: http.MethodPost, Path: "/api/user/orders", ContentType: "application/json",
+				Payload: "24", Account: "user1"},
+			expected: tests_common.Expected{
+				Code:        202,
+				ContentType: "text/plain",
+				DbDump: memory.Init(
 					customer_account.CustomerAccounts{
 						"user1": customer_account.CustomerAccount{
 							Login:    "user1",
@@ -131,12 +132,12 @@ func TestAddOrder(t *testing.T) {
 
 		{
 			name: "NEW ORDER REGISTRATION CORRECT",
-			input: input{method: http.MethodPost, path: "/api/user/orders", contentType: "application/json",
-				payload: "38", account: "user1"},
-			expected: expected{
-				code:        202,
-				contentType: "text/plain",
-				dbDump: memory.Init(
+			input: tests_common.Input{Method: http.MethodPost, Path: "/api/user/orders", ContentType: "application/json",
+				Payload: "38", Account: "user1"},
+			expected: tests_common.Expected{
+				Code:        202,
+				ContentType: "text/plain",
+				DbDump: memory.Init(
 					customer_account.CustomerAccounts{
 						"user1": customer_account.CustomerAccount{
 							Login:    "user1",
@@ -194,12 +195,12 @@ func TestAddOrder(t *testing.T) {
 
 		{
 			name: "INVALID ORDER REGISTRATION CORRECT",
-			input: input{method: http.MethodPost, path: "/api/user/orders", contentType: "application/json",
-				payload: "43", account: "user1"},
-			expected: expected{
-				code:        202,
-				contentType: "text/plain",
-				dbDump: memory.Init(
+			input: tests_common.Input{Method: http.MethodPost, Path: "/api/user/orders", ContentType: "application/json",
+				Payload: "43", Account: "user1"},
+			expected: tests_common.Expected{
+				Code:        202,
+				ContentType: "text/plain",
+				DbDump: memory.Init(
 					customer_account.CustomerAccounts{
 						"user1": customer_account.CustomerAccount{
 							Login:    "user1",
@@ -266,12 +267,12 @@ func TestAddOrder(t *testing.T) {
 
 		{
 			name: "ORDER REAPPLY",
-			input: input{method: http.MethodPost, path: "/api/user/orders", contentType: "application/json",
-				payload: "19", account: "user1"},
-			expected: expected{
-				code:        200,
-				contentType: "text/plain",
-				dbDump: memory.Init(
+			input: tests_common.Input{Method: http.MethodPost, Path: "/api/user/orders", ContentType: "application/json",
+				Payload: "19", Account: "user1"},
+			expected: tests_common.Expected{
+				Code:        200,
+				ContentType: "text/plain",
+				DbDump: memory.Init(
 					customer_account.CustomerAccounts{
 						"user1": customer_account.CustomerAccount{
 							Login:    "user1",
@@ -311,12 +312,12 @@ func TestAddOrder(t *testing.T) {
 
 		{
 			name: "ORDER REGISTRATION INCORRECT REQUEST FORMAT",
-			input: input{method: http.MethodPost, path: "/api/user/orders", contentType: "application/json",
-				payload: "{\"aa\":\"bb\"}", account: "user1"},
-			expected: expected{
-				code:        400,
-				contentType: "text/plain",
-				dbDump: memory.Init(
+			input: tests_common.Input{Method: http.MethodPost, Path: "/api/user/orders", ContentType: "application/json",
+				Payload: "{\"aa\":\"bb\"}", Account: "user1"},
+			expected: tests_common.Expected{
+				Code:        400,
+				ContentType: "text/plain",
+				DbDump: memory.Init(
 					customer_account.CustomerAccounts{
 						"user1": customer_account.CustomerAccount{
 							Login:    "user1",
@@ -356,12 +357,12 @@ func TestAddOrder(t *testing.T) {
 
 		{
 			name: "ORDER REGISTRATION INCORRECT ORDER ID FORMAT",
-			input: input{method: http.MethodPost, path: "/api/user/orders", contentType: "application/json",
-				payload: "20", account: "user1"},
-			expected: expected{
-				code:        422,
-				contentType: "text/plain",
-				dbDump: memory.Init(
+			input: tests_common.Input{Method: http.MethodPost, Path: "/api/user/orders", ContentType: "application/json",
+				Payload: "20", Account: "user1"},
+			expected: tests_common.Expected{
+				Code:        422,
+				ContentType: "text/plain",
+				DbDump: memory.Init(
 					customer_account.CustomerAccounts{
 						"user1": customer_account.CustomerAccount{
 							Login:    "user1",
@@ -401,12 +402,12 @@ func TestAddOrder(t *testing.T) {
 
 		{
 			name: "DUBLICATE ORDER",
-			input: input{method: http.MethodPost, path: "/api/user/orders", contentType: "application/json",
-				payload: "19", account: "user2"},
-			expected: expected{
-				code:        409,
-				contentType: "text/plain",
-				dbDump: memory.Init(
+			input: tests_common.Input{Method: http.MethodPost, Path: "/api/user/orders", ContentType: "application/json",
+				Payload: "19", Account: "user2"},
+			expected: tests_common.Expected{
+				Code:        409,
+				ContentType: "text/plain",
+				DbDump: memory.Init(
 					customer_account.CustomerAccounts{
 						"user1": customer_account.CustomerAccount{
 							Login:    "user1",
@@ -513,23 +514,23 @@ func TestAddOrder(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 
-			request, err := http.NewRequest(test.input.method, ts.URL+test.input.path,
-				bytes.NewBuffer([]byte(test.input.payload)))
+			request, err := http.NewRequest(test.input.Method, ts.URL+test.input.Path,
+				bytes.NewBuffer([]byte(test.input.Payload)))
 			require.NoError(t, err)
-			request.AddCookie(&http.Cookie{Name: "username", Value: test.input.account, MaxAge: 1000})
-			request.Header.Add("Content-Type", test.input.contentType)
+			request.AddCookie(&http.Cookie{Name: "username", Value: test.input.Account, MaxAge: 1000})
+			request.Header.Add("Content-Type", test.input.ContentType)
 			res, err := http.DefaultClient.Do(request)
 			if err != nil {
 				fmt.Println(err)
 			}
 			defer res.Body.Close()
 			require.NoError(t, err)
-			assert.Equal(t, test.expected.code, res.StatusCode)
+			assert.Equal(t, test.expected.Code, res.StatusCode)
 			if res.StatusCode == http.StatusAccepted {
-				assert.Equal(t, test.expected.contentType, res.Header.Get("Content-Type"))
-				//fmt.Printf("%+v\n", test.expected.dbDump)
+				assert.Equal(t, test.expected.ContentType, res.Header.Get("Content-Type"))
+				//fmt.Printf("%+v\n", test.expected.DbDump)
 				//fmt.Printf("%+v\n", storage)
-				assert.Equal(t, reflect.DeepEqual(*test.expected.dbDump, *storage), true)
+				assert.Equal(t, reflect.DeepEqual(*test.expected.DbDump, *storage), true)
 			}
 		})
 	}

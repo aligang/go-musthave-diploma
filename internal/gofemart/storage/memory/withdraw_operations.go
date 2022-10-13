@@ -1,8 +1,8 @@
 package memory
 
 import (
-	"errors"
 	"fmt"
+	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/repository_errors"
 	"github.com/aligang/go-musthave-diploma/internal/logging"
 	"github.com/aligang/go-musthave-diploma/internal/withdrawn"
 )
@@ -15,10 +15,10 @@ func (s *Storage) RegisterWithdrawn(userId string, withdrawn *withdrawn.Withdraw
 	return nil
 }
 
-func (s *Storage) GetWithdrawn(withdrawnId string) (*withdrawn.WithdrawnRecord, error) {
+func (s *Storage) GetWithdrawnWithinTransaction(withdrawnId string) (*withdrawn.WithdrawnRecord, error) {
 	withdrawn, exists := s.Withdrawns[withdrawnId]
 	if !exists {
-		return nil, errors.New("record does not exists")
+		return nil, repository_errors.ErrNoContent
 	}
 	return &withdrawn, nil
 }

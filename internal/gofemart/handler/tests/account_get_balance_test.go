@@ -8,6 +8,7 @@ import (
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/handler"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/memory"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/memory/internal_order"
+	"github.com/aligang/go-musthave-diploma/internal/gofemart/tests_common"
 	"github.com/aligang/go-musthave-diploma/internal/withdrawn"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -20,18 +21,18 @@ import (
 func TestGetBalanceAccount(t *testing.T) {
 	tests := []struct {
 		name     string
-		input    input
-		expected expected
+		input    tests_common.Input
+		expected tests_common.Expected
 	}{
 		{
 			name: "GET BALANCE CORRECT",
-			input: input{method: http.MethodGet, path: "/api/user/balance", contentType: "application/json",
-				payload: "", account: "user1"},
-			expected: expected{
-				code:        200,
-				contentType: "Application/Json",
-				payload:     "{\"balance\":100.5,\"withdrawn\":200.9}",
-				dbDump: memory.Init(
+			input: tests_common.Input{Method: http.MethodGet, Path: "/api/user/balance", ContentType: "application/json",
+				Payload: "", Account: "user1"},
+			expected: tests_common.Expected{
+				Code:        200,
+				ContentType: "Application/Json",
+				Payload:     "{\"balance\":100.5,\"withdrawn\":200.9}",
+				DbDump: memory.Init(
 					customer_account.CustomerAccounts{
 						"user1": customer_account.CustomerAccount{
 							Login:    "user1",
@@ -79,23 +80,23 @@ func TestGetBalanceAccount(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 
-			request, err := http.NewRequest(test.input.method, ts.URL+test.input.path,
-				bytes.NewBuffer([]byte(test.input.payload)))
+			request, err := http.NewRequest(test.input.Method, ts.URL+test.input.Path,
+				bytes.NewBuffer([]byte(test.input.Payload)))
 			require.NoError(t, err)
-			request.Header.Add("Content-Type", test.input.contentType)
+			request.Header.Add("Content-Type", test.input.ContentType)
 			request.AddCookie(
-				&http.Cookie{Name: "username", Value: test.input.account, MaxAge: 1000})
+				&http.Cookie{Name: "username", Value: test.input.Account, MaxAge: 1000})
 			res, err := http.DefaultClient.Do(request)
 			if err != nil {
 				fmt.Println(err)
 			}
 			defer res.Body.Close()
 			require.NoError(t, err)
-			assert.Equal(t, test.expected.code, res.StatusCode)
+			assert.Equal(t, test.expected.Code, res.StatusCode)
 			if res.StatusCode == http.StatusOK {
-				assert.Equal(t, test.expected.contentType, res.Header.Get("Content-Type"))
+				assert.Equal(t, test.expected.ContentType, res.Header.Get("Content-Type"))
 				payload, _ := io.ReadAll(res.Body)
-				assert.JSONEq(t, test.expected.payload, string(payload))
+				assert.JSONEq(t, test.expected.Payload, string(payload))
 			}
 		})
 	}

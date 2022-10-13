@@ -4,14 +4,19 @@ import (
 	"errors"
 	"fmt"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/customer_account"
+	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/repository_errors"
 )
 
 func (s *Storage) GetCustomerAccount(login string) (*customer_account.CustomerAccount, error) {
 	res, ok := s.CustomerAccounts[login]
 	if !ok {
-		return nil, errors.New("record was not found")
+		return nil, repository_errors.ErrNoContent
 	}
 	return &res, nil
+}
+
+func (s *Storage) GetCustomerAccountWithinTransaction(login string) (*customer_account.CustomerAccount, error) {
+	return s.GetCustomerAccount(login)
 }
 
 func (s *Storage) GetCustomerAccounts() (customer_account.CustomerAccounts, error) {

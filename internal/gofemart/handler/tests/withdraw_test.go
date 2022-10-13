@@ -9,6 +9,7 @@ import (
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/order"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/memory"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/memory/internal_order"
+	"github.com/aligang/go-musthave-diploma/internal/gofemart/tests_common"
 	"github.com/aligang/go-musthave-diploma/internal/withdrawn"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -22,17 +23,17 @@ import (
 func TestAddWithdraw(t *testing.T) {
 	tests := []struct {
 		name     string
-		input    input
-		expected expected
+		input    tests_common.Input
+		expected tests_common.Expected
 	}{
 		{
 			name: "WITHDRAW REGISTRATION",
-			input: input{method: http.MethodPost, path: "/api/user/balance/withdrawn", contentType: "application/json",
-				payload: "{\"order\": \"57\", \"sum\": 1}", account: "user1"},
-			expected: expected{
-				code:        200,
-				contentType: "text/plain",
-				dbDump: memory.Init(
+			input: tests_common.Input{Method: http.MethodPost, Path: "/api/user/balance/withdrawn", ContentType: "application/json",
+				Payload: "{\"order\": \"57\", \"sum\": 1}", Account: "user1"},
+			expected: tests_common.Expected{
+				Code:        200,
+				ContentType: "text/plain",
+				DbDump: memory.Init(
 					customer_account.CustomerAccounts{
 						"user1": customer_account.CustomerAccount{
 							Login:    "user1",
@@ -71,12 +72,12 @@ func TestAddWithdraw(t *testing.T) {
 		},
 		{
 			name: "WITHDRAW INSUFFICIENT FOUNDS",
-			input: input{method: http.MethodPost, path: "/api/user/balance/withdrawn", contentType: "application/json",
-				payload: "{\"order\": \"62\", \"sum\": 1000}", account: "user1"},
-			expected: expected{
-				code:        402,
-				contentType: "text/plain",
-				dbDump: memory.Init(
+			input: tests_common.Input{Method: http.MethodPost, Path: "/api/user/balance/withdrawn", ContentType: "application/json",
+				Payload: "{\"order\": \"62\", \"sum\": 1000}", Account: "user1"},
+			expected: tests_common.Expected{
+				Code:        402,
+				ContentType: "text/plain",
+				DbDump: memory.Init(
 					customer_account.CustomerAccounts{
 						"user1": customer_account.CustomerAccount{
 							Login:    "user1",
@@ -115,12 +116,12 @@ func TestAddWithdraw(t *testing.T) {
 		},
 		{
 			name: "WITHDRAW INCORRECT ID FORMAT",
-			input: input{method: http.MethodPost, path: "/api/user/balance/withdrawn", contentType: "application/json",
-				payload: "{\"order\": \"65\", \"sum\": 1}", account: "user1"},
-			expected: expected{
-				code:        422,
-				contentType: "text/plain",
-				dbDump: memory.Init(
+			input: tests_common.Input{Method: http.MethodPost, Path: "/api/user/balance/withdrawn", ContentType: "application/json",
+				Payload: "{\"order\": \"65\", \"sum\": 1}", Account: "user1"},
+			expected: tests_common.Expected{
+				Code:        422,
+				ContentType: "text/plain",
+				DbDump: memory.Init(
 					customer_account.CustomerAccounts{
 						"user1": customer_account.CustomerAccount{
 							Login:    "user1",
@@ -196,23 +197,23 @@ func TestAddWithdraw(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 
-			request, err := http.NewRequest(test.input.method, ts.URL+test.input.path,
-				bytes.NewBuffer([]byte(test.input.payload)))
+			request, err := http.NewRequest(test.input.Method, ts.URL+test.input.Path,
+				bytes.NewBuffer([]byte(test.input.Payload)))
 			require.NoError(t, err)
-			request.AddCookie(&http.Cookie{Name: "username", Value: test.input.account, MaxAge: 1000})
-			request.Header.Add("Content-Type", test.input.contentType)
+			request.AddCookie(&http.Cookie{Name: "username", Value: test.input.Account, MaxAge: 1000})
+			request.Header.Add("Content-Type", test.input.ContentType)
 			res, err := http.DefaultClient.Do(request)
 			if err != nil {
 				fmt.Println(err)
 			}
 			defer res.Body.Close()
 			require.NoError(t, err)
-			assert.Equal(t, test.expected.code, res.StatusCode)
+			assert.Equal(t, test.expected.Code, res.StatusCode)
 			if res.StatusCode == http.StatusAccepted {
-				assert.Equal(t, test.expected.contentType, res.Header.Get("Content-Type"))
-				//fmt.Printf("%+v\n", test.expected.dbDump)
+				assert.Equal(t, test.expected.ContentType, res.Header.Get("Content-Type"))
+				//fmt.Printf("%+v\n", test.expected.DbDump)
 				//fmt.Printf("%+v\n", storage)
-				assert.Equal(t, reflect.DeepEqual(*test.expected.dbDump, *storage), true)
+				assert.Equal(t, reflect.DeepEqual(*test.expected.DbDump, *storage), true)
 			}
 		})
 	}

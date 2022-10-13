@@ -1,7 +1,6 @@
 package storage
 
 import (
-	"github.com/aligang/go-musthave-diploma/internal/accural/message"
 	"github.com/aligang/go-musthave-diploma/internal/config"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/customer_account"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/order"
@@ -23,11 +22,12 @@ type Storage interface {
 	AddCustomerAccount(customerAccount *customer_account.CustomerAccount) error
 	UpdateCustomerAccount(customerAccount *customer_account.CustomerAccount) error
 	GetCustomerAccount(login string) (*customer_account.CustomerAccount, error)
+	GetCustomerAccountWithinTransaction(login string) (*customer_account.CustomerAccount, error)
 	GetCustomerAccounts() (customer_account.CustomerAccounts, error)
 
-	AddOrder(userId string, record *message.AccuralMessage) error
-
+	AddOrder(userId string, order *order.Order) error
 	GetOrder(orderId string) (*order.Order, error)
+	GetOrderWithinTransaction(orderId string) (*order.Order, error)
 	ListOrders(userId string) ([]order.Order, error)
 	GetOrderOwner(orderId string) (string, error)
 	UpdateOrder(order *order.Order) error
@@ -37,7 +37,7 @@ type Storage interface {
 	RemoveOrderFromPendingList(orderId string) error
 
 	RegisterWithdrawn(userId string, withdraw *withdrawn.WithdrawnRecord) error
-	GetWithdrawn(orderId string) (*withdrawn.WithdrawnRecord, error)
+	GetWithdrawnWithinTransaction(orderId string) (*withdrawn.WithdrawnRecord, error)
 	ListWithdrawns(orderId string) ([]withdrawn.WithdrawnRecord, error)
 }
 
@@ -47,7 +47,7 @@ func New(config *config.Config) Storage {
 	if len(config.DatabaseURI) == 0 {
 		storage = memory.New()
 	} else {
-		storage = database.New()
+		storage = database.New(config)
 	}
 	logging.Debug("Storage Initialization finished")
 	return storage

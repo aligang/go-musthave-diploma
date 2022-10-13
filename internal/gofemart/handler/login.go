@@ -29,7 +29,7 @@ func (h *ApiHandler) Login(w http.ResponseWriter, r *http.Request) {
 	logging.Debug("Authenticating user %s", accountInfo.Login)
 	account, err := h.storage.GetCustomerAccount(accountInfo.Login)
 	if err != nil || accountInfo.Password != account.Password {
-		http.Error(w, err.Error(), http.StatusUnauthorized)
+		http.Error(w, "Authentication Failure", http.StatusUnauthorized)
 		logging.Debug("Could not authenticate user %s", accountInfo.Login)
 		return
 	}

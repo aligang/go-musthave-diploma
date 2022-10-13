@@ -8,6 +8,7 @@ import (
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/handler"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/memory"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/memory/internal_order"
+	"github.com/aligang/go-musthave-diploma/internal/gofemart/tests_common"
 	"github.com/aligang/go-musthave-diploma/internal/withdrawn"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -20,17 +21,17 @@ import (
 func TestRegisterAccount(t *testing.T) {
 	tests := []struct {
 		name     string
-		input    input
-		expected expected
+		input    tests_common.Input
+		expected tests_common.Expected
 	}{
 		{
 			name: "ACCOUNT REGISTRATION CORRECT",
-			input: input{method: http.MethodPost, path: "/api/user/register", contentType: "text/plain",
-				payload: "{\"login\":\"user1\",\"password\":\"pass1\"}"},
-			expected: expected{
-				code:        200,
-				contentType: "text/plain",
-				dbDump: memory.Init(
+			input: tests_common.Input{Method: http.MethodPost, Path: "/api/user/register", ContentType: "text/plain",
+				Payload: "{\"login\":\"user1\",\"password\":\"pass1\"}"},
+			expected: tests_common.Expected{
+				Code:        200,
+				ContentType: "text/plain",
+				DbDump: memory.Init(
 					customer_account.CustomerAccounts{
 						"user1": customer_account.CustomerAccount{
 							Login:    "user1",
@@ -50,13 +51,13 @@ func TestRegisterAccount(t *testing.T) {
 			},
 		},
 		{
-			name: "ACCOUNT REGISTRATION INCORRECT INPUT ERROR",
-			input: input{method: http.MethodPost, path: "/api/user/register", contentType: "text/plain",
-				payload: "{\"login\":\"\",\"password\":\"aa\"}"},
-			expected: expected{
-				code:        400,
-				contentType: "text/plain",
-				dbDump: memory.Init(
+			name: "ACCOUNT REGISTRATION INCORRECT tests_common.Input ERROR",
+			input: tests_common.Input{Method: http.MethodPost, Path: "/api/user/register", ContentType: "text/plain",
+				Payload: "{\"login\":\"\",\"password\":\"aa\"}"},
+			expected: tests_common.Expected{
+				Code:        400,
+				ContentType: "text/plain",
+				DbDump: memory.Init(
 					customer_account.CustomerAccounts{},
 					internal_order.Orders{},
 					withdrawn.Withdrawns{},
@@ -68,12 +69,12 @@ func TestRegisterAccount(t *testing.T) {
 		},
 		{
 			name: "DUBLICATE ACCOUNT ERROR",
-			input: input{method: http.MethodPost, path: "/api/user/register", contentType: "text/plain",
-				payload: "{\"login\":\"user1\",\"password\":\"pass1\"}"},
-			expected: expected{
-				code:        409,
-				contentType: "text/plain",
-				dbDump: memory.Init(
+			input: tests_common.Input{Method: http.MethodPost, Path: "/api/user/register", ContentType: "text/plain",
+				Payload: "{\"login\":\"user1\",\"password\":\"pass1\"}"},
+			expected: tests_common.Expected{
+				Code:        409,
+				ContentType: "text/plain",
+				DbDump: memory.Init(
 					customer_account.CustomerAccounts{
 						"user1": customer_account.CustomerAccount{
 							Login:    "user1",
@@ -112,20 +113,20 @@ func TestRegisterAccount(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 
-			request, err := http.NewRequest(test.input.method, ts.URL+test.input.path,
-				bytes.NewBuffer([]byte(test.input.payload)))
+			request, err := http.NewRequest(test.input.Method, ts.URL+test.input.Path,
+				bytes.NewBuffer([]byte(test.input.Payload)))
 			require.NoError(t, err)
-			request.Header.Add("Content-Type", test.input.contentType)
+			request.Header.Add("Content-Type", test.input.ContentType)
 			res, err := http.DefaultClient.Do(request)
 			if err != nil {
 				fmt.Println(err)
 			}
 			defer res.Body.Close()
 			require.NoError(t, err)
-			assert.Equal(t, test.expected.code, res.StatusCode)
+			assert.Equal(t, test.expected.Code, res.StatusCode)
 			if res.StatusCode == http.StatusOK {
-				assert.Equal(t, test.expected.contentType, res.Header.Get("Content-Type"))
-				assert.Equal(t, reflect.DeepEqual(*test.expected.dbDump, *storage), true)
+				assert.Equal(t, test.expected.ContentType, res.Header.Get("Content-Type"))
+				assert.Equal(t, reflect.DeepEqual(*test.expected.DbDump, *storage), true)
 			}
 		})
 	}

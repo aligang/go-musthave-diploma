@@ -30,8 +30,8 @@ func (h *ApiHandler) ListOrders(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if len(orders) == 0 {
-		http.Error(w, "there is now registered orders", http.StatusNoContent)
-		logging.Warn("User=%s has now registered orders", userId)
+		http.Error(w, "there is no registered orders", http.StatusNoContent)
+		logging.Warn("User=%s has no registered orders", userId)
 		return
 	}
 

@@ -1,27 +1,27 @@
-package tests
+package tests_common
 
 import (
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/memory"
 	"time"
 )
 
-type expected struct {
-	path        string
-	code        int
-	contentType string
-	payload     string
-	dbDump      *memory.Storage
+type Expected struct {
+	Path        string
+	Code        int
+	ContentType string
+	Payload     string
+	DbDump      *memory.Storage
 }
 
-type input struct {
-	account     string
-	method      string
-	path        string
-	contentType string
-	payload     string
+type Input struct {
+	Account     string
+	Method      string
+	Path        string
+	ContentType string
+	Payload     string
 }
 
-func genTimeStamps() []time.Time {
+func GenTimeStamps() []time.Time {
 	var timeStamps []time.Time
 	for i := 0; i < 10; i++ {
 		timeStamp, _ := time.Parse(time.RFC3339, "2021-09-19T15:59:41+03:00")

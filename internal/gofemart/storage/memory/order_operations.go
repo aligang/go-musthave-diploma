@@ -1,19 +1,18 @@
 package memory
 
 import (
-	"errors"
 	"fmt"
-	"github.com/aligang/go-musthave-diploma/internal/accural/message"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/order"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/memory/internal_order"
+	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/repository_errors"
 	"github.com/aligang/go-musthave-diploma/internal/logging"
 )
 
-func (s *Storage) AddOrder(userId string, record *message.AccuralMessage) error {
-	orderInstance := internal_order.New(userId, order.FromAccural(record))
+func (s *Storage) AddOrder(userId string, order *order.Order) error {
+	orderInstance := internal_order.New(userId, order)
 	logging.Debug("order to be Stored: %+v", orderInstance)
-	s.Orders[record.Order] = orderInstance
-	s.CustomerOrders[userId] = append(s.CustomerOrders[userId], record.Order)
+	s.Orders[order.Number] = orderInstance
+	s.CustomerOrders[userId] = append(s.CustomerOrders[userId], order.Number)
 	return nil
 }
 
@@ -44,9 +43,13 @@ func (s *Storage) RemoveOrderFromPendingList(orderId string) error {
 func (s *Storage) GetOrder(orderId string) (*order.Order, error) {
 	orderRecord, exists := s.Orders[orderId]
 	if !exists {
-		return nil, errors.New("order record does not exist")
+		return nil, repository_errors.ErrNoContent
 	}
 	return orderRecord.Order, nil
+}
+
+func (s *Storage) GetOrderWithinTransaction(orderId string) (*order.Order, error) {
+	return s.GetOrder(orderId)
 }
 
 func (s *Storage) ListOrders(userId string) ([]order.Order, error) {

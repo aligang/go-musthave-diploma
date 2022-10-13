@@ -2,8 +2,10 @@ package handler
 
 import (
 	"encoding/json"
+	"errors"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/auth"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/order"
+	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/repository_errors"
 	"github.com/aligang/go-musthave-diploma/internal/logging"
 	"github.com/aligang/go-musthave-diploma/internal/withdrawn"
 	"io"
@@ -54,21 +56,34 @@ func (h *ApiHandler) AddWithdraw(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	_, err = h.storage.GetOrder(withdrawRequest.Order)
-	if err == nil {
-		logging.Warn("Withdraw=%s was already registered", withdrawRequest.Order)
-		http.Error(w, "Withdraw was already registered", http.StatusInternalServerError)
+	switch {
+	case errors.Is(err, repository_errors.ErrNoContent):
+	case err != nil:
+		logging.Warn("error during fetching order %s", err.Error())
+		http.Error(w, "System Error", http.StatusInternalServerError)
+		return
+	default:
+		logging.Warn("Withdraw=%s was already registered within order database", withdrawRequest.Order)
+		http.Error(w, "Withdraw was already registered", http.StatusConflict)
 		return
 	}
-	_, err = h.storage.GetWithdrawn(withdrawRequest.Order)
-	if err == nil {
-		logging.Warn("Withdraw=%s was already registered", withdrawRequest.Order)
-		http.Error(w, "Withdraw was already registered", http.StatusInternalServerError)
+
+	_, err = h.storage.GetWithdrawnWithinTransaction(withdrawRequest.Order)
+	switch {
+	case errors.Is(err, repository_errors.ErrNoContent):
+	case err != nil:
+		logging.Warn("error during fetching withdraw %s", err.Error())
+		http.Error(w, "System Error", http.StatusInternalServerError)
+		return
+	default:
+		logging.Warn("Withdraw was already registered in withdraw database", withdrawRequest.Order)
+		http.Error(w, "Withdraw was already registered", http.StatusConflict)
 		return
 	}
 
 	logging.Debug("Trying to register withdrawn order=%s to user-account=%s", withdrawRequest.Order, userId)
 	logging.Debug("Fetching account info for user-account=%s", userId)
-	accountData, err := h.storage.GetCustomerAccount(userId)
+	accountData, err := h.storage.GetCustomerAccountWithinTransaction(userId)
 	if err != nil {
 		logging.Warn("error during fetching account info: %s", err.Error())
 		http.Error(w, "error during add accural to balance", http.StatusInternalServerError)
