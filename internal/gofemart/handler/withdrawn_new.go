@@ -19,6 +19,7 @@ func (h *ApiHandler) AddWithdraw(w http.ResponseWriter, r *http.Request) {
 		logging.Warn("No user info were provided")
 		return
 	}
+	logging.Debug("Processing Withdraw for user %s", userId)
 	payload, err := io.ReadAll(r.Body)
 	logging.Warn("Withdraw add: received request %s", string(payload))
 	if err != nil {
@@ -45,7 +46,7 @@ func (h *ApiHandler) AddWithdraw(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid orderId checksum", http.StatusUnprocessableEntity)
 		return
 	}
-
+	logging.Debug("Withdraw ID is %d", withdrawRequest.Order)
 	var dBerr error
 	h.storage.StartTransaction()
 	defer func() {

@@ -27,7 +27,7 @@ func (h *ApiHandler) GetAccountBalance(w http.ResponseWriter, r *http.Request) {
 		logging.Warn("Could not encode %+v", accountInfo.AccountBalance)
 		return
 	}
-	logging.Debug("Sending data to wire", string(payload))
+	logging.Debug("Sending data to wire %s", string(payload))
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	_, err = w.Write(payload)
