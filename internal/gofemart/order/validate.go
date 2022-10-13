@@ -16,7 +16,7 @@ func ValidateId(orderId string) error {
 }
 
 func ValidateIdFormat(orderId string) error {
-	order, _ := strconv.ParseUint(orderId, 10, 32)
+	order, _ := strconv.ParseUint(orderId, 10, 64)
 	if luhn.Valid(int(order)) {
 		return nil
 	}
