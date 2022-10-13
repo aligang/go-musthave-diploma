@@ -22,6 +22,7 @@ require (
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.16 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
+	github.com/theplant/luhn v0.0.0-20170224032821-81a1a381387a // indirect
 	golang.org/x/crypto v0.0.0-20221010152910-d6f0a8c073c2 // indirect
 	golang.org/x/sys v0.0.0-20221010170243-090e33056c14 // indirect
 	golang.org/x/text v0.3.8 // indirect

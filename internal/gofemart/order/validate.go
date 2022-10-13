@@ -2,6 +2,7 @@ package order
 
 import (
 	"errors"
+	"github.com/theplant/luhn"
 	"strconv"
 )
 
@@ -15,11 +16,9 @@ func ValidateId(orderId string) error {
 }
 
 func ValidateIdFormat(orderId string) error {
-	var err error
-	digitSequence, err := strconv.ParseUint(orderId, 10, 64)
-	if !CheckLuhn(digitSequence) {
-		return errors.New("invalid orderId: invalid checksum")
-
+	order, _ := strconv.ParseUint(orderId, 10, 32)
+	if luhn.Valid(int(order)) {
+		return nil
 	}
-	return err
+	return errors.New("id format is invalid")
 }
