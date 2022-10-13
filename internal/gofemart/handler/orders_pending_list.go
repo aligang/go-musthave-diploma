@@ -19,7 +19,7 @@ func (h *ApiHandler) ListPendingOrders(w http.ResponseWriter, r *http.Request) {
 
 	ordersPayload, err := json.Marshal(orderIds)
 	logging.Debug("forming response %s", string(ordersPayload))
-	w.Header().Set("Content-Type", "Application/Json")
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	_, err = w.Write(ordersPayload)
 	if err != nil {

@@ -18,7 +18,7 @@ func (h *ApiHandler) ListCustomerAccounts(w http.ResponseWriter, r *http.Request
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 	w.WriteHeader(http.StatusOK)
-	w.Header().Set("Content-Type", "Application/Json")
+	w.Header().Set("Content-Type", "application/json")
 	_, err = w.Write(payload)
 	if err != nil {
 		logging.Warn("Could set data to wire", string(payload))

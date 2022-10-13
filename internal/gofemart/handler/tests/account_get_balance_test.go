@@ -30,7 +30,7 @@ func TestGetBalanceAccount(t *testing.T) {
 				Payload: "", Account: "user1"},
 			expected: tests_common.Expected{
 				Code:        200,
-				ContentType: "Application/Json",
+				ContentType: "application/json",
 				Payload:     "{\"balance\":100.5,\"withdrawn\":200.9}",
 				DbDump: memory.Init(
 					customer_account.CustomerAccounts{

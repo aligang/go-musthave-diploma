@@ -40,7 +40,7 @@ func (h *ApiHandler) ListOrders(w http.ResponseWriter, r *http.Request) {
 	sort.Sort(order.OrderSlice(orders))
 	ordersPayload, err := json.Marshal(orders)
 	logging.Debug("forming response %s", string(ordersPayload))
-	w.Header().Set("Content-Type", "Application/Json")
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	_, err = w.Write(ordersPayload)
 	if err != nil {

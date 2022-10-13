@@ -25,7 +25,7 @@ func TestLogin(t *testing.T) {
 	}{
 		{
 			name: "AUTHENTICATION CORRECT",
-			input: tests_common.Input{Method: http.MethodPost, Path: "/api/user/login", ContentType: "Application/Json",
+			input: tests_common.Input{Method: http.MethodPost, Path: "/api/user/login", ContentType: "application/json",
 				Payload: "{\"login\":\"user1\",\"password\":\"pass1\"}"},
 			expected: tests_common.Expected{
 				Code:        200,
@@ -52,7 +52,7 @@ func TestLogin(t *testing.T) {
 
 		{
 			name: "AUTHENTICATION FAILED: WRONG REQUEST FORMAT",
-			input: tests_common.Input{Method: http.MethodPost, Path: "/api/user/login", ContentType: "Application/Json",
+			input: tests_common.Input{Method: http.MethodPost, Path: "/api/user/login", ContentType: "application/json",
 				Payload: "{\"notalogin\":\"user1\",\"notapassword\":\"pass1\"}"},
 			expected: tests_common.Expected{
 				Code:        400,
@@ -79,7 +79,7 @@ func TestLogin(t *testing.T) {
 
 		{
 			name: "AUTHENTICATION CORRECT",
-			input: tests_common.Input{Method: http.MethodPost, Path: "/api/user/login", ContentType: "Application/Json",
+			input: tests_common.Input{Method: http.MethodPost, Path: "/api/user/login", ContentType: "application/json",
 				Payload: "{\"login\":\"wronguser\",\"password\":\"wrongpassword\"}"},
 			expected: tests_common.Expected{
 				Code:        401,

@@ -39,7 +39,7 @@ func (h *ApiHandler) ListWithdraws(w http.ResponseWriter, r *http.Request) {
 	sort.Sort(withdrawn.WithdrawnSlice(withdrawns))
 	withdrawsPayload, err := json.Marshal(withdrawns)
 	logging.Debug("forming response %s", string(withdrawsPayload))
-	w.Header().Set("Content-Type", "Application/Json")
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	_, err = w.Write(withdrawsPayload)
 	if err != nil {

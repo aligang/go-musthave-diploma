@@ -33,7 +33,7 @@ func TestListWithdrawns(t *testing.T) {
 				Payload: "[{\"order\":\"222\",\"sum\":1,\"processed_at\":\"2021-09-19T15:59:42+03:00\"}," +
 					"{\"order\":\"111\",\"sum\":1,\"processed_at\":\"2021-09-19T15:59:41+03:00\"}]",
 				Code:        200,
-				ContentType: "Application/Json",
+				ContentType: "application/json",
 			},
 		},
 	}
@@ -127,7 +127,7 @@ func TestListEmptyWithdrawns(t *testing.T) {
 			expected: tests_common.Expected{
 				Payload:     "",
 				Code:        204,
-				ContentType: "Application/Json",
+				ContentType: "application/json",
 			},
 		},
 	}

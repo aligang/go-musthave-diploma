@@ -28,7 +28,7 @@ func (h *ApiHandler) GetAccountBalance(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	logging.Debug("Sending data to wire", string(payload))
-	w.Header().Set("Content-Type", "Application/Json")
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	_, err = w.Write(payload)
 	if err != nil {
