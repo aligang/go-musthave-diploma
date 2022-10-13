@@ -25,7 +25,7 @@ func New(conf *config.Config) *Storage {
 		DB: db,
 	}
 	_, err = s.DB.Exec(
-		"create table if not exists accounts(Login text, Password text, Balance double precision, Withdraw double precision)",
+		"create table if not exists accounts(Login text, Password text, Current double precision, Withdraw double precision)",
 	)
 	if err != nil {
 		msg, _ := fmt.Printf("Failure during initialisation of accounts table: %s\n", err.Error())
