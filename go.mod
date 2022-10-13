@@ -8,7 +8,6 @@ require (
 	github.com/jackc/pgx/v4 v4.17.2
 	github.com/rs/zerolog v1.28.0
 	github.com/stretchr/testify v1.8.0
-	golang.org/x/exp v0.0.0-20221012211006-4de253d81b95
 )
 
 require (

@@ -1,16 +1,24 @@
 package status
 
-import "golang.org/x/exp/slices"
-
 const INVALID = "INVALID"
 const PROCESSING = "PROCESSING"
 const PROCESSED = "PROCESSED"
 const NEW = "NEW"
 
 func IsSupported(status string) bool {
-	return slices.Contains([]string{INVALID, PROCESSED, PROCESSING, NEW}, status)
+	for _, s := range []string{INVALID, PROCESSED, PROCESSING, NEW} {
+		if status == s {
+			return true
+		}
+	}
+	return false
 }
 
 func RequiresTracking(status string) bool {
-	return slices.Contains([]string{PROCESSING, NEW}, status)
+	for _, s := range []string{PROCESSING, NEW} {
+		if status == s {
+			return true
+		}
+	}
+	return false
 }
