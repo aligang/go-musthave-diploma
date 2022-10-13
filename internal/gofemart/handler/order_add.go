@@ -14,6 +14,7 @@ import (
 
 func (h *ApiHandler) AddOrder(w http.ResponseWriter, r *http.Request) {
 	userId, err := auth.ResolveUsername(r)
+	logging.Debug("Processing Order registration request for user %s", userId)
 	if err != nil {
 		http.Error(w, "", http.StatusBadRequest)
 		logging.Warn("No user info were provided")
@@ -37,7 +38,7 @@ func (h *ApiHandler) AddOrder(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid orderId checksum", http.StatusUnprocessableEntity)
 		return
 	}
-
+	logging.Debug("Processing Order registration request with id %s", orderId)
 	var dBerr error
 	h.storage.StartTransaction()
 	defer func() {
