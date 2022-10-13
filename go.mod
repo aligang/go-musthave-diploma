@@ -1,6 +1,6 @@
 module github.com/aligang/go-musthave-diploma
 
-go 1.18
+go 1.17
 
 require (
 	github.com/caarlos0/env/v6 v6.10.1
