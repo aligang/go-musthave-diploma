@@ -10,6 +10,7 @@ import (
 	"github.com/aligang/go-musthave-diploma/internal/logging"
 	"io"
 	"net/http"
+	"net/http/httputil"
 	"time"
 )
 
@@ -24,7 +25,9 @@ func FetchOrderInfo(orderId string, config *config.Config) (*message.AccuralMess
 		logging.Warn("Error During Request preparation: %s", err.Error())
 		return nil, err
 	}
+	requestDump, err := httputil.DumpRequestOut(request, true)
 	logging.Debug("Sending request to: URI: %s", URI)
+	logging.Debug("request content: %s", string(requestDump))
 	//request.Header.Add("Accept-Type", "application/json")
 	response, err := client.Do(request)
 	if err != nil {
@@ -36,7 +39,8 @@ func FetchOrderInfo(orderId string, config *config.Config) (*message.AccuralMess
 			config.AccuralSystemAddress, response.StatusCode)
 		return nil, errors.New("problem during fetching order info")
 	}
-
+	responseDump, err := httputil.DumpResponse(response, true)
+	logging.Debug("Response content: %s", string(responseDump))
 	responsePayload, err := io.ReadAll(response.Body)
 	if err != nil {
 		logging.Warn("Could not read data from wire")
