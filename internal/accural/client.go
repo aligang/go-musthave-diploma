@@ -34,13 +34,14 @@ func FetchOrderInfo(orderId string, config *config.Config) (*message.AccuralMess
 		logging.Warn("Error During communication with: %s", URI)
 		return nil, err
 	}
+	responseDump, err := httputil.DumpResponse(response, true)
+	logging.Debug("Response content: %s", string(responseDump))
 	if response.StatusCode != http.StatusOK {
 		logging.Warn("Got response from %s with code: %d, Could not fetch order info",
 			config.AccuralSystemAddress, response.StatusCode)
 		return nil, errors.New("problem during fetching order info")
 	}
-	responseDump, err := httputil.DumpResponse(response, true)
-	logging.Debug("Response content: %s", string(responseDump))
+
 	responsePayload, err := io.ReadAll(response.Body)
 	if err != nil {
 		logging.Warn("Could not read data from wire")
