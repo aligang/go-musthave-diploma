@@ -11,6 +11,7 @@ import (
 )
 
 func (h *ApiHandler) RegisterCustomerAccount(w http.ResponseWriter, r *http.Request) {
+	//r.Context()
 	accountInfo := &customer_account.CustomerAccount{}
 	payload, err := io.ReadAll(r.Body)
 	if err != nil {
