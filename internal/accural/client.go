@@ -25,14 +25,15 @@ func FetchOrderInfo(orderId string, config *config.Config) (*message.AccuralMess
 		return nil, err
 	}
 	logging.Debug("Sending request to: URI: %s", URI)
-	request.Header.Add("Accept-Type", "application/json")
+	//request.Header.Add("Accept-Type", "application/json")
 	response, err := client.Do(request)
 	if err != nil {
 		logging.Warn("Error During communication with: %s", URI)
 		return nil, err
 	}
 	if response.StatusCode != http.StatusOK {
-		logging.Warn("Got response from  with code: %d, Could not fetch order info", response.StatusCode)
+		logging.Warn("Got response from %s with code: %d, Could not fetch order info",
+			config.AccuralSystemAddress, response.StatusCode)
 		return nil, errors.New("problem during fetching order info")
 	}
 
