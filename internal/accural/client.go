@@ -28,6 +28,7 @@ func FetchOrderInfo(orderId string, config *config.Config) (*message.AccuralMess
 	requestDump, err := httputil.DumpRequestOut(request, true)
 	logging.Debug("Sending request to: URI: %s", URI)
 	logging.Debug("request content: %s", string(requestDump))
+	fmt.Println(string(requestDump))
 	//request.Header.Add("Accept-Type", "application/json")
 	response, err := client.Do(request)
 	if err != nil {
@@ -36,6 +37,7 @@ func FetchOrderInfo(orderId string, config *config.Config) (*message.AccuralMess
 	}
 	responseDump, err := httputil.DumpResponse(response, true)
 	logging.Debug("Response content: %s", string(responseDump))
+	fmt.Println(string(responseDump))
 	if response.StatusCode != http.StatusOK {
 		logging.Warn("Got response from %s with code: %d, Could not fetch order info",
 			config.AccuralSystemAddress, response.StatusCode)
