@@ -36,7 +36,7 @@ func TestListOrders(t *testing.T) {
 					"{\"number\":\"1\",\"status\":\"PROCESSED\",\"accrual\":10.5,\"uploaded_at\":\"2021-09-19T15:59:41+03:00\"}]",
 				Code:        200,
 				ContentType: "application/json",
-				DbDump: memory.Init(
+				DBDump: memory.Init(
 					account.CustomerAccounts{
 						"user1": account.CustomerAccount{
 							Login:    "user1",
@@ -193,7 +193,7 @@ func TestListEmptyOrders(t *testing.T) {
 				Payload:     "",
 				Code:        204,
 				ContentType: "application/json",
-				DbDump: memory.Init(
+				DBDump: memory.Init(
 					account.CustomerAccounts{
 						"user1": account.CustomerAccount{
 							Login:    "user1",

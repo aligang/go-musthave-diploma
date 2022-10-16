@@ -30,7 +30,7 @@ func TestLogin(t *testing.T) {
 			expected: testscommon.Expected{
 				Code:        200,
 				ContentType: "text/plain",
-				DbDump: memory.Init(
+				DBDump: memory.Init(
 					account.CustomerAccounts{
 						"user1": account.CustomerAccount{
 							Login:    "user1",
@@ -57,7 +57,7 @@ func TestLogin(t *testing.T) {
 			expected: testscommon.Expected{
 				Code:        400,
 				ContentType: "text/plain",
-				DbDump: memory.Init(
+				DBDump: memory.Init(
 					account.CustomerAccounts{
 						"user1": account.CustomerAccount{
 							Login:    "user1",
@@ -84,7 +84,7 @@ func TestLogin(t *testing.T) {
 			expected: testscommon.Expected{
 				Code:        401,
 				ContentType: "text/plain",
-				DbDump: memory.Init(
+				DBDump: memory.Init(
 					account.CustomerAccounts{
 						"user1": account.CustomerAccount{
 							Login:    "user1",

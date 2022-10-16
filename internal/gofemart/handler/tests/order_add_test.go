@@ -37,7 +37,7 @@ func TestAddOrder(t *testing.T) {
 			expected: testscommon.Expected{
 				Code:        202,
 				ContentType: "text/plain",
-				DbDump: memory.Init(
+				DBDump: memory.Init(
 					account.CustomerAccounts{
 						"user1": account.CustomerAccount{
 							Login:    "user1",
@@ -82,7 +82,7 @@ func TestAddOrder(t *testing.T) {
 			expected: testscommon.Expected{
 				Code:        202,
 				ContentType: "text/plain",
-				DbDump: memory.Init(
+				DBDump: memory.Init(
 					account.CustomerAccounts{
 						"user1": account.CustomerAccount{
 							Login:    "user1",
@@ -136,7 +136,7 @@ func TestAddOrder(t *testing.T) {
 			expected: testscommon.Expected{
 				Code:        202,
 				ContentType: "text/plain",
-				DbDump: memory.Init(
+				DBDump: memory.Init(
 					account.CustomerAccounts{
 						"user1": account.CustomerAccount{
 							Login:    "user1",
@@ -199,7 +199,7 @@ func TestAddOrder(t *testing.T) {
 			expected: testscommon.Expected{
 				Code:        202,
 				ContentType: "text/plain",
-				DbDump: memory.Init(
+				DBDump: memory.Init(
 					account.CustomerAccounts{
 						"user1": account.CustomerAccount{
 							Login:    "user1",
@@ -271,7 +271,7 @@ func TestAddOrder(t *testing.T) {
 			expected: testscommon.Expected{
 				Code:        200,
 				ContentType: "text/plain",
-				DbDump: memory.Init(
+				DBDump: memory.Init(
 					account.CustomerAccounts{
 						"user1": account.CustomerAccount{
 							Login:    "user1",
@@ -316,7 +316,7 @@ func TestAddOrder(t *testing.T) {
 			expected: testscommon.Expected{
 				Code:        400,
 				ContentType: "text/plain",
-				DbDump: memory.Init(
+				DBDump: memory.Init(
 					account.CustomerAccounts{
 						"user1": account.CustomerAccount{
 							Login:    "user1",
@@ -361,7 +361,7 @@ func TestAddOrder(t *testing.T) {
 			expected: testscommon.Expected{
 				Code:        422,
 				ContentType: "text/plain",
-				DbDump: memory.Init(
+				DBDump: memory.Init(
 					account.CustomerAccounts{
 						"user1": account.CustomerAccount{
 							Login:    "user1",
@@ -406,7 +406,7 @@ func TestAddOrder(t *testing.T) {
 			expected: testscommon.Expected{
 				Code:        409,
 				ContentType: "text/plain",
-				DbDump: memory.Init(
+				DBDump: memory.Init(
 					account.CustomerAccounts{
 						"user1": account.CustomerAccount{
 							Login:    "user1",
@@ -530,9 +530,9 @@ func TestAddOrder(t *testing.T) {
 			assert.Equal(t, test.expected.Code, res.StatusCode)
 			if res.StatusCode == http.StatusAccepted {
 				assert.Equal(t, test.expected.ContentType, res.Header.Get("Content-Type"))
-				//fmt.Printf("%+v\n", test.expected.DbDump)
+				//fmt.Printf("%+v\n", test.expected.DBDump)
 				//fmt.Printf("%+v\n", storage)
-				assert.Equal(t, reflect.DeepEqual(*test.expected.DbDump, *storage), true)
+				assert.Equal(t, reflect.DeepEqual(*test.expected.DBDump, *storage), true)
 			}
 		})
 	}

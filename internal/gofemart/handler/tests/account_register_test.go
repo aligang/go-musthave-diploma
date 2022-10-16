@@ -31,7 +31,7 @@ func TestRegisterAccount(t *testing.T) {
 			expected: testscommon.Expected{
 				Code:        200,
 				ContentType: "text/plain",
-				DbDump: memory.Init(
+				DBDump: memory.Init(
 					account.CustomerAccounts{
 						"user1": account.CustomerAccount{
 							Login:    "user1",
@@ -57,7 +57,7 @@ func TestRegisterAccount(t *testing.T) {
 			expected: testscommon.Expected{
 				Code:        400,
 				ContentType: "text/plain",
-				DbDump: memory.Init(
+				DBDump: memory.Init(
 					account.CustomerAccounts{},
 					orderrecord.Orders{},
 					withdrawn.Withdrawns{},
@@ -74,7 +74,7 @@ func TestRegisterAccount(t *testing.T) {
 			expected: testscommon.Expected{
 				Code:        409,
 				ContentType: "text/plain",
-				DbDump: memory.Init(
+				DBDump: memory.Init(
 					account.CustomerAccounts{
 						"user1": account.CustomerAccount{
 							Login:    "user1",
@@ -126,7 +126,7 @@ func TestRegisterAccount(t *testing.T) {
 			assert.Equal(t, test.expected.Code, res.StatusCode)
 			if res.StatusCode == http.StatusOK {
 				assert.Equal(t, test.expected.ContentType, res.Header.Get("Content-Type"))
-				assert.Equal(t, reflect.DeepEqual(*test.expected.DbDump, *storage), true)
+				assert.Equal(t, reflect.DeepEqual(*test.expected.DBDump, *storage), true)
 			}
 		})
 	}

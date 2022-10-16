@@ -31,7 +31,7 @@ func TestTracking(t *testing.T) {
 			expected: testscommon.Expected{
 				Code:        202,
 				ContentType: "text/plain",
-				DBdump: memory.Init(
+				DBDump: memory.Init(
 					account.CustomerAccounts{
 						"user1": account.CustomerAccount{
 							Login:    "user1",
@@ -182,7 +182,7 @@ func TestTracking(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			Tracker.Sync(context.Background())
-			assert.Equal(t, reflect.DeepEqual(*test.expected.DBdump, *storage), true)
+			assert.Equal(t, reflect.DeepEqual(*test.expected.DBDump, *storage), true)
 		},
 		)
 	}

@@ -10,7 +10,7 @@ type Expected struct {
 	Code        int
 	ContentType string
 	Payload     string
-	DBdump      *memory.Storage
+	DBDump      *memory.Storage
 }
 
 type Input struct {
