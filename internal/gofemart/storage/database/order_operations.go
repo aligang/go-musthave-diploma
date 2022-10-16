@@ -9,10 +9,10 @@ import (
 	"github.com/aligang/go-musthave-diploma/internal/logging"
 )
 
-func (s *Storage) AddOrder(ctx context.Context, userId string, order *order.Order) error {
-	logging.Debug("Preparing statement to add order to Repository: %+v for user %s", order, userId)
+func (s *Storage) AddOrder(ctx context.Context, userID string, order *order.Order) error {
+	logging.Debug("Preparing statement to add order to Repository: %+v for user %s", order, userID)
 	query := "INSERT INTO orders (Number, Status, Accural, UploadedAt, Owner) VALUES($1, $2, $3, $4, $5)"
-	var args = []interface{}{order.Number, order.Status, order.Accural, order.UploadedAt, userId}
+	var args = []interface{}{order.Number, order.Status, order.Accural, order.UploadedAt, userID}
 	return s.modifyOrder(ctx, order, query, args)
 }
 
@@ -80,10 +80,10 @@ func (s *Storage) getOrderCommon(orderID string, prepareFunc func(query string) 
 	}
 }
 
-func (s *Storage) ListOrders(userId string) ([]order.Order, error) {
+func (s *Storage) ListOrders(userID string) ([]order.Order, error) {
 	logging.Debug("Preparing statement to fetch orders from Repository")
 	query := "SELECT number, status, accural, uploadedat  FROM orders where owner = $1"
-	args := []interface{}{userId}
+	args := []interface{}{userID}
 	var orders []order.Order
 
 	statement, err := s.DB.Prepare(query)

@@ -26,10 +26,10 @@ type Storage interface {
 	GetCustomerAccountWithinTransaction(ctx context.Context, login string) (*account.CustomerAccount, error)
 	GetCustomerAccounts() (account.CustomerAccounts, error)
 
-	AddOrder(ctx context.Context, userId string, order *order.Order) error
+	AddOrder(ctx context.Context, userID string, order *order.Order) error
 	GetOrder(orderID string) (*order.Order, error)
 	GetOrderWithinTransaction(ctx context.Context, orderID string) (*order.Order, error)
-	ListOrders(userId string) ([]order.Order, error)
+	ListOrders(userID string) ([]order.Order, error)
 	GetOrderOwner(ctx context.Context, orderID string) (string, error)
 	UpdateOrder(ctx context.Context, order *order.Order) error
 
@@ -37,7 +37,7 @@ type Storage interface {
 	GetPendingOrders(ctx context.Context) ([]string, error)
 	RemoveOrderFromPendingList(ctx context.Context, orderID string) error
 
-	RegisterWithdrawn(ctx context.Context, userId string, withdraw *withdrawn.WithdrawnRecord) error
+	RegisterWithdrawn(ctx context.Context, userID string, withdraw *withdrawn.WithdrawnRecord) error
 	GetWithdrawnWithinTransaction(ctx context.Context, orderID string) (*withdrawn.WithdrawnRecord, error)
 	ListWithdrawns(orderID string) ([]withdrawn.WithdrawnRecord, error)
 }

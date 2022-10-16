@@ -9,10 +9,10 @@ import (
 	"github.com/aligang/go-musthave-diploma/internal/withdrawn"
 )
 
-func (s *Storage) RegisterWithdrawn(ctx context.Context, userId string, withdraw *withdrawn.WithdrawnRecord) error {
-	logging.Debug("Preparing statement to add withdraw to Repository: %+v for user %s", withdraw, userId)
+func (s *Storage) RegisterWithdrawn(ctx context.Context, userID string, withdraw *withdrawn.WithdrawnRecord) error {
+	logging.Debug("Preparing statement to add withdraw to Repository: %+v for user %s", withdraw, userID)
 	query := "INSERT INTO withdrawns (Order_Id, Sum, Processed_at, Owner) VALUES($1, $2, $3, $4)"
-	var args = []interface{}{withdraw.Order, withdraw.Sum, withdraw.ProcessedAt, userId}
+	var args = []interface{}{withdraw.Order, withdraw.Sum, withdraw.ProcessedAt, userID}
 	statement, err := s.Tx[ctx].Prepare(query)
 	if err != nil {
 		logging.Warn("Error During statement creation %s", query)
@@ -63,10 +63,10 @@ func (s *Storage) GetWithdrawnWithinTransaction(ctx context.Context, orderID str
 	}
 }
 
-func (s *Storage) ListWithdrawns(userId string) ([]withdrawn.WithdrawnRecord, error) {
+func (s *Storage) ListWithdrawns(userID string) ([]withdrawn.WithdrawnRecord, error) {
 	logging.Debug("Preparing statement to fetch orders from Repository")
 	query := "SELECT Order_Id, Sum, Processed_at FROM withdrawns WHERE Owner = $1"
-	args := []interface{}{userId}
+	args := []interface{}{userID}
 	var wthdrawns []withdrawn.WithdrawnRecord
 
 	statement, err := s.DB.Prepare(query)

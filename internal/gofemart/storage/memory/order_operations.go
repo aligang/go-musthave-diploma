@@ -9,11 +9,11 @@ import (
 	"github.com/aligang/go-musthave-diploma/internal/logging"
 )
 
-func (s *Storage) AddOrder(ctx context.Context, userId string, order *order.Order) error {
-	orderInstance := internal_order.New(userId, order)
+func (s *Storage) AddOrder(ctx context.Context, userID string, order *order.Order) error {
+	orderInstance := internal_order.New(userID, order)
 	logging.Debug("order to be Stored: %+v", orderInstance)
 	s.Orders[order.Number] = orderInstance
-	s.CustomerOrders[userId] = append(s.CustomerOrders[userId], order.Number)
+	s.CustomerOrders[userID] = append(s.CustomerOrders[userID], order.Number)
 	return nil
 }
 
@@ -53,8 +53,8 @@ func (s *Storage) GetOrderWithinTransaction(ctx context.Context, orderID string)
 	return s.GetOrder(orderID)
 }
 
-func (s *Storage) ListOrders(userId string) ([]order.Order, error) {
-	orderIDs, exists := s.CustomerOrders[userId]
+func (s *Storage) ListOrders(userID string) ([]order.Order, error) {
+	orderIDs, exists := s.CustomerOrders[userID]
 	if !exists {
 		return []order.Order{}, nil
 	}

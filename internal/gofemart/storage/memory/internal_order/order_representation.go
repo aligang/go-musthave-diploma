@@ -11,9 +11,9 @@ type Order struct {
 
 type Orders map[string]Order
 
-func New(userId string, order *order.Order) Order {
+func New(userID string, order *order.Order) Order {
 	return Order{
 		Order: order,
-		Owner: userId,
+		Owner: userID,
 	}
 }

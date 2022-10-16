@@ -8,9 +8,9 @@ import (
 	"github.com/aligang/go-musthave-diploma/internal/withdrawn"
 )
 
-func (s *Storage) RegisterWithdrawn(ctx context.Context, userId string, withdrawn *withdrawn.WithdrawnRecord) error {
+func (s *Storage) RegisterWithdrawn(ctx context.Context, userID string, withdrawn *withdrawn.WithdrawnRecord) error {
 	s.Withdrawns[withdrawn.Order] = *withdrawn
-	s.CustomerWithdrawns[userId] = append(s.CustomerWithdrawns[userId], withdrawn.Order)
+	s.CustomerWithdrawns[userID] = append(s.CustomerWithdrawns[userID], withdrawn.Order)
 	return nil
 }
 
@@ -22,12 +22,12 @@ func (s *Storage) GetWithdrawnWithinTransaction(ctx context.Context, withdrawnId
 	return &withdrawn, nil
 }
 
-func (s *Storage) GetWithdrawnIds(userId string) ([]string, error) {
-	return s.CustomerWithdrawns[userId], nil
+func (s *Storage) GetWithdrawnIds(userID string) ([]string, error) {
+	return s.CustomerWithdrawns[userID], nil
 }
 
-func (s *Storage) ListWithdrawns(userId string) ([]withdrawn.WithdrawnRecord, error) {
-	withdrawnIds, exists := s.CustomerWithdrawns[userId]
+func (s *Storage) ListWithdrawns(userID string) ([]withdrawn.WithdrawnRecord, error) {
+	withdrawnIds, exists := s.CustomerWithdrawns[userID]
 	if !exists {
 		return []withdrawn.WithdrawnRecord{}, nil
 	}
