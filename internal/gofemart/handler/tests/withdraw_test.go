@@ -15,7 +15,6 @@ import (
 	"github.com/stretchr/testify/require"
 	"net/http"
 	"net/http/httptest"
-	"reflect"
 	"testing"
 	"time"
 )
@@ -213,7 +212,7 @@ func TestAddWithdraw(t *testing.T) {
 				assert.Equal(t, test.expected.ContentType, res.Header.Get("Content-Type"))
 				//fmt.Printf("%+v\n", test.expected.DBDump)
 				//fmt.Printf("%+v\n", storage)
-				assert.Equal(t, reflect.DeepEqual(*test.expected.DBDump, *storage), true)
+				assert.Equal(t, true, test.expected.DBDump.Equals(storage))
 			}
 		})
 	}

@@ -14,7 +14,6 @@ import (
 	"github.com/aligang/go-musthave-diploma/internal/withdrawn"
 	"github.com/stretchr/testify/assert"
 	"net/http/httptest"
-	"reflect"
 	"strings"
 	"testing"
 	"time"
@@ -182,7 +181,7 @@ func TestTracking(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			Tracker.Sync(context.Background())
-			assert.Equal(t, reflect.DeepEqual(*test.expected.DBDump, *storage), true)
+			assert.Equal(t, test.expected.DBDump.Equals(storage), true)
 		},
 		)
 	}

@@ -1,10 +1,12 @@
 package memory
 
 import (
+	"fmt"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/account"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/memory/orderrecord"
 	"github.com/aligang/go-musthave-diploma/internal/logging"
 	"github.com/aligang/go-musthave-diploma/internal/withdrawn"
+	"reflect"
 	"sync"
 )
 
@@ -49,4 +51,32 @@ func Init(
 		CustomerWithdrawns: customerWithdrawns,
 	}
 	return m
+}
+
+func (s *Storage) Equals(other *Storage) bool {
+	if !reflect.DeepEqual(s.CustomerAccounts, other.CustomerAccounts) {
+		fmt.Println("Accounts maps are not equal")
+		return false
+	}
+	if !reflect.DeepEqual(s.Orders, other.Orders) {
+		fmt.Println("Orders maps are not equal")
+		return false
+	}
+	if !reflect.DeepEqual(s.Withdrawns, other.Withdrawns) {
+		fmt.Println("Withdrawns maps are not equal")
+		return false
+	}
+	if !reflect.DeepEqual(s.PendingOrders, other.PendingOrders) {
+		fmt.Println("Pending Orders maps are not equal")
+		return false
+	}
+	if !reflect.DeepEqual(s.CustomerOrders, other.CustomerOrders) {
+		fmt.Println("Customer orders maps are not equal")
+		return false
+	}
+	if !reflect.DeepEqual(s.CustomerWithdrawns, other.CustomerWithdrawns) {
+		fmt.Println("Customer Withdrawns maps are not equal")
+		return false
+	}
+	return true
 }
