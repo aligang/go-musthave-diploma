@@ -3,8 +3,8 @@ package tests
 import (
 	"bytes"
 	"fmt"
+	"github.com/aligang/go-musthave-diploma/internal/gofemart/account"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/auth"
-	"github.com/aligang/go-musthave-diploma/internal/gofemart/customer_account"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/handler"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/memory"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/memory/internal_order"
@@ -32,11 +32,11 @@ func TestRegisterAccount(t *testing.T) {
 				Code:        200,
 				ContentType: "text/plain",
 				DbDump: memory.Init(
-					customer_account.CustomerAccounts{
-						"user1": customer_account.CustomerAccount{
+					account.CustomerAccounts{
+						"user1": account.CustomerAccount{
 							Login:    "user1",
 							Password: "pass1",
-							AccountBalance: customer_account.AccountBalance{
+							AccountBalance: account.AccountBalance{
 								Current:  0,
 								Withdraw: 0,
 							},
@@ -58,7 +58,7 @@ func TestRegisterAccount(t *testing.T) {
 				Code:        400,
 				ContentType: "text/plain",
 				DbDump: memory.Init(
-					customer_account.CustomerAccounts{},
+					account.CustomerAccounts{},
 					internal_order.Orders{},
 					withdrawn.Withdrawns{},
 					map[string]*struct{}{},
@@ -75,11 +75,11 @@ func TestRegisterAccount(t *testing.T) {
 				Code:        409,
 				ContentType: "text/plain",
 				DbDump: memory.Init(
-					customer_account.CustomerAccounts{
-						"user1": customer_account.CustomerAccount{
+					account.CustomerAccounts{
+						"user1": account.CustomerAccount{
 							Login:    "user1",
 							Password: "pass1",
-							AccountBalance: customer_account.AccountBalance{
+							AccountBalance: account.AccountBalance{
 								Current:  0,
 								Withdraw: 0,
 							},
@@ -98,7 +98,7 @@ func TestRegisterAccount(t *testing.T) {
 	//accuralStorage := accuralMemory.Init(message.AccuralMessageMap{})
 	Auth := auth.New()
 	storage := memory.Init(
-		customer_account.CustomerAccounts{},
+		account.CustomerAccounts{},
 		internal_order.Orders{},
 		withdrawn.Withdrawns{},
 		map[string]*struct{}{},

@@ -3,7 +3,7 @@ package storage
 import (
 	"context"
 	"github.com/aligang/go-musthave-diploma/internal/config"
-	"github.com/aligang/go-musthave-diploma/internal/gofemart/customer_account"
+	"github.com/aligang/go-musthave-diploma/internal/gofemart/account"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/order"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/database"
 	"github.com/aligang/go-musthave-diploma/internal/logging"
@@ -20,11 +20,11 @@ type Storage interface {
 	RollbackTransaction(ctx context.Context)
 	CommitTransaction(ctx context.Context)
 
-	AddCustomerAccount(ctx context.Context, customerAccount *customer_account.CustomerAccount) error
-	UpdateCustomerAccount(ctx context.Context, customerAccount *customer_account.CustomerAccount) error
-	GetCustomerAccount(login string) (*customer_account.CustomerAccount, error)
-	GetCustomerAccountWithinTransaction(ctx context.Context, login string) (*customer_account.CustomerAccount, error)
-	GetCustomerAccounts() (customer_account.CustomerAccounts, error)
+	AddCustomerAccount(ctx context.Context, customerAccount *account.CustomerAccount) error
+	UpdateCustomerAccount(ctx context.Context, customerAccount *account.CustomerAccount) error
+	GetCustomerAccount(login string) (*account.CustomerAccount, error)
+	GetCustomerAccountWithinTransaction(ctx context.Context, login string) (*account.CustomerAccount, error)
+	GetCustomerAccounts() (account.CustomerAccounts, error)
 
 	AddOrder(ctx context.Context, userId string, order *order.Order) error
 	GetOrder(orderID string) (*order.Order, error)

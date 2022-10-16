@@ -13,6 +13,9 @@ func (h *APIHandler) Update(w http.ResponseWriter, r *http.Request) {
 	payload, err := io.ReadAll(r.Body)
 	logging.Debug("Recieved JSON: %s", string(payload))
 	err = json.Unmarshal(payload, &m)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+	}
 	defer r.Body.Close()
 	if err != nil {
 		logging.Crit("Could not decode received JSON")

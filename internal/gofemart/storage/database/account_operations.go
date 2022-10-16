@@ -4,13 +4,13 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"github.com/aligang/go-musthave-diploma/internal/gofemart/customer_account"
+	"github.com/aligang/go-musthave-diploma/internal/gofemart/account"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/repository_errors"
 	"github.com/aligang/go-musthave-diploma/internal/logging"
 	"strconv"
 )
 
-func (s *Storage) AddCustomerAccount(ctx context.Context, customerAccount *customer_account.CustomerAccount) error {
+func (s *Storage) AddCustomerAccount(ctx context.Context, customerAccount *account.CustomerAccount) error {
 	query := "INSERT INTO accounts (Login, Password, Current, Withdraw) VALUES($1, $2, $3, $4)"
 	balance := strconv.FormatFloat(customerAccount.Current, 'f', -1, 64)
 	withdraw := strconv.FormatFloat(customerAccount.Withdraw, 'f', -1, 64)
@@ -18,7 +18,7 @@ func (s *Storage) AddCustomerAccount(ctx context.Context, customerAccount *custo
 	return s.modifyCustomerAccount(ctx, customerAccount, query, args)
 }
 
-func (s *Storage) UpdateCustomerAccount(ctx context.Context, customerAccount *customer_account.CustomerAccount) error {
+func (s *Storage) UpdateCustomerAccount(ctx context.Context, customerAccount *account.CustomerAccount) error {
 	query := "UPDATE accounts SET Login = $1, Password = $2, Current = $3, Withdraw = $4 WHERE Login = $5"
 	balance := strconv.FormatFloat(customerAccount.Current, 'f', -1, 64)
 	withdraw := strconv.FormatFloat(customerAccount.Withdraw, 'f', -1, 64)
@@ -26,7 +26,7 @@ func (s *Storage) UpdateCustomerAccount(ctx context.Context, customerAccount *cu
 	return s.modifyCustomerAccount(ctx, customerAccount, query, args)
 }
 
-func (s *Storage) modifyCustomerAccount(ctx context.Context, customerAccount *customer_account.CustomerAccount,
+func (s *Storage) modifyCustomerAccount(ctx context.Context, customerAccount *account.CustomerAccount,
 	query string, args []interface{}) error {
 	logging.Debug("Preparing statement to update customer account to Repository: %+v", customerAccount)
 	statement, err := s.Tx[ctx].Prepare(query)
@@ -44,15 +44,15 @@ func (s *Storage) modifyCustomerAccount(ctx context.Context, customerAccount *cu
 	return nil
 }
 
-func (s *Storage) GetCustomerAccount(login string) (*customer_account.CustomerAccount, error) {
+func (s *Storage) GetCustomerAccount(login string) (*account.CustomerAccount, error) {
 	return s.getCustomerAccountCommon(login, s.DB.Prepare)
 }
 
-func (s *Storage) GetCustomerAccountWithinTransaction(ctx context.Context, login string) (*customer_account.CustomerAccount, error) {
+func (s *Storage) GetCustomerAccountWithinTransaction(ctx context.Context, login string) (*account.CustomerAccount, error) {
 	return s.getCustomerAccountCommon(login, s.Tx[ctx].Prepare)
 }
 
-func (s *Storage) getCustomerAccountCommon(login string, prepareFunc func(query string) (*sql.Stmt, error)) (*customer_account.CustomerAccount, error) {
+func (s *Storage) getCustomerAccountCommon(login string, prepareFunc func(query string) (*sql.Stmt, error)) (*account.CustomerAccount, error) {
 	query := "SELECT * FROM accounts WHERE Login = $1"
 	var args = []interface{}{login}
 	logging.Debug("Preparing statement to fetch customer account to Repository: %s", login)
@@ -68,7 +68,7 @@ func (s *Storage) getCustomerAccountCommon(login string, prepareFunc func(query 
 		logging.Warn("Error During statement Execution %s with %s", query, login)
 		return nil, err
 	}
-	a := &customer_account.CustomerAccount{}
+	a := &account.CustomerAccount{}
 	err = row.Scan(&a.Login, &a.Password, &a.Current, &a.Withdraw)
 
 	switch {
@@ -83,8 +83,8 @@ func (s *Storage) getCustomerAccountCommon(login string, prepareFunc func(query 
 	}
 }
 
-func (s *Storage) GetCustomerAccounts() (customer_account.CustomerAccounts, error) {
-	return customer_account.CustomerAccounts{}, nil
+func (s *Storage) GetCustomerAccounts() (account.CustomerAccounts, error) {
+	return account.CustomerAccounts{}, nil
 }
 
 func (s *Storage) GetOrderOwner(ctx context.Context, orderID string) (string, error) {

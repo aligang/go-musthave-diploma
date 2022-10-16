@@ -3,7 +3,7 @@ package handler
 import (
 	"encoding/json"
 	"errors"
-	"github.com/aligang/go-musthave-diploma/internal/gofemart/customer_account"
+	"github.com/aligang/go-musthave-diploma/internal/gofemart/account"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/repository_errors"
 	"github.com/aligang/go-musthave-diploma/internal/logging"
 	"io"
@@ -15,7 +15,7 @@ func (h *ApiHandler) RegisterCustomerAccount(w http.ResponseWriter, r *http.Requ
 	if RequestContextIsClosed(ctx, w) {
 		return
 	}
-	accountInfo := customer_account.New()
+	accountInfo := account.New()
 	payload, err := io.ReadAll(r.Body)
 	if err != nil {
 		logging.Warn("Could not read data from wire")
@@ -27,7 +27,7 @@ func (h *ApiHandler) RegisterCustomerAccount(w http.ResponseWriter, r *http.Requ
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	if err = customer_account.ValidateCredentials(accountInfo); err != nil {
+	if err = account.ValidateCredentials(accountInfo); err != nil {
 		logging.Warn(err.Error())
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return

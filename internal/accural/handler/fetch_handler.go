@@ -8,10 +8,10 @@ import (
 )
 
 func (h *APIHandler) Fetch(w http.ResponseWriter, r *http.Request) {
-	orderId := chi.URLParam(r, "order")
-	order, err := h.Storage.Get(orderId)
+	orderID := chi.URLParam(r, "order")
+	order, err := h.Storage.Get(orderID)
 	if err != nil {
-		logging.Warn("Could not found record with id=%id", orderId)
+		logging.Warn("Could not found record with id=%s", orderID)
 		http.Error(w, "Record was not found", http.StatusNotFound)
 		return
 	}
@@ -26,7 +26,7 @@ func (h *APIHandler) Fetch(w http.ResponseWriter, r *http.Request) {
 	logging.Debug("%s Sending Storage", string(j))
 	_, err = w.Write(j)
 	if err != nil {
-		logging.Warn("Error during data transfer", orderId)
+		logging.Warn("Error during data transfer", orderID)
 		http.Error(w, "Record was not found", http.StatusUnsupportedMediaType)
 		return
 	}

@@ -3,8 +3,8 @@ package tests
 import (
 	"bytes"
 	"fmt"
+	"github.com/aligang/go-musthave-diploma/internal/gofemart/account"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/auth"
-	"github.com/aligang/go-musthave-diploma/internal/gofemart/customer_account"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/handler"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/order"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/memory"
@@ -34,11 +34,11 @@ func TestAddWithdraw(t *testing.T) {
 				Code:        200,
 				ContentType: "text/plain",
 				DbDump: memory.Init(
-					customer_account.CustomerAccounts{
-						"user1": customer_account.CustomerAccount{
+					account.CustomerAccounts{
+						"user1": account.CustomerAccount{
 							Login:    "user1",
 							Password: "pass1",
-							AccountBalance: customer_account.AccountBalance{
+							AccountBalance: account.AccountBalance{
 								Current:  99,
 								Withdraw: 0,
 							},
@@ -78,11 +78,11 @@ func TestAddWithdraw(t *testing.T) {
 				Code:        402,
 				ContentType: "text/plain",
 				DbDump: memory.Init(
-					customer_account.CustomerAccounts{
-						"user1": customer_account.CustomerAccount{
+					account.CustomerAccounts{
+						"user1": account.CustomerAccount{
 							Login:    "user1",
 							Password: "pass1",
-							AccountBalance: customer_account.AccountBalance{
+							AccountBalance: account.AccountBalance{
 								Current:  99,
 								Withdraw: 0,
 							},
@@ -122,11 +122,11 @@ func TestAddWithdraw(t *testing.T) {
 				Code:        422,
 				ContentType: "text/plain",
 				DbDump: memory.Init(
-					customer_account.CustomerAccounts{
-						"user1": customer_account.CustomerAccount{
+					account.CustomerAccounts{
+						"user1": account.CustomerAccount{
 							Login:    "user1",
 							Password: "pass1",
-							AccountBalance: customer_account.AccountBalance{
+							AccountBalance: account.AccountBalance{
 								Current:  99,
 								Withdraw: 0,
 							},
@@ -162,11 +162,11 @@ func TestAddWithdraw(t *testing.T) {
 
 	Auth := auth.New()
 	storage := memory.Init(
-		customer_account.CustomerAccounts{
-			"user1": customer_account.CustomerAccount{
+		account.CustomerAccounts{
+			"user1": account.CustomerAccount{
 				Login:    "user1",
 				Password: "pass1",
-				AccountBalance: customer_account.AccountBalance{
+				AccountBalance: account.AccountBalance{
 					Current:  100,
 					Withdraw: 0,
 				},

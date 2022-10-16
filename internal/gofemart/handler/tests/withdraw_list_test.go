@@ -3,8 +3,8 @@ package tests
 import (
 	"bytes"
 	"fmt"
+	"github.com/aligang/go-musthave-diploma/internal/gofemart/account"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/auth"
-	"github.com/aligang/go-musthave-diploma/internal/gofemart/customer_account"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/handler"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/order"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/memory"
@@ -41,11 +41,11 @@ func TestListWithdrawns(t *testing.T) {
 	//Starting Test ApplicationServer
 	Auth := auth.New()
 	storage := memory.Init(
-		customer_account.CustomerAccounts{
-			"user1": customer_account.CustomerAccount{
+		account.CustomerAccounts{
+			"user1": account.CustomerAccount{
 				Login:    "user1",
 				Password: "pass1",
-				AccountBalance: customer_account.AccountBalance{
+				AccountBalance: account.AccountBalance{
 					Current:  10.5,
 					Withdraw: 2,
 				},
@@ -135,11 +135,11 @@ func TestListEmptyWithdrawns(t *testing.T) {
 	//Starting Test ApplicationServer
 	Auth := auth.New()
 	storage := memory.Init(
-		customer_account.CustomerAccounts{
-			"user1": customer_account.CustomerAccount{
+		account.CustomerAccounts{
+			"user1": account.CustomerAccount{
 				Login:    "user1",
 				Password: "pass1",
-				AccountBalance: customer_account.AccountBalance{
+				AccountBalance: account.AccountBalance{
 					Current:  0,
 					Withdraw: 0,
 				},

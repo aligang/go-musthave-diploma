@@ -2,7 +2,7 @@ package handler
 
 import (
 	"encoding/json"
-	"github.com/aligang/go-musthave-diploma/internal/gofemart/customer_account"
+	"github.com/aligang/go-musthave-diploma/internal/gofemart/account"
 	"github.com/aligang/go-musthave-diploma/internal/logging"
 	"io"
 	"net/http"
@@ -14,7 +14,7 @@ func (h *ApiHandler) Login(w http.ResponseWriter, r *http.Request) {
 	if RequestContextIsClosed(ctx, w) {
 		return
 	}
-	accountInfo := customer_account.New()
+	accountInfo := account.New()
 	payload, err := io.ReadAll(r.Body)
 	if err != nil {
 		logging.Warn("Could not read data from wire")
@@ -26,7 +26,7 @@ func (h *ApiHandler) Login(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	if err = customer_account.ValidateCredentials(accountInfo); err != nil {
+	if err = account.ValidateCredentials(accountInfo); err != nil {
 		logging.Warn(err.Error())
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return

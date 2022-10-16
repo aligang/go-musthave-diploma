@@ -2,7 +2,7 @@ package auth
 
 import (
 	"fmt"
-	"github.com/aligang/go-musthave-diploma/internal/gofemart/customer_account"
+	"github.com/aligang/go-musthave-diploma/internal/gofemart/account"
 	"github.com/aligang/go-musthave-diploma/internal/logging"
 	"net/http"
 	"sync"
@@ -27,7 +27,7 @@ func New() *Auth {
 	return auth
 }
 
-func (a *Auth) CreateAuthCookie(account *customer_account.CustomerAccount) *http.Cookie {
+func (a *Auth) CreateAuthCookie(account *account.CustomerAccount) *http.Cookie {
 	logging.Debug("Creating New cookie for %s", account.Login)
 	token := account.Login + account.Password
 	a.cookiesMeta[token] = cookieInfo{
@@ -42,7 +42,7 @@ func (a *Auth) CreateAuthCookie(account *customer_account.CustomerAccount) *http
 }
 
 func (a *Auth) CreateUserInfoCookie(token string) *http.Cookie {
-	metadata, _ := a.cookiesMeta[token]
+	metadata := a.cookiesMeta[token]
 	return &http.Cookie{
 		Name:  "username",
 		Value: metadata.login,

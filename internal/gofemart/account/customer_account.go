@@ -1,4 +1,4 @@
-package customer_account
+package account
 
 type AccountBalance struct {
 	Current  float64 `json:"current"`
