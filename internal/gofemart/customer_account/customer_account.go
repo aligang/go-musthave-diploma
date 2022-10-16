@@ -12,3 +12,9 @@ type CustomerAccount struct {
 }
 
 type CustomerAccounts map[string]CustomerAccount
+
+func New() *CustomerAccount {
+	return &CustomerAccount{
+		AccountBalance: AccountBalance{},
+	}
+}

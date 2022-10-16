@@ -11,8 +11,11 @@ import (
 )
 
 func (h *ApiHandler) RegisterCustomerAccount(w http.ResponseWriter, r *http.Request) {
-	//r.Context()
-	accountInfo := &customer_account.CustomerAccount{}
+	ctx := r.Context()
+	if RequestContextIsClosed(ctx, w) {
+		return
+	}
+	accountInfo := customer_account.New()
 	payload, err := io.ReadAll(r.Body)
 	if err != nil {
 		logging.Warn("Could not read data from wire")
@@ -30,17 +33,22 @@ func (h *ApiHandler) RegisterCustomerAccount(w http.ResponseWriter, r *http.Requ
 		return
 	}
 	logging.Debug("Registering new account for %s", accountInfo.Login)
+	if RequestContextIsClosed(ctx, w) {
+		return
+	}
 
 	var dBerr error
-	h.storage.StartTransaction()
+	h.storage.StartTransaction(ctx)
 	defer func() {
 		if dBerr != nil {
-			h.storage.RollbackTransaction()
+			h.storage.RollbackTransaction(ctx)
 		}
-		h.storage.CommitTransaction()
+		h.storage.CommitTransaction(ctx)
 	}()
-
-	_, err = h.storage.GetCustomerAccountWithinTransaction(accountInfo.Login)
+	if RequestContextIsClosed(ctx, w) {
+		return
+	}
+	_, err = h.storage.GetCustomerAccountWithinTransaction(ctx, accountInfo.Login)
 	switch {
 	case errors.Is(err, repository_errors.ErrNoContent):
 	case err != nil:
@@ -52,11 +60,16 @@ func (h *ApiHandler) RegisterCustomerAccount(w http.ResponseWriter, r *http.Requ
 		http.Error(w, "Account %s already exists", http.StatusConflict)
 		return
 	}
-
-	err = h.storage.AddCustomerAccount(accountInfo)
+	if RequestContextIsClosed(ctx, w) {
+		return
+	}
+	err = h.storage.AddCustomerAccount(ctx, accountInfo)
 	if err != nil {
 		logging.Warn("Could not store Account Data: %s", err.Error())
 		http.Error(w, err.Error(), http.StatusConflict)
+		return
+	}
+	if RequestContextIsClosed(ctx, w) {
 		return
 	}
 	cookie := h.auth.CreateAuthCookie(accountInfo)

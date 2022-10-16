@@ -1,6 +1,7 @@
 package tracker
 
 import (
+	"context"
 	accural_handler "github.com/aligang/go-musthave-diploma/internal/accural/handler"
 	"github.com/aligang/go-musthave-diploma/internal/accural/message"
 	accural_storage "github.com/aligang/go-musthave-diploma/internal/accural/storage/memory"
@@ -180,7 +181,7 @@ func TestTracking(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			Tracker.Sync()
+			Tracker.Sync(context.Background())
 			assert.Equal(t, reflect.DeepEqual(*test.expected.DbDump, *storage), true)
 		},
 		)

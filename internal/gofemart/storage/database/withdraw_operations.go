@@ -1,6 +1,7 @@
 package database
 
 import (
+	"context"
 	"database/sql"
 	"errors"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/repository_errors"
@@ -8,11 +9,11 @@ import (
 	"github.com/aligang/go-musthave-diploma/internal/withdrawn"
 )
 
-func (s *Storage) RegisterWithdrawn(userId string, withdraw *withdrawn.WithdrawnRecord) error {
+func (s *Storage) RegisterWithdrawn(ctx context.Context, userId string, withdraw *withdrawn.WithdrawnRecord) error {
 	logging.Debug("Preparing statement to add withdraw to Repository: %+v for user %s", withdraw, userId)
 	query := "INSERT INTO withdrawns (Order_Id, Sum, Processed_at, Owner) VALUES($1, $2, $3, $4)"
 	var args = []interface{}{withdraw.Order, withdraw.Sum, withdraw.ProcessedAt, userId}
-	statement, err := s.Tx.Prepare(query)
+	statement, err := s.Tx[ctx].Prepare(query)
 	if err != nil {
 		logging.Warn("Error During statement creation %s", query)
 		return err
@@ -29,11 +30,11 @@ func (s *Storage) RegisterWithdrawn(userId string, withdraw *withdrawn.Withdrawn
 
 }
 
-func (s *Storage) GetWithdrawnWithinTransaction(orderId string) (*withdrawn.WithdrawnRecord, error) {
+func (s *Storage) GetWithdrawnWithinTransaction(ctx context.Context, orderId string) (*withdrawn.WithdrawnRecord, error) {
 	query := "SELECT Order_Id, Sum, Processed_at FROM withdrawns WHERE Order_Id = $1"
 	var args = []interface{}{orderId}
 	logging.Debug("Preparing statement to fetch order from Repository: %s", query)
-	statement, err := s.Tx.Prepare(query)
+	statement, err := s.Tx[ctx].Prepare(query)
 	if err != nil {
 		logging.Warn("Error During statement creation %s", query)
 		return nil, err

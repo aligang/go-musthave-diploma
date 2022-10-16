@@ -1,6 +1,7 @@
 package memory
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/customer_account"
@@ -15,7 +16,7 @@ func (s *Storage) GetCustomerAccount(login string) (*customer_account.CustomerAc
 	return &res, nil
 }
 
-func (s *Storage) GetCustomerAccountWithinTransaction(login string) (*customer_account.CustomerAccount, error) {
+func (s *Storage) GetCustomerAccountWithinTransaction(ctx context.Context, login string) (*customer_account.CustomerAccount, error) {
 	return s.GetCustomerAccount(login)
 }
 
@@ -23,7 +24,7 @@ func (s *Storage) GetCustomerAccounts() (customer_account.CustomerAccounts, erro
 	return s.CustomerAccounts, nil
 }
 
-func (s *Storage) AddCustomerAccount(customerAccount *customer_account.CustomerAccount) error {
+func (s *Storage) AddCustomerAccount(ctx context.Context, customerAccount *customer_account.CustomerAccount) error {
 	_, ok := s.CustomerAccounts[customerAccount.Login]
 	if !ok {
 		s.CustomerAccounts[customerAccount.Login] = *customerAccount
@@ -32,7 +33,7 @@ func (s *Storage) AddCustomerAccount(customerAccount *customer_account.CustomerA
 	return fmt.Errorf("record Alreadt present")
 }
 
-func (s *Storage) UpdateCustomerAccount(customerAccount *customer_account.CustomerAccount) error {
+func (s *Storage) UpdateCustomerAccount(ctx context.Context, customerAccount *customer_account.CustomerAccount) error {
 	_, exists := s.CustomerAccounts[customerAccount.Login]
 	if !exists {
 		return errors.New("relevant record does not exist")
@@ -41,7 +42,7 @@ func (s *Storage) UpdateCustomerAccount(customerAccount *customer_account.Custom
 	return nil
 }
 
-func (s *Storage) GetOrderOwner(orderId string) (string, error) {
+func (s *Storage) GetOrderOwner(ctx context.Context, orderId string) (string, error) {
 	order, exists := s.Orders[orderId]
 	if !exists {
 		return "", fmt.Errorf("record does not exist")

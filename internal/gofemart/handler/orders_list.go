@@ -10,6 +10,11 @@ import (
 )
 
 func (h *ApiHandler) ListOrders(w http.ResponseWriter, r *http.Request) {
+	logging.Warn("Processing order list request")
+	ctx := r.Context()
+	if RequestContextIsClosed(ctx, w) {
+		return
+	}
 	userId, err := auth.ResolveUsername(r)
 	if err != nil {
 		http.Error(w, "", http.StatusBadRequest)
@@ -17,26 +22,30 @@ func (h *ApiHandler) ListOrders(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.storage.StartTransaction()
+	h.storage.StartTransaction(ctx)
 	defer func() {
-		h.storage.CommitTransaction()
+		h.storage.CommitTransaction(ctx)
 	}()
 
 	logging.Debug("Fetching orders registered for user=%s from repository", userId)
+	if RequestContextIsClosed(ctx, w) {
+		return
+	}
 	orders, err := h.storage.ListOrders(userId)
-
 	if err != nil {
 		http.Error(w, "error during Fetching orders", http.StatusInternalServerError)
 		logging.Warn("Error during fetching orders register for user=%s: %s", userId, err.Error())
 		return
-	}
-	if len(orders) == 0 {
+	} else if len(orders) == 0 {
 		http.Error(w, "there is no registered orders", http.StatusNoContent)
 		logging.Warn("User=%s has no registered orders", userId)
 		return
 	}
 
 	logging.Debug("user %s, has registered orders: %+v", userId, orders)
+	if RequestContextIsClosed(ctx, w) {
+		return
+	}
 	sort.Sort(order.OrderSlice(orders))
 	ordersPayload, err := json.Marshal(orders)
 	logging.Debug("forming response %s", string(ordersPayload))

@@ -20,7 +20,10 @@ func (a *Auth) junkCleaner() {
 					expiredCookies += 1
 				}
 			}
-			if expiredCookies == 0 {
+			switch {
+			case len(a.cookiesMeta) == 0:
+				logging.Debug("No Cookies to track")
+			case expiredCookies == 0:
 				logging.Debug("All tracked Cookies are valid")
 			}
 			a.Lock.Unlock()

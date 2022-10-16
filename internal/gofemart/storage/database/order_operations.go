@@ -1,6 +1,7 @@
 package database
 
 import (
+	"context"
 	"database/sql"
 	"errors"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/order"
@@ -8,23 +9,23 @@ import (
 	"github.com/aligang/go-musthave-diploma/internal/logging"
 )
 
-func (s *Storage) AddOrder(userId string, order *order.Order) error {
+func (s *Storage) AddOrder(ctx context.Context, userId string, order *order.Order) error {
 	logging.Debug("Preparing statement to add order to Repository: %+v for user %s", order, userId)
 	query := "INSERT INTO orders (Number, Status, Accural, UploadedAt, Owner) VALUES($1, $2, $3, $4, $5)"
 	var args = []interface{}{order.Number, order.Status, order.Accural, order.UploadedAt, userId}
-	return s.modifyOrder(order, query, args)
+	return s.modifyOrder(ctx, order, query, args)
 }
 
-func (s *Storage) UpdateOrder(order *order.Order) error {
+func (s *Storage) UpdateOrder(ctx context.Context, order *order.Order) error {
 	logging.Debug("Preparing statement to update order to Repository: %+v", order)
 	query := "UPDATE orders SET number = $1, status = $2, accural = $3, uploadedat = $4 WHERE number = $5"
 	var args = []interface{}{order.Number, order.Status, order.Accural, order.UploadedAt, order.Number}
-	return s.modifyOrder(order, query, args)
+	return s.modifyOrder(ctx, order, query, args)
 }
 
-func (s *Storage) modifyOrder(order *order.Order, query string, args []interface{}) error {
+func (s *Storage) modifyOrder(ctx context.Context, order *order.Order, query string, args []interface{}) error {
 
-	statement, err := s.Tx.Prepare(query)
+	statement, err := s.Tx[ctx].Prepare(query)
 	if err != nil {
 		logging.Warn("Error During statement creation %s", query)
 		return err
@@ -44,8 +45,8 @@ func (s *Storage) GetOrder(orderId string) (*order.Order, error) {
 	return s.getOrderCommon(orderId, s.DB.Prepare)
 }
 
-func (s *Storage) GetOrderWithinTransaction(orderId string) (*order.Order, error) {
-	return s.getOrderCommon(orderId, s.Tx.Prepare)
+func (s *Storage) GetOrderWithinTransaction(ctx context.Context, orderId string) (*order.Order, error) {
+	return s.getOrderCommon(orderId, s.Tx[ctx].Prepare)
 }
 
 func (s *Storage) getOrderCommon(orderId string, prepareFunc func(query string) (*sql.Stmt, error)) (*order.Order, error) {
@@ -114,12 +115,12 @@ func (s *Storage) ListOrders(userId string) ([]order.Order, error) {
 	return orders, nil
 }
 
-func (s *Storage) AddOrderToPendingList(orderId string) error {
+func (s *Storage) AddOrderToPendingList(ctx context.Context, orderId string) error {
 	logging.Debug("Preparing statement to delete pending order From Repository:  %s", orderId)
 	query := "INSERT INTO pending_orders (order_id) VALUES($1)"
 	var args = []interface{}{orderId}
 
-	statement, err := s.Tx.Prepare(query)
+	statement, err := s.Tx[ctx].Prepare(query)
 	if err != nil {
 		logging.Warn("Error During statement creation %s", query)
 		return err
@@ -132,12 +133,12 @@ func (s *Storage) AddOrderToPendingList(orderId string) error {
 	}
 	return nil
 }
-func (s *Storage) RemoveOrderFromPendingList(orderId string) error {
+func (s *Storage) RemoveOrderFromPendingList(ctx context.Context, orderId string) error {
 	logging.Debug("Preparing statement to delete pending order to Repository:  %s", orderId)
 	query := "DELETE FROM pending_orders WHERE order_id = $1"
 	var args = []interface{}{orderId}
 
-	statement, err := s.Tx.Prepare(query)
+	statement, err := s.Tx[ctx].Prepare(query)
 	if err != nil {
 		logging.Warn("Error During statement creation %s", query)
 		return err
@@ -151,13 +152,13 @@ func (s *Storage) RemoveOrderFromPendingList(orderId string) error {
 	return nil
 }
 
-func (s *Storage) GetPendingOrders() ([]string, error) {
+func (s *Storage) GetPendingOrders(ctx context.Context) ([]string, error) {
 	logging.Debug("Preparing statement to fetch pending order from Repository")
 	query := "SELECT * FROM pending_orders"
 	var args []interface{}
 	var orders []string
 
-	statement, err := s.Tx.Prepare(query)
+	statement, err := s.Tx[ctx].Prepare(query)
 	if err != nil {
 		logging.Warn("Error During statement creation %s", query)
 		return orders, err

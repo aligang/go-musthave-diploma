@@ -13,6 +13,11 @@ import (
 )
 
 func (h *ApiHandler) AddOrder(w http.ResponseWriter, r *http.Request) {
+	logging.Warn("Processing order add request")
+	ctx := r.Context()
+	if RequestContextIsClosed(ctx, w) {
+		return
+	}
 	userId, err := auth.ResolveUsername(r)
 	logging.Debug("Processing Order registration request for user %s", userId)
 	if err != nil {
@@ -26,6 +31,9 @@ func (h *ApiHandler) AddOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	orderId := string(payload)
+	if RequestContextIsClosed(ctx, w) {
+		return
+	}
 	err = order.ValidateId(orderId)
 	if err != nil {
 		logging.Warn("Invalid order format: %s", orderId)
@@ -39,17 +47,18 @@ func (h *ApiHandler) AddOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	logging.Debug("Processing Order registration request with id %s", orderId)
+	if RequestContextIsClosed(ctx, w) {
+		return
+	}
 	var dBerr error
-	h.storage.StartTransaction()
+	h.storage.StartTransaction(ctx)
 	defer func() {
 		if dBerr != nil {
-			h.storage.RollbackTransaction()
+			h.storage.RollbackTransaction(ctx)
 		}
-		h.storage.CommitTransaction()
+		h.storage.CommitTransaction(ctx)
 	}()
-
-	_, err = h.storage.GetOrderWithinTransaction(orderId)
-
+	_, err = h.storage.GetOrderWithinTransaction(ctx, orderId)
 	switch {
 	case errors.Is(err, repository_errors.ErrNoContent):
 	case err != nil:
@@ -57,7 +66,7 @@ func (h *ApiHandler) AddOrder(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "System error", http.StatusInternalServerError)
 		return
 	default:
-		owner, err := h.storage.GetOrderOwner(orderId)
+		owner, err := h.storage.GetOrderOwner(ctx, orderId)
 		switch {
 		case owner == userId:
 			w.Header().Set("Content-Type", "text/plain")
@@ -73,8 +82,10 @@ func (h *ApiHandler) AddOrder(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
-
-	_, err = h.storage.GetWithdrawnWithinTransaction(orderId)
+	if RequestContextIsClosed(ctx, w) {
+		return
+	}
+	_, err = h.storage.GetWithdrawnWithinTransaction(ctx, orderId)
 	switch {
 	case errors.Is(err, repository_errors.ErrNoContent):
 	case err != nil:
@@ -88,14 +99,22 @@ func (h *ApiHandler) AddOrder(w http.ResponseWriter, r *http.Request) {
 	}
 
 	logging.Warn("Trying to bind order=%s to user-account=%s", orderId, userId)
-	accuralRecord, err := accural.FetchOrderInfo(orderId, h.config)
+	if RequestContextIsClosed(ctx, w) {
+		return
+	}
+	accuralRecord, err := accural.FetchOrderInfo(ctx, orderId, h.config)
 	if err != nil {
 		logging.Warn("Failed to fecth accural Info: %s", err.Error())
 		http.Error(w, "error during registering order", http.StatusInternalServerError)
 		return
 	}
+
 	order := order.FromAccural(accuralRecord)
-	err = h.storage.AddOrder(userId, order)
+
+	if RequestContextIsClosed(ctx, w) {
+		return
+	}
+	err = h.storage.AddOrder(ctx, userId, order)
 	if err != nil {
 		logging.Warn("error during adding order to order Database: %s", err.Error())
 		http.Error(w, "error during registering order", http.StatusInternalServerError)
@@ -103,7 +122,10 @@ func (h *ApiHandler) AddOrder(w http.ResponseWriter, r *http.Request) {
 	}
 	if status.RequiresTracking(order.Status) {
 		logging.Debug("adding order=%s to PENDING", order.Number)
-		err = h.storage.AddOrderToPendingList(orderId)
+		if RequestContextIsClosed(ctx, w) {
+			return
+		}
+		err = h.storage.AddOrderToPendingList(ctx, orderId)
 		if err != nil {
 			logging.Warn("error during adding order to pending list: %s", err.Error())
 			http.Error(w, "error during registering order", http.StatusInternalServerError)
@@ -112,19 +134,28 @@ func (h *ApiHandler) AddOrder(w http.ResponseWriter, r *http.Request) {
 	}
 	if accuralRecord.Status == status.PROCESSED {
 		logging.Debug("Applying orderId=%s accural to %s balance", accuralRecord.Order, userId)
-		accountData, err := h.storage.GetCustomerAccountWithinTransaction(userId)
+		if RequestContextIsClosed(ctx, w) {
+			return
+		}
+		accountData, err := h.storage.GetCustomerAccountWithinTransaction(ctx, userId)
 		if err != nil {
 			logging.Warn("error during fetching account info: %s", err.Error())
 			http.Error(w, "error during add accural to balance", http.StatusInternalServerError)
 			return
 		}
 		accountData.Current += order.Accural
-		err = h.storage.UpdateCustomerAccount(accountData)
+		if RequestContextIsClosed(ctx, w) {
+			return
+		}
+		err = h.storage.UpdateCustomerAccount(ctx, accountData)
 		if err != nil {
 			logging.Warn("error during fetching account info: %s", err.Error())
 			http.Error(w, "error during add accural to balance", http.StatusInternalServerError)
 			return
 		}
+	}
+	if RequestContextIsClosed(ctx, w) {
+		return
 	}
 	w.Header().Set("Content-Type", "text/plain")
 	w.WriteHeader(http.StatusAccepted)

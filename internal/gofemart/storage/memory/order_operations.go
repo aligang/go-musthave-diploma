@@ -1,6 +1,7 @@
 package memory
 
 import (
+	"context"
 	"fmt"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/order"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/memory/internal_order"
@@ -8,7 +9,7 @@ import (
 	"github.com/aligang/go-musthave-diploma/internal/logging"
 )
 
-func (s *Storage) AddOrder(userId string, order *order.Order) error {
+func (s *Storage) AddOrder(ctx context.Context, userId string, order *order.Order) error {
 	orderInstance := internal_order.New(userId, order)
 	logging.Debug("order to be Stored: %+v", orderInstance)
 	s.Orders[order.Number] = orderInstance
@@ -16,7 +17,7 @@ func (s *Storage) AddOrder(userId string, order *order.Order) error {
 	return nil
 }
 
-func (s *Storage) AddOrderToPendingList(orderId string) error {
+func (s *Storage) AddOrderToPendingList(ctx context.Context, orderId string) error {
 	if _, exists := s.PendingOrders[orderId]; exists {
 		return fmt.Errorf("record Already present")
 	}
@@ -24,7 +25,7 @@ func (s *Storage) AddOrderToPendingList(orderId string) error {
 	return nil
 }
 
-func (s *Storage) GetPendingOrders() ([]string, error) {
+func (s *Storage) GetPendingOrders(ctx context.Context) ([]string, error) {
 	var pendingOrders []string
 	for orderId, _ := range s.PendingOrders {
 		pendingOrders = append(pendingOrders, orderId)
@@ -32,7 +33,7 @@ func (s *Storage) GetPendingOrders() ([]string, error) {
 	return pendingOrders, nil
 }
 
-func (s *Storage) RemoveOrderFromPendingList(orderId string) error {
+func (s *Storage) RemoveOrderFromPendingList(ctx context.Context, orderId string) error {
 	if _, exists := s.PendingOrders[orderId]; !exists {
 		return fmt.Errorf("record does not exist")
 	}
@@ -48,7 +49,7 @@ func (s *Storage) GetOrder(orderId string) (*order.Order, error) {
 	return orderRecord.Order, nil
 }
 
-func (s *Storage) GetOrderWithinTransaction(orderId string) (*order.Order, error) {
+func (s *Storage) GetOrderWithinTransaction(ctx context.Context, orderId string) (*order.Order, error) {
 	return s.GetOrder(orderId)
 }
 
@@ -71,7 +72,7 @@ func (s *Storage) ListOrders(userId string) ([]order.Order, error) {
 	return orders, err
 }
 
-func (s *Storage) UpdateOrder(order *order.Order) error {
+func (s *Storage) UpdateOrder(ctx context.Context, order *order.Order) error {
 	orderInstance, exists := s.Orders[order.Number]
 	if !exists {
 		return fmt.Errorf("order record was not found in database")

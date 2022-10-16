@@ -10,6 +10,11 @@ import (
 )
 
 func (h *ApiHandler) ListWithdraws(w http.ResponseWriter, r *http.Request) {
+	logging.Warn("Processing withdraw list request")
+	ctx := r.Context()
+	if RequestContextIsClosed(ctx, w) {
+		return
+	}
 	userId, err := auth.ResolveUsername(r)
 	if err != nil {
 		http.Error(w, "", http.StatusBadRequest)
@@ -17,19 +22,25 @@ func (h *ApiHandler) ListWithdraws(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.storage.StartTransaction()
+	if RequestContextIsClosed(ctx, w) {
+		return
+	}
+	h.storage.StartTransaction(ctx)
 	defer func() {
-		h.storage.CommitTransaction()
+		h.storage.CommitTransaction(ctx)
 	}()
 
 	logging.Debug("Fetching withdraws registered for user=%s from repository", userId)
+	if RequestContextIsClosed(ctx, w) {
+		return
+	}
 	withdrawns, err := h.storage.ListWithdrawns(userId)
-	if err != nil {
+	switch {
+	case err != nil:
 		http.Error(w, "", http.StatusInternalServerError)
 		logging.Warn("Error during fetching withdraws registered for user=%s: %s", userId, err.Error())
 		return
-	}
-	if len(withdrawns) == 0 {
+	case len(withdrawns) == 0:
 		http.Error(w, "there is now registered withdraws", http.StatusNoContent)
 		logging.Warn("User=%s has now registered withdraws", userId)
 		return
@@ -39,6 +50,9 @@ func (h *ApiHandler) ListWithdraws(w http.ResponseWriter, r *http.Request) {
 	sort.Sort(withdrawn.WithdrawnSlice(withdrawns))
 	withdrawsPayload, err := json.Marshal(withdrawns)
 	logging.Debug("forming response %s", string(withdrawsPayload))
+	if RequestContextIsClosed(ctx, w) {
+		return
+	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	_, err = w.Write(withdrawsPayload)

@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"context"
 	"github.com/aligang/go-musthave-diploma/internal/config"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/customer_account"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/order"
@@ -15,29 +16,29 @@ type Test interface {
 }
 
 type Storage interface {
-	StartTransaction()
-	RollbackTransaction()
-	CommitTransaction()
+	StartTransaction(ctx context.Context)
+	RollbackTransaction(ctx context.Context)
+	CommitTransaction(ctx context.Context)
 
-	AddCustomerAccount(customerAccount *customer_account.CustomerAccount) error
-	UpdateCustomerAccount(customerAccount *customer_account.CustomerAccount) error
+	AddCustomerAccount(ctx context.Context, customerAccount *customer_account.CustomerAccount) error
+	UpdateCustomerAccount(ctx context.Context, customerAccount *customer_account.CustomerAccount) error
 	GetCustomerAccount(login string) (*customer_account.CustomerAccount, error)
-	GetCustomerAccountWithinTransaction(login string) (*customer_account.CustomerAccount, error)
+	GetCustomerAccountWithinTransaction(ctx context.Context, login string) (*customer_account.CustomerAccount, error)
 	GetCustomerAccounts() (customer_account.CustomerAccounts, error)
 
-	AddOrder(userId string, order *order.Order) error
+	AddOrder(ctx context.Context, userId string, order *order.Order) error
 	GetOrder(orderId string) (*order.Order, error)
-	GetOrderWithinTransaction(orderId string) (*order.Order, error)
+	GetOrderWithinTransaction(ctx context.Context, orderId string) (*order.Order, error)
 	ListOrders(userId string) ([]order.Order, error)
-	GetOrderOwner(orderId string) (string, error)
-	UpdateOrder(order *order.Order) error
+	GetOrderOwner(ctx context.Context, orderId string) (string, error)
+	UpdateOrder(ctx context.Context, order *order.Order) error
 
-	AddOrderToPendingList(orderId string) error
-	GetPendingOrders() ([]string, error)
-	RemoveOrderFromPendingList(orderId string) error
+	AddOrderToPendingList(ctx context.Context, orderId string) error
+	GetPendingOrders(ctx context.Context) ([]string, error)
+	RemoveOrderFromPendingList(ctx context.Context, orderId string) error
 
-	RegisterWithdrawn(userId string, withdraw *withdrawn.WithdrawnRecord) error
-	GetWithdrawnWithinTransaction(orderId string) (*withdrawn.WithdrawnRecord, error)
+	RegisterWithdrawn(ctx context.Context, userId string, withdraw *withdrawn.WithdrawnRecord) error
+	GetWithdrawnWithinTransaction(ctx context.Context, orderId string) (*withdrawn.WithdrawnRecord, error)
 	ListWithdrawns(orderId string) ([]withdrawn.WithdrawnRecord, error)
 }
 

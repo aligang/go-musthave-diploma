@@ -7,3 +7,7 @@ type AccuralMessage struct {
 }
 
 type AccuralMessageMap map[string]AccuralMessage
+
+func New() *AccuralMessage {
+	return &AccuralMessage{}
+}

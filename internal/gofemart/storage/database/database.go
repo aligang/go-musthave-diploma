@@ -1,6 +1,7 @@
 package database
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	"github.com/aligang/go-musthave-diploma/internal/config"
@@ -11,7 +12,7 @@ import _ "github.com/jackc/pgx/v4/stdlib"
 
 type Storage struct {
 	DB   *sql.DB
-	Tx   *sql.Tx
+	Tx   map[context.Context]*sql.Tx
 	Lock sync.Mutex
 }
 
@@ -23,6 +24,7 @@ func New(conf *config.Config) *Storage {
 	}
 	s := &Storage{
 		DB: db,
+		Tx: map[context.Context]*sql.Tx{},
 	}
 	_, err = s.DB.Exec(
 		"create table if not exists accounts(Login text, Password text, Current double precision, Withdraw double precision)",

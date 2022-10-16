@@ -9,10 +9,17 @@ import (
 
 func (h *ApiHandler) GetAccountBalance(w http.ResponseWriter, r *http.Request) {
 	logging.Warn("Processing account balance request")
+	ctx := r.Context()
+	if RequestContextIsClosed(ctx, w) {
+		return
+	}
 	userId, err := auth.ResolveUsername(r)
 	if err != nil {
 		http.Error(w, "", http.StatusUnauthorized)
 		logging.Warn("No user info were provided")
+		return
+	}
+	if RequestContextIsClosed(ctx, w) {
 		return
 	}
 	accountInfo, err := h.storage.GetCustomerAccount(userId)
@@ -28,6 +35,9 @@ func (h *ApiHandler) GetAccountBalance(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	logging.Debug("Sending data to wire %s", string(payload))
+	if RequestContextIsClosed(ctx, w) {
+		return
+	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	_, err = w.Write(payload)

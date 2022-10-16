@@ -29,7 +29,7 @@ func TestAddWithdraw(t *testing.T) {
 		{
 			name: "WITHDRAW REGISTRATION",
 			input: tests_common.Input{Method: http.MethodPost, Path: "/api/user/balance/withdrawn", ContentType: "application/json",
-				Payload: "{\"order\": \"57\", \"sum\": 1}", Account: "user1"},
+				Payload: "{\"order\": \"67\", \"sum\": 1}", Account: "user1"},
 			expected: tests_common.Expected{
 				Code:        200,
 				ContentType: "text/plain",
@@ -56,9 +56,9 @@ func TestAddWithdraw(t *testing.T) {
 						},
 					},
 					withdrawn.Withdrawns{
-						"57": withdrawn.WithdrawnRecord{
+						"67": withdrawn.WithdrawnRecord{
 							Withdrawn: &withdrawn.Withdrawn{
-								Order: "57",
+								Order: "67",
 								Sum:   1,
 							},
 							ProcessedAt: time.Now().Round(time.Second),
@@ -66,14 +66,14 @@ func TestAddWithdraw(t *testing.T) {
 					},
 					map[string]*struct{}{},
 					map[string][]string{"user1": {"1"}},
-					map[string][]string{"user1": {"57"}},
+					map[string][]string{"user1": {"67"}},
 				),
 			},
 		},
 		{
 			name: "WITHDRAW INSUFFICIENT FOUNDS",
 			input: tests_common.Input{Method: http.MethodPost, Path: "/api/user/balance/withdrawn", ContentType: "application/json",
-				Payload: "{\"order\": \"62\", \"sum\": 1000}", Account: "user1"},
+				Payload: "{\"order\": \"75\", \"sum\": 1000}", Account: "user1"},
 			expected: tests_common.Expected{
 				Code:        402,
 				ContentType: "text/plain",
@@ -102,7 +102,7 @@ func TestAddWithdraw(t *testing.T) {
 					withdrawn.Withdrawns{
 						"62": withdrawn.WithdrawnRecord{
 							Withdrawn: &withdrawn.Withdrawn{
-								Order: "62",
+								Order: "75",
 								Sum:   1,
 							},
 							ProcessedAt: time.Now().Round(time.Second),
@@ -110,14 +110,14 @@ func TestAddWithdraw(t *testing.T) {
 					},
 					map[string]*struct{}{},
 					map[string][]string{"user1": {"1"}},
-					map[string][]string{"user1": {"62"}},
+					map[string][]string{"user1": {"67"}},
 				),
 			},
 		},
 		{
 			name: "WITHDRAW INCORRECT ID FORMAT",
 			input: tests_common.Input{Method: http.MethodPost, Path: "/api/user/balance/withdrawn", ContentType: "application/json",
-				Payload: "{\"order\": \"65\", \"sum\": 1}", Account: "user1"},
+				Payload: "{\"order\": \"68\", \"sum\": 1}", Account: "user1"},
 			expected: tests_common.Expected{
 				Code:        422,
 				ContentType: "text/plain",
@@ -144,9 +144,9 @@ func TestAddWithdraw(t *testing.T) {
 						},
 					},
 					withdrawn.Withdrawns{
-						"111": withdrawn.WithdrawnRecord{
+						"67": withdrawn.WithdrawnRecord{
 							Withdrawn: &withdrawn.Withdrawn{
-								Order: "111",
+								Order: "67",
 								Sum:   1,
 							},
 							ProcessedAt: time.Now().Round(time.Second),
@@ -154,7 +154,7 @@ func TestAddWithdraw(t *testing.T) {
 					},
 					map[string]*struct{}{},
 					map[string][]string{"user1": {"1"}},
-					map[string][]string{"user1": {"111"}},
+					map[string][]string{"user1": {"67"}},
 				),
 			},
 		},

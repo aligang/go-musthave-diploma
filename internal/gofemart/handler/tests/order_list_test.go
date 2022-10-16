@@ -31,9 +31,9 @@ func TestListOrders(t *testing.T) {
 				Payload: "1", Account: "user1"},
 			expected: tests_common.Expected{
 				Payload: "[" +
-					"{\"number\":\"3\",\"status\":\"NEW\",\"accural\":20.5,\"uploaded_at\":\"2021-09-19T15:59:43+03:00\"}," +
-					"{\"number\":\"2\",\"status\":\"PROCESSING\",\"accural\":25.5,\"uploaded_at\":\"2021-09-19T15:59:42+03:00\"}," +
-					"{\"number\":\"1\",\"status\":\"PROCESSED\",\"accural\":10.5,\"uploaded_at\":\"2021-09-19T15:59:41+03:00\"}]",
+					"{\"number\":\"3\",\"status\":\"NEW\",\"accrual\":20.5,\"uploaded_at\":\"2021-09-19T15:59:43+03:00\"}," +
+					"{\"number\":\"2\",\"status\":\"PROCESSING\",\"accrual\":25.5,\"uploaded_at\":\"2021-09-19T15:59:42+03:00\"}," +
+					"{\"number\":\"1\",\"status\":\"PROCESSED\",\"accrual\":10.5,\"uploaded_at\":\"2021-09-19T15:59:41+03:00\"}]",
 				Code:        200,
 				ContentType: "application/json",
 				DbDump: memory.Init(

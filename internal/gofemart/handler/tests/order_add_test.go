@@ -34,7 +34,7 @@ func TestAddOrder(t *testing.T) {
 		{
 			name: "PROCESSED ORDER REGISTRATION CORRECT",
 			input: tests_common.Input{Method: http.MethodPost, Path: "/api/user/orders", ContentType: "application/json",
-				Payload: "19", Account: "user1"},
+				Payload: "18", Account: "user1"},
 			expected: tests_common.Expected{
 				Code:        202,
 				ContentType: "text/plain",
@@ -58,9 +58,9 @@ func TestAddOrder(t *testing.T) {
 						},
 					},
 					internal_order.Orders{
-						"19": internal_order.Order{
+						"18": internal_order.Order{
 							Order: &order.Order{
-								Number:     "19",
+								Number:     "18",
 								Accural:    10.5,
 								Status:     "PROCESSED",
 								UploadedAt: time.Now().Round(time.Second),
@@ -70,7 +70,7 @@ func TestAddOrder(t *testing.T) {
 					},
 					withdrawn.Withdrawns{},
 					map[string]*struct{}{},
-					map[string][]string{"user1": {"19"}},
+					map[string][]string{"user1": {"18"}},
 					map[string][]string{},
 				),
 			},
@@ -79,7 +79,7 @@ func TestAddOrder(t *testing.T) {
 		{
 			name: "PROCESSING ORDER REGISTRATION CORRECT",
 			input: tests_common.Input{Method: http.MethodPost, Path: "/api/user/orders", ContentType: "application/json",
-				Payload: "24", Account: "user1"},
+				Payload: "26", Account: "user1"},
 			expected: tests_common.Expected{
 				Code:        202,
 				ContentType: "text/plain",
@@ -103,18 +103,18 @@ func TestAddOrder(t *testing.T) {
 						},
 					},
 					internal_order.Orders{
-						"19": internal_order.Order{
+						"18": internal_order.Order{
 							Order: &order.Order{
-								Number:     "19",
+								Number:     "18",
 								Accural:    10.5,
 								Status:     "PROCESSED",
 								UploadedAt: time.Now().Round(time.Second),
 							},
 							Owner: "user1",
 						},
-						"24": internal_order.Order{
+						"26": internal_order.Order{
 							Order: &order.Order{
-								Number:     "24",
+								Number:     "26",
 								Accural:    10.5,
 								Status:     "PROCESSING",
 								UploadedAt: time.Now().Round(time.Second),
@@ -123,8 +123,8 @@ func TestAddOrder(t *testing.T) {
 						},
 					},
 					withdrawn.Withdrawns{},
-					map[string]*struct{}{"24": nil},
-					map[string][]string{"user1": {"19", "24"}},
+					map[string]*struct{}{"26": nil},
+					map[string][]string{"user1": {"18", "26"}},
 					map[string][]string{},
 				),
 			},
@@ -133,7 +133,7 @@ func TestAddOrder(t *testing.T) {
 		{
 			name: "NEW ORDER REGISTRATION CORRECT",
 			input: tests_common.Input{Method: http.MethodPost, Path: "/api/user/orders", ContentType: "application/json",
-				Payload: "38", Account: "user1"},
+				Payload: "34", Account: "user1"},
 			expected: tests_common.Expected{
 				Code:        202,
 				ContentType: "text/plain",
@@ -157,27 +157,27 @@ func TestAddOrder(t *testing.T) {
 						},
 					},
 					internal_order.Orders{
-						"19": internal_order.Order{
+						"18": internal_order.Order{
 							Order: &order.Order{
-								Number:     "19",
+								Number:     "18",
 								Accural:    10.5,
 								Status:     "PROCESSED",
 								UploadedAt: time.Now().Round(time.Second),
 							},
 							Owner: "user1",
 						},
-						"24": internal_order.Order{
+						"26": internal_order.Order{
 							Order: &order.Order{
-								Number:     "24",
+								Number:     "26",
 								Accural:    10.5,
 								Status:     "PROCESSING",
 								UploadedAt: time.Now().Round(time.Second),
 							},
 							Owner: "user1",
 						},
-						"38": internal_order.Order{
+						"34": internal_order.Order{
 							Order: &order.Order{
-								Number:     "38",
+								Number:     "34",
 								Accural:    10.5,
 								Status:     "NEW",
 								UploadedAt: time.Now().Round(time.Second),
@@ -186,8 +186,8 @@ func TestAddOrder(t *testing.T) {
 						},
 					},
 					withdrawn.Withdrawns{},
-					map[string]*struct{}{"24": nil, "38": nil},
-					map[string][]string{"user1": {"19", "24", "38"}},
+					map[string]*struct{}{"26": nil, "34": nil},
+					map[string][]string{"user1": {"18", "26", "34"}},
 					map[string][]string{},
 				),
 			},
@@ -196,7 +196,7 @@ func TestAddOrder(t *testing.T) {
 		{
 			name: "INVALID ORDER REGISTRATION CORRECT",
 			input: tests_common.Input{Method: http.MethodPost, Path: "/api/user/orders", ContentType: "application/json",
-				Payload: "43", Account: "user1"},
+				Payload: "42", Account: "user1"},
 			expected: tests_common.Expected{
 				Code:        202,
 				ContentType: "text/plain",
@@ -220,36 +220,36 @@ func TestAddOrder(t *testing.T) {
 						},
 					},
 					internal_order.Orders{
-						"19": internal_order.Order{
+						"18": internal_order.Order{
 							Order: &order.Order{
-								Number:     "19",
+								Number:     "18",
 								Accural:    10.5,
 								Status:     "PROCESSED",
 								UploadedAt: time.Now().Round(time.Second),
 							},
 							Owner: "user1",
 						},
-						"24": internal_order.Order{
+						"26": internal_order.Order{
 							Order: &order.Order{
-								Number:     "24",
+								Number:     "26",
 								Accural:    10.5,
 								Status:     "PROCESSING",
 								UploadedAt: time.Now().Round(time.Second),
 							},
 							Owner: "user1",
 						},
-						"38": internal_order.Order{
+						"34": internal_order.Order{
 							Order: &order.Order{
-								Number:     "38",
+								Number:     "34",
 								Accural:    10.5,
 								Status:     "NEW",
 								UploadedAt: time.Now().Round(time.Second),
 							},
 							Owner: "user1",
 						},
-						"43": internal_order.Order{
+						"42": internal_order.Order{
 							Order: &order.Order{
-								Number:     "43",
+								Number:     "42",
 								Accural:    10.5,
 								Status:     "INVALID",
 								UploadedAt: time.Now().Round(time.Second),
@@ -258,8 +258,8 @@ func TestAddOrder(t *testing.T) {
 						},
 					},
 					withdrawn.Withdrawns{},
-					map[string]*struct{}{"24": nil, "38": nil},
-					map[string][]string{"user1": {"19", "24", "38", "43"}},
+					map[string]*struct{}{"26": nil, "34": nil},
+					map[string][]string{"user1": {"18", "26", "34", "42"}},
 					map[string][]string{},
 				),
 			},
@@ -268,7 +268,7 @@ func TestAddOrder(t *testing.T) {
 		{
 			name: "ORDER REAPPLY",
 			input: tests_common.Input{Method: http.MethodPost, Path: "/api/user/orders", ContentType: "application/json",
-				Payload: "19", Account: "user1"},
+				Payload: "18", Account: "user1"},
 			expected: tests_common.Expected{
 				Code:        200,
 				ContentType: "text/plain",
@@ -292,9 +292,9 @@ func TestAddOrder(t *testing.T) {
 						},
 					},
 					internal_order.Orders{
-						"1": internal_order.Order{
+						"18": internal_order.Order{
 							Order: &order.Order{
-								Number:     "1",
+								Number:     "18",
 								Accural:    10.5,
 								Status:     "PROCESSED",
 								UploadedAt: time.Now().Round(time.Second),
@@ -304,7 +304,7 @@ func TestAddOrder(t *testing.T) {
 					},
 					withdrawn.Withdrawns{},
 					map[string]*struct{}{},
-					map[string][]string{"user1": {"1"}},
+					map[string][]string{"user1": {"18"}},
 					map[string][]string{},
 				),
 			},
@@ -337,9 +337,9 @@ func TestAddOrder(t *testing.T) {
 						},
 					},
 					internal_order.Orders{
-						"1": internal_order.Order{
+						"18": internal_order.Order{
 							Order: &order.Order{
-								Number:     "1",
+								Number:     "18",
 								Accural:    10.5,
 								Status:     "PROCESSED",
 								UploadedAt: time.Now().Round(time.Second),
@@ -349,7 +349,7 @@ func TestAddOrder(t *testing.T) {
 					},
 					withdrawn.Withdrawns{},
 					map[string]*struct{}{},
-					map[string][]string{"user1": {"1"}},
+					map[string][]string{"user1": {"18"}},
 					map[string][]string{},
 				),
 			},
@@ -403,7 +403,7 @@ func TestAddOrder(t *testing.T) {
 		{
 			name: "DUBLICATE ORDER",
 			input: tests_common.Input{Method: http.MethodPost, Path: "/api/user/orders", ContentType: "application/json",
-				Payload: "19", Account: "user2"},
+				Payload: "18", Account: "user2"},
 			expected: tests_common.Expected{
 				Code:        409,
 				ContentType: "text/plain",
@@ -427,9 +427,9 @@ func TestAddOrder(t *testing.T) {
 						},
 					},
 					internal_order.Orders{
-						"1": internal_order.Order{
+						"18": internal_order.Order{
 							Order: &order.Order{
-								Number:     "1",
+								Number:     "18",
 								Accural:    10.5,
 								Status:     "PROCESSED",
 								UploadedAt: time.Now().Round(time.Second),
@@ -439,7 +439,7 @@ func TestAddOrder(t *testing.T) {
 					},
 					withdrawn.Withdrawns{},
 					map[string]*struct{}{},
-					map[string][]string{"user1": {"1"}},
+					map[string][]string{"user1": {"18"}},
 					map[string][]string{},
 				),
 			},
@@ -448,23 +448,23 @@ func TestAddOrder(t *testing.T) {
 
 	//Starting Test AccuralServer
 	accuralStorage := accural_storage.Init(message.AccuralMessageMap{
-		"19": message.AccuralMessage{
-			Order:   "19",
+		"18": message.AccuralMessage{
+			Order:   "18",
 			Status:  "PROCESSED",
 			Accural: 10.5,
 		},
-		"24": message.AccuralMessage{
-			Order:   "24",
+		"26": message.AccuralMessage{
+			Order:   "26",
 			Status:  "PROCESSING",
 			Accural: 10.5,
 		},
-		"38": message.AccuralMessage{
-			Order:   "38",
+		"34": message.AccuralMessage{
+			Order:   "34",
 			Status:  "NEW",
 			Accural: 10.5,
 		},
-		"43": message.AccuralMessage{
-			Order:   "43",
+		"42": message.AccuralMessage{
+			Order:   "42",
 			Status:  "INVALID",
 			Accural: 10.5,
 		},
@@ -480,6 +480,7 @@ func TestAddOrder(t *testing.T) {
 		RunAddress:           "",
 	}
 	Auth := auth.New()
+
 	storage := memory.Init(
 		customer_account.CustomerAccounts{
 			"user1": customer_account.CustomerAccount{
@@ -505,7 +506,6 @@ func TestAddOrder(t *testing.T) {
 		map[string][]string{},
 		map[string][]string{},
 	)
-
 	mux := handler.New(storage, Auth, cfg)
 	mux.Post("/api/user/orders", mux.AddOrder)
 	ts := httptest.NewServer(mux)

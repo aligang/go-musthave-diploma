@@ -1,57 +1,65 @@
 package main
 
 import (
+	"context"
 	"github.com/aligang/go-musthave-diploma/internal/config"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/auth"
-	"github.com/aligang/go-musthave-diploma/internal/gofemart/compress"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/handler"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/tracker"
 	"github.com/aligang/go-musthave-diploma/internal/logging"
-	"github.com/go-chi/chi/v5/middleware"
 	"github.com/rs/zerolog"
+	"net"
 	"net/http"
 	"os"
+	"os/signal"
+	"strings"
+	"syscall"
 )
-
-var URI = "127.0.0.1:8080"
 
 func main() {
 	logging.Configure(os.Stdout, zerolog.DebugLevel)
+	globalCtx, cancel := context.WithCancel(context.Background())
 	cfg := config.Init()
 	Storage := storage.New(cfg)
 	Auth := auth.New()
 	Tracker := tracker.New(Storage, cfg)
-	Tracker.RunInBackground()
+	Tracker.RunInBackground(globalCtx)
 	mux := handler.New(Storage, Auth, cfg)
-	mux.Use(middleware.RequestID)
-	mux.Use(middleware.RealIP)
-	mux.Use(middleware.Recoverer)
-	//user api
-	mux.With(compress.Gzip).
-		Post("/api/user/register", mux.RegisterCustomerAccount)
-	mux.With(compress.Gzip).
-		Post("/api/user/login", mux.Login)
-	mux.With(Auth.CheckAuthInfo).
-		With(compress.Gzip).
-		Post("/api/user/orders", mux.AddOrder)
-	mux.With(Auth.CheckAuthInfo).
-		With(compress.Gzip).
-		Get("/api/user/orders", mux.ListOrders)
-	mux.With(Auth.CheckAuthInfo).
-		With(compress.Gzip).
-		Get("/api/user/balance", mux.GetAccountBalance)
-	mux.With(Auth.CheckAuthInfo).
-		With(compress.Gzip).
-		Post("/api/user/balance/withdraw", mux.AddWithdraw)
-	mux.With(Auth.CheckAuthInfo).
-		With(compress.Gzip).
-		Get("/api/user/withdrawals", mux.ListWithdraws)
+	mux.ApplyProdConfig()
+	//mux.ApplyDebugConfig()
 
-	//internal api
-	mux.Get("/api/internal/accounts", mux.ListCustomerAccounts)
-	mux.Get("/api/internal/pending-orders", mux.ListPendingOrders)
+	app := New(globalCtx, mux, cfg)
 
-	logging.Debug(" Starting Server on: %s", URI)
-	logging.Crit(http.ListenAndServe(URI, mux).Error())
+	go runServer(app)
+	exitSignal := make(chan os.Signal, 1)
+	signal.Notify(exitSignal, syscall.SIGINT, syscall.SIGTERM)
+	<-exitSignal
+	cancel()
+	logging.Debug("Server stopped")
+}
+
+func runServer(server *http.Server) {
+	logging.Debug("enable TCP listener on: %s", server.Addr)
+	ip := strings.Split(server.Addr, "/")[2]
+	listener, err := net.Listen("tcp", ip)
+	if err != nil {
+		panic(err)
+	}
+	logging.Debug(" Starting Server on: %s", server.Addr)
+	err = server.Serve(listener)
+	if err != nil {
+		panic(err)
+	}
+}
+
+func New(ctx context.Context, mux http.Handler, cfg *config.Config) *http.Server {
+	serverBaseCtxFunc := func(listener net.Listener) context.Context {
+		return context.WithValue(ctx, "context-name", "server-base-context")
+	}
+	return &http.Server{
+		Addr:        cfg.RunAddress,
+		Handler:     mux,
+		BaseContext: serverBaseCtxFunc,
+	}
 }

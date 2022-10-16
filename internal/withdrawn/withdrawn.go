@@ -9,6 +9,10 @@ type Withdrawn struct {
 	Sum   float64 `json:"sum"`
 }
 
+func New() *Withdrawn {
+	return &Withdrawn{}
+}
+
 type WithdrawnRecord struct {
 	*Withdrawn
 	ProcessedAt time.Time `json:"processed_at"`
