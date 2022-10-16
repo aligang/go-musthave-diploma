@@ -13,7 +13,6 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
-	"strings"
 	"syscall"
 )
 
@@ -41,8 +40,7 @@ func main() {
 
 func runServer(server *http.Server) {
 	logging.Debug("enable TCP listener on: %s", server.Addr)
-	ip := strings.Split(server.Addr, "/")[2]
-	listener, err := net.Listen("tcp", ip)
+	listener, err := net.Listen("tcp", server.Addr)
 	if err != nil {
 		panic(err)
 	}
