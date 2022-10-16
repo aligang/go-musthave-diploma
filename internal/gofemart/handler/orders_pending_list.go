@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-func (h *ApiHandler) ListPendingOrders(w http.ResponseWriter, r *http.Request) {
+func (h *APIhandler) ListPendingOrders(w http.ResponseWriter, r *http.Request) {
 	logging.Debug("pending orders  list was requested")
 	ctx := r.Context()
 	if RequestContextIsClosed(ctx, w) {
@@ -18,7 +18,6 @@ func (h *ApiHandler) ListPendingOrders(w http.ResponseWriter, r *http.Request) {
 		logging.Warn("Error during fetching pending orders list")
 		return
 	}
-	logging.Debug("user %s, has registered orders")
 	if RequestContextIsClosed(ctx, w) {
 		return
 	}

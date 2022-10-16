@@ -12,7 +12,7 @@ import (
 	"net/http"
 )
 
-func (h *ApiHandler) AddWithdraw(w http.ResponseWriter, r *http.Request) {
+func (h *APIhandler) AddWithdraw(w http.ResponseWriter, r *http.Request) {
 	logging.Warn("Processing withdraw list request")
 	ctx := r.Context()
 	if RequestContextIsClosed(ctx, w) {
@@ -104,7 +104,7 @@ func (h *ApiHandler) AddWithdraw(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "System Error", http.StatusInternalServerError)
 		return
 	default:
-		logging.Warn("Withdraw was already registered in withdraw database", withdrawRequest.Order)
+		logging.Warn("Withdraw was already registered in withdraw database: %s", withdrawRequest.Order)
 		if RequestContextIsClosed(ctx, w) {
 			return
 		}

@@ -10,7 +10,7 @@ import (
 	"net/http"
 )
 
-func (h *ApiHandler) RegisterCustomerAccount(w http.ResponseWriter, r *http.Request) {
+func (h *APIhandler) RegisterCustomerAccount(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	if RequestContextIsClosed(ctx, w) {
 		return

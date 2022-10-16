@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-func (h *ApiHandler) ListCustomerAccounts(w http.ResponseWriter, r *http.Request) {
+func (h *APIhandler) ListCustomerAccounts(w http.ResponseWriter, r *http.Request) {
 	accounts, err := h.storage.GetCustomerAccounts()
 	if err != nil {
 		logging.Warn("Could not get Accounts List: %s", err.Error())

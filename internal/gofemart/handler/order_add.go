@@ -13,7 +13,7 @@ import (
 	"net/http"
 )
 
-func (h *ApiHandler) AddOrder(w http.ResponseWriter, r *http.Request) {
+func (h *APIhandler) AddOrder(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("1")
 	logging.Warn("Processing order add request")
 	ctx := r.Context()

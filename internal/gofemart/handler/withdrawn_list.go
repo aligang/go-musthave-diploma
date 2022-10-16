@@ -9,7 +9,7 @@ import (
 	"sort"
 )
 
-func (h *ApiHandler) ListWithdraws(w http.ResponseWriter, r *http.Request) {
+func (h *APIhandler) ListWithdraws(w http.ResponseWriter, r *http.Request) {
 	logging.Warn("Processing withdraw list request")
 	ctx := r.Context()
 	if RequestContextIsClosed(ctx, w) {
@@ -49,6 +49,11 @@ func (h *ApiHandler) ListWithdraws(w http.ResponseWriter, r *http.Request) {
 	logging.Debug("user %s, has registered orders: %+v", userID, withdrawns)
 	sort.Sort(withdrawn.WithdrawnSlice(withdrawns))
 	withdrawsPayload, err := json.Marshal(withdrawns)
+	if err != nil {
+		http.Error(w, "error during Fetching orders", http.StatusInternalServerError)
+		logging.Warn("Could not decode json")
+		return
+	}
 	logging.Debug("forming response %s", string(withdrawsPayload))
 	if RequestContextIsClosed(ctx, w) {
 		return

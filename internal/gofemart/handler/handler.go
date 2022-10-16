@@ -12,15 +12,15 @@ import (
 	"net/http"
 )
 
-type ApiHandler struct {
+type APIhandler struct {
 	*chi.Mux
 	storage storage.Storage
 	auth    *auth.Auth
 	config  *config.Config
 }
 
-func New(storage storage.Storage, auth *auth.Auth, cfg *config.Config) *ApiHandler {
-	return &ApiHandler{
+func New(storage storage.Storage, auth *auth.Auth, cfg *config.Config) *APIhandler {
+	return &APIhandler{
 		Mux:     chi.NewMux(),
 		storage: storage,
 		auth:    auth,
@@ -28,7 +28,7 @@ func New(storage storage.Storage, auth *auth.Auth, cfg *config.Config) *ApiHandl
 	}
 }
 
-func (h *ApiHandler) ApplyProdConfig() {
+func (h *APIhandler) ApplyProdConfig() {
 	h.Use(middleware.RequestID)
 	h.Use(middleware.RealIP)
 	h.Use(middleware.Recoverer)
@@ -54,7 +54,7 @@ func (h *ApiHandler) ApplyProdConfig() {
 		Get("/api/user/withdrawals", h.ListWithdraws)
 }
 
-func (h *ApiHandler) ApplyDebugConfig() {
+func (h *APIhandler) ApplyDebugConfig() {
 	h.Get("/api/internal/accounts", h.ListCustomerAccounts)
 	h.Get("/api/internal/pending-orders", h.ListPendingOrders)
 }

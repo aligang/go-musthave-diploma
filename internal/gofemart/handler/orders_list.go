@@ -9,7 +9,7 @@ import (
 	"sort"
 )
 
-func (h *ApiHandler) ListOrders(w http.ResponseWriter, r *http.Request) {
+func (h *APIhandler) ListOrders(w http.ResponseWriter, r *http.Request) {
 	logging.Warn("Processing order list request")
 	ctx := r.Context()
 	if RequestContextIsClosed(ctx, w) {
@@ -48,6 +48,11 @@ func (h *ApiHandler) ListOrders(w http.ResponseWriter, r *http.Request) {
 	}
 	sort.Sort(order.OrderSlice(orders))
 	ordersPayload, err := json.Marshal(orders)
+	if err != nil {
+		http.Error(w, "error during Fetching orders", http.StatusInternalServerError)
+		logging.Warn("Could not decode json")
+		return
+	}
 	logging.Debug("forming response %s", string(ordersPayload))
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)

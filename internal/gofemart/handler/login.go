@@ -8,7 +8,7 @@ import (
 	"net/http"
 )
 
-func (h *ApiHandler) Login(w http.ResponseWriter, r *http.Request) {
+func (h *APIhandler) Login(w http.ResponseWriter, r *http.Request) {
 	logging.Warn("Processing Login request")
 	ctx := r.Context()
 	if RequestContextIsClosed(ctx, w) {

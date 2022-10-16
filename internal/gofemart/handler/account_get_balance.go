@@ -7,7 +7,7 @@ import (
 	"net/http"
 )
 
-func (h *ApiHandler) GetAccountBalance(w http.ResponseWriter, r *http.Request) {
+func (h *APIhandler) GetAccountBalance(w http.ResponseWriter, r *http.Request) {
 	logging.Warn("Processing account balance request")
 	ctx := r.Context()
 	if RequestContextIsClosed(ctx, w) {
