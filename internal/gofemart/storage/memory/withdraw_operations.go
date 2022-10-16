@@ -14,8 +14,8 @@ func (s *Storage) RegisterWithdrawn(ctx context.Context, userID string, withdraw
 	return nil
 }
 
-func (s *Storage) GetWithdrawnWithinTransaction(ctx context.Context, withdrawnId string) (*withdrawn.WithdrawnRecord, error) {
-	withdrawn, exists := s.Withdrawns[withdrawnId]
+func (s *Storage) GetWithdrawnWithinTransaction(ctx context.Context, withdrawnID string) (*withdrawn.WithdrawnRecord, error) {
+	withdrawn, exists := s.Withdrawns[withdrawnID]
 	if !exists {
 		return nil, repositoryerrors.ErrNoContent
 	}
@@ -27,14 +27,14 @@ func (s *Storage) GetWithdrawnIds(userID string) ([]string, error) {
 }
 
 func (s *Storage) ListWithdrawns(userID string) ([]withdrawn.WithdrawnRecord, error) {
-	withdrawnIds, exists := s.CustomerWithdrawns[userID]
+	withdrawnIDs, exists := s.CustomerWithdrawns[userID]
 	if !exists {
 		return []withdrawn.WithdrawnRecord{}, nil
 	}
 
 	var err error
 	var withdrawns []withdrawn.WithdrawnRecord
-	for _, id := range withdrawnIds {
+	for _, id := range withdrawnIDs {
 		withdrawn, exists := s.Withdrawns[id]
 		if !exists {
 			logging.Warn("order info for orderID=%s was not found, seems as DB data lost", id)
