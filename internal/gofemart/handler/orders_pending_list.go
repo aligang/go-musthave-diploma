@@ -12,7 +12,7 @@ func (h *ApiHandler) ListPendingOrders(w http.ResponseWriter, r *http.Request) {
 	if RequestContextIsClosed(ctx, w) {
 		return
 	}
-	orderIds, err := h.storage.GetPendingOrders(ctx)
+	orderIDs, err := h.storage.GetPendingOrders(ctx)
 	if err != nil {
 		http.Error(w, "", http.StatusInternalServerError)
 		logging.Warn("Error during fetching pending orders list")
@@ -22,7 +22,7 @@ func (h *ApiHandler) ListPendingOrders(w http.ResponseWriter, r *http.Request) {
 	if RequestContextIsClosed(ctx, w) {
 		return
 	}
-	ordersPayload, err := json.Marshal(orderIds)
+	ordersPayload, err := json.Marshal(orderIDs)
 	logging.Debug("forming response %s", string(ordersPayload))
 	if RequestContextIsClosed(ctx, w) {
 		return

@@ -30,23 +30,23 @@ func (s *Storage) RegisterWithdrawn(ctx context.Context, userId string, withdraw
 
 }
 
-func (s *Storage) GetWithdrawnWithinTransaction(ctx context.Context, orderId string) (*withdrawn.WithdrawnRecord, error) {
+func (s *Storage) GetWithdrawnWithinTransaction(ctx context.Context, orderID string) (*withdrawn.WithdrawnRecord, error) {
 	query := "SELECT Order_Id, Sum, Processed_at FROM withdrawns WHERE Order_Id = $1"
-	var args = []interface{}{orderId}
+	var args = []interface{}{orderID}
 	logging.Debug("Preparing statement to fetch order from Repository: %s", query)
 	statement, err := s.Tx[ctx].Prepare(query)
 	if err != nil {
 		logging.Warn("Error During statement creation %s", query)
 		return nil, err
 	}
-	logging.Debug("Executing statement to fetch withdraw info from Repository: %s %s", query, orderId)
+	logging.Debug("Executing statement to fetch withdraw info from Repository: %s %s", query, orderID)
 	row := statement.QueryRow(args...)
 	if row.Err() != nil {
 		logging.Warn("rows check result: ", row.Err().Error())
 		return nil, row.Err()
 	}
 
-	logging.Debug("Decoding database response of : %s %s", query, orderId)
+	logging.Debug("Decoding database response of : %s %s", query, orderID)
 	withdrawnInstance := &withdrawn.WithdrawnRecord{
 		Withdrawn: &withdrawn.Withdrawn{},
 	}

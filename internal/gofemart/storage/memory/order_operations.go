@@ -17,54 +17,54 @@ func (s *Storage) AddOrder(ctx context.Context, userId string, order *order.Orde
 	return nil
 }
 
-func (s *Storage) AddOrderToPendingList(ctx context.Context, orderId string) error {
-	if _, exists := s.PendingOrders[orderId]; exists {
+func (s *Storage) AddOrderToPendingList(ctx context.Context, orderID string) error {
+	if _, exists := s.PendingOrders[orderID]; exists {
 		return fmt.Errorf("record Already present")
 	}
-	s.PendingOrders[orderId] = nil
+	s.PendingOrders[orderID] = nil
 	return nil
 }
 
 func (s *Storage) GetPendingOrders(ctx context.Context) ([]string, error) {
 	var pendingOrders []string
-	for orderId, _ := range s.PendingOrders {
-		pendingOrders = append(pendingOrders, orderId)
+	for orderID, _ := range s.PendingOrders {
+		pendingOrders = append(pendingOrders, orderID)
 	}
 	return pendingOrders, nil
 }
 
-func (s *Storage) RemoveOrderFromPendingList(ctx context.Context, orderId string) error {
-	if _, exists := s.PendingOrders[orderId]; !exists {
+func (s *Storage) RemoveOrderFromPendingList(ctx context.Context, orderID string) error {
+	if _, exists := s.PendingOrders[orderID]; !exists {
 		return fmt.Errorf("record does not exist")
 	}
-	delete(s.PendingOrders, orderId)
+	delete(s.PendingOrders, orderID)
 	return nil
 }
 
-func (s *Storage) GetOrder(orderId string) (*order.Order, error) {
-	orderRecord, exists := s.Orders[orderId]
+func (s *Storage) GetOrder(orderID string) (*order.Order, error) {
+	orderRecord, exists := s.Orders[orderID]
 	if !exists {
 		return nil, repository_errors.ErrNoContent
 	}
 	return orderRecord.Order, nil
 }
 
-func (s *Storage) GetOrderWithinTransaction(ctx context.Context, orderId string) (*order.Order, error) {
-	return s.GetOrder(orderId)
+func (s *Storage) GetOrderWithinTransaction(ctx context.Context, orderID string) (*order.Order, error) {
+	return s.GetOrder(orderID)
 }
 
 func (s *Storage) ListOrders(userId string) ([]order.Order, error) {
-	orderIds, exists := s.CustomerOrders[userId]
+	orderIDs, exists := s.CustomerOrders[userId]
 	if !exists {
 		return []order.Order{}, nil
 	}
 
 	var err error
 	var orders []order.Order
-	for _, orderId := range orderIds {
-		internalOrder, exists := s.Orders[orderId]
+	for _, orderID := range orderIDs {
+		internalOrder, exists := s.Orders[orderID]
 		if !exists {
-			logging.Warn("order info for orderId=%s was not found, seems as DB data lost", orderId)
+			logging.Warn("order info for orderID=%s was not found, seems as DB data lost", orderID)
 			err = fmt.Errorf("porblem during fetching list of orders")
 		}
 		orders = append(orders, *internalOrder.Order)

@@ -37,7 +37,7 @@ func (s *Storage) ListWithdrawns(userId string) ([]withdrawn.WithdrawnRecord, er
 	for _, id := range withdrawnIds {
 		withdrawn, exists := s.Withdrawns[id]
 		if !exists {
-			logging.Warn("order info for orderId=%s was not found, seems as DB data lost", id)
+			logging.Warn("order info for orderID=%s was not found, seems as DB data lost", id)
 			err = fmt.Errorf("porblem during fetching list of orders")
 		}
 		withdrawns = append(withdrawns, withdrawn)

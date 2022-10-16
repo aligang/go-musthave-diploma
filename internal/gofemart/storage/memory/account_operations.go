@@ -42,8 +42,8 @@ func (s *Storage) UpdateCustomerAccount(ctx context.Context, customerAccount *cu
 	return nil
 }
 
-func (s *Storage) GetOrderOwner(ctx context.Context, orderId string) (string, error) {
-	order, exists := s.Orders[orderId]
+func (s *Storage) GetOrderOwner(ctx context.Context, orderID string) (string, error) {
+	order, exists := s.Orders[orderID]
 	if !exists {
 		return "", fmt.Errorf("record does not exist")
 	}

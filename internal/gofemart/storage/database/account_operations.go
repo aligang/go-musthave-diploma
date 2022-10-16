@@ -87,9 +87,9 @@ func (s *Storage) GetCustomerAccounts() (customer_account.CustomerAccounts, erro
 	return customer_account.CustomerAccounts{}, nil
 }
 
-func (s *Storage) GetOrderOwner(ctx context.Context, orderId string) (string, error) {
+func (s *Storage) GetOrderOwner(ctx context.Context, orderID string) (string, error) {
 	query := "SELECT owner FROM orders WHERE number = $1"
-	var args = []interface{}{orderId}
+	var args = []interface{}{orderID}
 	logging.Debug("Preparing statement to fetch customer account to Repository: %s", query)
 	statement, err := s.Tx[ctx].Prepare(query)
 	if err != nil {
@@ -100,7 +100,7 @@ func (s *Storage) GetOrderOwner(ctx context.Context, orderId string) (string, er
 	row := statement.QueryRow(args...)
 
 	if row.Err() != nil {
-		logging.Warn("Error During statement Execution %s with %s", query, orderId)
+		logging.Warn("Error During statement Execution %s with %s", query, orderID)
 		return "", err
 	}
 	var owner string

@@ -13,7 +13,7 @@ func (h *ApiHandler) GetAccountBalance(w http.ResponseWriter, r *http.Request) {
 	if RequestContextIsClosed(ctx, w) {
 		return
 	}
-	userId, err := auth.ResolveUsername(r)
+	userID, err := auth.ResolveUsername(r)
 	if err != nil {
 		http.Error(w, "", http.StatusUnauthorized)
 		logging.Warn("No user info were provided")
@@ -22,7 +22,7 @@ func (h *ApiHandler) GetAccountBalance(w http.ResponseWriter, r *http.Request) {
 	if RequestContextIsClosed(ctx, w) {
 		return
 	}
-	accountInfo, err := h.storage.GetCustomerAccount(userId)
+	accountInfo, err := h.storage.GetCustomerAccount(userID)
 	if err != nil {
 		http.Error(w, "Could not provide account balance info", http.StatusInternalServerError)
 		logging.Warn("Error during fetching account info from repository")

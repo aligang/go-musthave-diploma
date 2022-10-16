@@ -41,28 +41,28 @@ func (s *Storage) modifyOrder(ctx context.Context, order *order.Order, query str
 	return nil
 }
 
-func (s *Storage) GetOrder(orderId string) (*order.Order, error) {
-	return s.getOrderCommon(orderId, s.DB.Prepare)
+func (s *Storage) GetOrder(orderID string) (*order.Order, error) {
+	return s.getOrderCommon(orderID, s.DB.Prepare)
 }
 
-func (s *Storage) GetOrderWithinTransaction(ctx context.Context, orderId string) (*order.Order, error) {
-	return s.getOrderCommon(orderId, s.Tx[ctx].Prepare)
+func (s *Storage) GetOrderWithinTransaction(ctx context.Context, orderID string) (*order.Order, error) {
+	return s.getOrderCommon(orderID, s.Tx[ctx].Prepare)
 }
 
-func (s *Storage) getOrderCommon(orderId string, prepareFunc func(query string) (*sql.Stmt, error)) (*order.Order, error) {
+func (s *Storage) getOrderCommon(orderID string, prepareFunc func(query string) (*sql.Stmt, error)) (*order.Order, error) {
 	query := "SELECT number, status, accural, uploadedat FROM orders WHERE Number = $1"
-	var args = []interface{}{orderId}
+	var args = []interface{}{orderID}
 	logging.Debug("Preparing statement to fetch order from Repository: %s", query)
 	statement, err := prepareFunc(query)
 	if err != nil {
 		logging.Warn("Error During statement creation %s", query)
 		return nil, err
 	}
-	logging.Debug("Executing statement to fetch order info Repository: %s %s", query, orderId)
+	logging.Debug("Executing statement to fetch order info Repository: %s %s", query, orderID)
 	row := statement.QueryRow(args...)
 
 	if row.Err() != nil {
-		logging.Warn("Error During statement Execution %s with %s: %s", query, orderId, row.Err().Error())
+		logging.Warn("Error During statement Execution %s with %s: %s", query, orderID, row.Err().Error())
 		return nil, row.Err()
 	}
 
@@ -115,17 +115,17 @@ func (s *Storage) ListOrders(userId string) ([]order.Order, error) {
 	return orders, nil
 }
 
-func (s *Storage) AddOrderToPendingList(ctx context.Context, orderId string) error {
-	logging.Debug("Preparing statement to delete pending order From Repository:  %s", orderId)
+func (s *Storage) AddOrderToPendingList(ctx context.Context, orderID string) error {
+	logging.Debug("Preparing statement to delete pending order From Repository:  %s", orderID)
 	query := "INSERT INTO pending_orders (order_id) VALUES($1)"
-	var args = []interface{}{orderId}
+	var args = []interface{}{orderID}
 
 	statement, err := s.Tx[ctx].Prepare(query)
 	if err != nil {
 		logging.Warn("Error During statement creation %s", query)
 		return err
 	}
-	logging.Debug("Executing statement to delete pending order from Repository: %+s", orderId)
+	logging.Debug("Executing statement to delete pending order from Repository: %+s", orderID)
 	_, err = statement.Exec(args...)
 	if err != nil {
 		logging.Warn("Error During statement Execution %s with %s", query, args[0])
@@ -133,17 +133,17 @@ func (s *Storage) AddOrderToPendingList(ctx context.Context, orderId string) err
 	}
 	return nil
 }
-func (s *Storage) RemoveOrderFromPendingList(ctx context.Context, orderId string) error {
-	logging.Debug("Preparing statement to delete pending order to Repository:  %s", orderId)
+func (s *Storage) RemoveOrderFromPendingList(ctx context.Context, orderID string) error {
+	logging.Debug("Preparing statement to delete pending order to Repository:  %s", orderID)
 	query := "DELETE FROM pending_orders WHERE order_id = $1"
-	var args = []interface{}{orderId}
+	var args = []interface{}{orderID}
 
 	statement, err := s.Tx[ctx].Prepare(query)
 	if err != nil {
 		logging.Warn("Error During statement creation %s", query)
 		return err
 	}
-	logging.Debug("Executing statement to add pending order to Repository: %+s", orderId)
+	logging.Debug("Executing statement to add pending order to Repository: %+s", orderID)
 	_, err = statement.Exec(args...)
 	if err != nil {
 		logging.Warn("Error During statement Execution %s with %s", query, args[0])
@@ -175,13 +175,13 @@ func (s *Storage) GetPendingOrders(ctx context.Context) ([]string, error) {
 		return orders, err
 	}
 	for rows.Next() {
-		var orderId string
-		err = rows.Scan(&orderId)
+		var orderID string
+		err = rows.Scan(&orderID)
 		if err != nil {
 			logging.Warn("problem during parsing data from repository")
 			return orders, err
 		}
-		orders = append(orders, orderId)
+		orders = append(orders, orderID)
 	}
 
 	return orders, nil

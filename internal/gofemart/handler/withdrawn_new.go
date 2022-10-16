@@ -18,13 +18,13 @@ func (h *ApiHandler) AddWithdraw(w http.ResponseWriter, r *http.Request) {
 	if RequestContextIsClosed(ctx, w) {
 		return
 	}
-	userId, err := auth.ResolveUsername(r)
+	userID, err := auth.ResolveUsername(r)
 	if err != nil {
 		http.Error(w, "", http.StatusBadRequest)
 		logging.Warn("No user info were provided")
 		return
 	}
-	logging.Debug("Processing Withdraw for user %s", userId)
+	logging.Debug("Processing Withdraw for user %s", userID)
 	payload, err := io.ReadAll(r.Body)
 	logging.Warn("Withdraw add: received request %s", string(payload))
 	if err != nil {
@@ -50,8 +50,8 @@ func (h *ApiHandler) AddWithdraw(w http.ResponseWriter, r *http.Request) {
 	}
 	err = order.ValidateIdFormat(withdrawRequest.Order)
 	if err != nil {
-		logging.Warn("Invalid orderId checksum: %s", withdrawRequest.Order)
-		http.Error(w, "Invalid orderId checksum", http.StatusUnprocessableEntity)
+		logging.Warn("Invalid orderID checksum: %s", withdrawRequest.Order)
+		http.Error(w, "Invalid orderID checksum", http.StatusUnprocessableEntity)
 		return
 	}
 	logging.Debug("Withdraw ID is %d", withdrawRequest.Order)
@@ -112,12 +112,12 @@ func (h *ApiHandler) AddWithdraw(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	logging.Debug("Trying to register withdrawn order=%s to user-account=%s", withdrawRequest.Order, userId)
-	logging.Debug("Fetching account info for user-account=%s", userId)
+	logging.Debug("Trying to register withdrawn order=%s to user-account=%s", withdrawRequest.Order, userID)
+	logging.Debug("Fetching account info for user-account=%s", userID)
 	if RequestContextIsClosed(ctx, w) {
 		return
 	}
-	accountData, err := h.storage.GetCustomerAccountWithinTransaction(ctx, userId)
+	accountData, err := h.storage.GetCustomerAccountWithinTransaction(ctx, userID)
 	if err != nil {
 		logging.Warn("error during fetching account info: %s", err.Error())
 		http.Error(w, "error during add accural to balance", http.StatusInternalServerError)
@@ -125,7 +125,7 @@ func (h *ApiHandler) AddWithdraw(w http.ResponseWriter, r *http.Request) {
 	}
 	logging.Debug("Fetched account info=%+v", accountData)
 	if accountData.Current < withdrawRequest.Sum {
-		logging.Warn("error during using balance of: %s, unsufficent balance", userId)
+		logging.Warn("error during using balance of: %s, unsufficent balance", userID)
 		http.Error(w, "unsufficent balance", http.StatusPaymentRequired)
 		return
 	}
@@ -143,7 +143,7 @@ func (h *ApiHandler) AddWithdraw(w http.ResponseWriter, r *http.Request) {
 	if RequestContextIsClosed(ctx, w) {
 		return
 	}
-	err = h.storage.RegisterWithdrawn(ctx, userId, withdrawn.NewRecord(withdrawRequest))
+	err = h.storage.RegisterWithdrawn(ctx, userID, withdrawn.NewRecord(withdrawRequest))
 	if err != nil {
 		logging.Warn("error during registering new withdrawn=%s  for account=%s: %s",
 			withdrawRequest.Order, accountData.Login, err.Error())

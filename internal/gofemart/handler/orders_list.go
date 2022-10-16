@@ -15,7 +15,7 @@ func (h *ApiHandler) ListOrders(w http.ResponseWriter, r *http.Request) {
 	if RequestContextIsClosed(ctx, w) {
 		return
 	}
-	userId, err := auth.ResolveUsername(r)
+	userID, err := auth.ResolveUsername(r)
 	if err != nil {
 		http.Error(w, "", http.StatusBadRequest)
 		logging.Warn("No user info were provided")
@@ -27,22 +27,22 @@ func (h *ApiHandler) ListOrders(w http.ResponseWriter, r *http.Request) {
 		h.storage.CommitTransaction(ctx)
 	}()
 
-	logging.Debug("Fetching orders registered for user=%s from repository", userId)
+	logging.Debug("Fetching orders registered for user=%s from repository", userID)
 	if RequestContextIsClosed(ctx, w) {
 		return
 	}
-	orders, err := h.storage.ListOrders(userId)
+	orders, err := h.storage.ListOrders(userID)
 	if err != nil {
 		http.Error(w, "error during Fetching orders", http.StatusInternalServerError)
-		logging.Warn("Error during fetching orders register for user=%s: %s", userId, err.Error())
+		logging.Warn("Error during fetching orders register for user=%s: %s", userID, err.Error())
 		return
 	} else if len(orders) == 0 {
 		http.Error(w, "there is no registered orders", http.StatusNoContent)
-		logging.Warn("User=%s has no registered orders", userId)
+		logging.Warn("User=%s has no registered orders", userID)
 		return
 	}
 
-	logging.Debug("user %s, has registered orders: %+v", userId, orders)
+	logging.Debug("user %s, has registered orders: %+v", userID, orders)
 	if RequestContextIsClosed(ctx, w) {
 		return
 	}
@@ -55,5 +55,5 @@ func (h *ApiHandler) ListOrders(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		logging.Debug("Error during writing data to wire")
 	}
-	logging.Debug("orders  list user=%s was sent", userId)
+	logging.Debug("orders  list user=%s was sent", userID)
 }

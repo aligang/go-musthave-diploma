@@ -20,8 +20,8 @@ func (h *ApiHandler) AddOrder(w http.ResponseWriter, r *http.Request) {
 	if RequestContextIsClosed(ctx, w) {
 		return
 	}
-	userId, err := auth.ResolveUsername(r)
-	logging.Debug("Processing Order registration request for user %s", userId)
+	userID, err := auth.ResolveUsername(r)
+	logging.Debug("Processing Order registration request for user %s", userID)
 	if err != nil {
 		http.Error(w, "", http.StatusBadRequest)
 		logging.Warn("No user info were provided")
@@ -32,23 +32,23 @@ func (h *ApiHandler) AddOrder(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Could not read data from wire", http.StatusInternalServerError)
 		return
 	}
-	orderId := string(payload)
+	orderID := string(payload)
 	if RequestContextIsClosed(ctx, w) {
 		return
 	}
-	err = order.ValidateId(orderId)
+	err = order.ValidateId(orderID)
 	if err != nil {
-		logging.Warn("Invalid order format: %s", orderId)
+		logging.Warn("Invalid order format: %s", orderID)
 		http.Error(w, "Invalid order format", http.StatusBadRequest)
 		return
 	}
-	err = order.ValidateIdFormat(orderId)
+	err = order.ValidateIdFormat(orderID)
 	if err != nil {
-		logging.Warn("Invalid orderId checksum: %s", orderId)
-		http.Error(w, "Invalid orderId checksum", http.StatusUnprocessableEntity)
+		logging.Warn("Invalid orderID checksum: %s", orderID)
+		http.Error(w, "Invalid orderID checksum", http.StatusUnprocessableEntity)
 		return
 	}
-	logging.Debug("Processing Order registration request with id %s", orderId)
+	logging.Debug("Processing Order registration request with id %s", orderID)
 	if RequestContextIsClosed(ctx, w) {
 		return
 	}
@@ -60,26 +60,26 @@ func (h *ApiHandler) AddOrder(w http.ResponseWriter, r *http.Request) {
 		}
 		h.storage.CommitTransaction(ctx)
 	}()
-	_, err = h.storage.GetOrderWithinTransaction(ctx, orderId)
+	_, err = h.storage.GetOrderWithinTransaction(ctx, orderID)
 	switch {
 	case errors.Is(err, repository_errors.ErrNoContent):
 	case err != nil:
-		logging.Warn("error during fetching order with id: %s", orderId)
+		logging.Warn("error during fetching order with id: %s", orderID)
 		http.Error(w, "System error", http.StatusInternalServerError)
 		return
 	default:
-		owner, err := h.storage.GetOrderOwner(ctx, orderId)
+		owner, err := h.storage.GetOrderOwner(ctx, orderID)
 		switch {
-		case owner == userId:
+		case owner == userID:
 			w.Header().Set("Content-Type", "text/plain")
 			w.WriteHeader(http.StatusOK)
 			return
 		case err != nil:
-			logging.Warn("error during fetching order=%s", orderId)
+			logging.Warn("error during fetching order=%s", orderID)
 			http.Error(w, "System error", http.StatusInternalServerError)
 			return
 		default:
-			logging.Warn("Order=%s was already registered in order database", orderId)
+			logging.Warn("Order=%s was already registered in order database", orderID)
 			http.Error(w, "Order was already registered", http.StatusConflict)
 			return
 		}
@@ -87,7 +87,7 @@ func (h *ApiHandler) AddOrder(w http.ResponseWriter, r *http.Request) {
 	if RequestContextIsClosed(ctx, w) {
 		return
 	}
-	_, err = h.storage.GetWithdrawnWithinTransaction(ctx, orderId)
+	_, err = h.storage.GetWithdrawnWithinTransaction(ctx, orderID)
 	switch {
 	case errors.Is(err, repository_errors.ErrNoContent):
 	case err != nil:
@@ -95,16 +95,16 @@ func (h *ApiHandler) AddOrder(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Account %s already exists", http.StatusInternalServerError)
 		return
 	default:
-		logging.Warn("Order=%s was already registered in withdraw database", orderId)
+		logging.Warn("Order=%s was already registered in withdraw database", orderID)
 		http.Error(w, "Order was already registered", http.StatusConflict)
 		return
 	}
 
-	logging.Warn("Trying to bind order=%s to user-account=%s", orderId, userId)
+	logging.Warn("Trying to bind order=%s to user-account=%s", orderID, userID)
 	if RequestContextIsClosed(ctx, w) {
 		return
 	}
-	accuralRecord, err := accural.FetchOrderInfo(ctx, orderId, h.config)
+	accuralRecord, err := accural.FetchOrderInfo(ctx, orderID, h.config)
 	if err != nil {
 		logging.Warn("Failed to fecth accural Info: %s", err.Error())
 		http.Error(w, "error during registering order", http.StatusInternalServerError)
@@ -116,7 +116,7 @@ func (h *ApiHandler) AddOrder(w http.ResponseWriter, r *http.Request) {
 	if RequestContextIsClosed(ctx, w) {
 		return
 	}
-	err = h.storage.AddOrder(ctx, userId, order)
+	err = h.storage.AddOrder(ctx, userID, order)
 	if err != nil {
 		logging.Warn("error during adding order to order Database: %s", err.Error())
 		http.Error(w, "error during registering order", http.StatusInternalServerError)
@@ -127,7 +127,7 @@ func (h *ApiHandler) AddOrder(w http.ResponseWriter, r *http.Request) {
 		if RequestContextIsClosed(ctx, w) {
 			return
 		}
-		err = h.storage.AddOrderToPendingList(ctx, orderId)
+		err = h.storage.AddOrderToPendingList(ctx, orderID)
 		if err != nil {
 			logging.Warn("error during adding order to pending list: %s", err.Error())
 			http.Error(w, "error during registering order", http.StatusInternalServerError)
@@ -135,11 +135,11 @@ func (h *ApiHandler) AddOrder(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	if accuralRecord.Status == status.PROCESSED {
-		logging.Debug("Applying orderId=%s accural to %s balance", accuralRecord.Order, userId)
+		logging.Debug("Applying orderID=%s accural to %s balance", accuralRecord.Order, userID)
 		if RequestContextIsClosed(ctx, w) {
 			return
 		}
-		accountData, err := h.storage.GetCustomerAccountWithinTransaction(ctx, userId)
+		accountData, err := h.storage.GetCustomerAccountWithinTransaction(ctx, userID)
 		if err != nil {
 			logging.Warn("error during fetching account info: %s", err.Error())
 			http.Error(w, "error during add accural to balance", http.StatusInternalServerError)
@@ -161,5 +161,5 @@ func (h *ApiHandler) AddOrder(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Header().Set("Content-Type", "text/plain")
 	w.WriteHeader(http.StatusAccepted)
-	logging.Debug("New Order=%s is successfully registered", orderId)
+	logging.Debug("New Order=%s is successfully registered", orderID)
 }

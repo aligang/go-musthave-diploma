@@ -27,19 +27,19 @@ type Storage interface {
 	GetCustomerAccounts() (customer_account.CustomerAccounts, error)
 
 	AddOrder(ctx context.Context, userId string, order *order.Order) error
-	GetOrder(orderId string) (*order.Order, error)
-	GetOrderWithinTransaction(ctx context.Context, orderId string) (*order.Order, error)
+	GetOrder(orderID string) (*order.Order, error)
+	GetOrderWithinTransaction(ctx context.Context, orderID string) (*order.Order, error)
 	ListOrders(userId string) ([]order.Order, error)
-	GetOrderOwner(ctx context.Context, orderId string) (string, error)
+	GetOrderOwner(ctx context.Context, orderID string) (string, error)
 	UpdateOrder(ctx context.Context, order *order.Order) error
 
-	AddOrderToPendingList(ctx context.Context, orderId string) error
+	AddOrderToPendingList(ctx context.Context, orderID string) error
 	GetPendingOrders(ctx context.Context) ([]string, error)
-	RemoveOrderFromPendingList(ctx context.Context, orderId string) error
+	RemoveOrderFromPendingList(ctx context.Context, orderID string) error
 
 	RegisterWithdrawn(ctx context.Context, userId string, withdraw *withdrawn.WithdrawnRecord) error
-	GetWithdrawnWithinTransaction(ctx context.Context, orderId string) (*withdrawn.WithdrawnRecord, error)
-	ListWithdrawns(orderId string) ([]withdrawn.WithdrawnRecord, error)
+	GetWithdrawnWithinTransaction(ctx context.Context, orderID string) (*withdrawn.WithdrawnRecord, error)
+	ListWithdrawns(orderID string) ([]withdrawn.WithdrawnRecord, error)
 }
 
 func New(config *config.Config) Storage {
