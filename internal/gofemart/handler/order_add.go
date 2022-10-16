@@ -36,13 +36,13 @@ func (h *ApiHandler) AddOrder(w http.ResponseWriter, r *http.Request) {
 	if RequestContextIsClosed(ctx, w) {
 		return
 	}
-	err = order.ValidateId(orderID)
+	err = order.ValidateID(orderID)
 	if err != nil {
 		logging.Warn("Invalid order format: %s", orderID)
 		http.Error(w, "Invalid order format", http.StatusBadRequest)
 		return
 	}
-	err = order.ValidateIdFormat(orderID)
+	err = order.ValidateIDFormat(orderID)
 	if err != nil {
 		logging.Warn("Invalid orderID checksum: %s", orderID)
 		http.Error(w, "Invalid orderID checksum", http.StatusUnprocessableEntity)

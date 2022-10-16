@@ -27,7 +27,7 @@ func (s *Storage) AddOrderToPendingList(ctx context.Context, orderID string) err
 
 func (s *Storage) GetPendingOrders(ctx context.Context) ([]string, error) {
 	var pendingOrders []string
-	for orderID, _ := range s.PendingOrders {
+	for orderID := range s.PendingOrders {
 		pendingOrders = append(pendingOrders, orderID)
 	}
 	return pendingOrders, nil

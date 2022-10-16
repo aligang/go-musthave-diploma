@@ -6,17 +6,17 @@ import (
 	"strconv"
 )
 
-func ValidateId(orderId string) error {
+func ValidateID(orderID string) error {
 	var err error
-	_, err = strconv.ParseUint(orderId, 10, 64)
+	_, err = strconv.ParseUint(orderID, 10, 64)
 	if err != nil {
-		errors.New("invalid orderId: invalid character set")
+		errors.New("invalid orderID: invalid character set")
 	}
 	return err
 }
 
-func ValidateIdFormat(orderId string) error {
-	order, _ := strconv.ParseUint(orderId, 10, 64)
+func ValidateIDFormat(orderID string) error {
+	order, _ := strconv.ParseUint(orderID, 10, 64)
 	if luhn.Valid(int(order)) {
 		return nil
 	}

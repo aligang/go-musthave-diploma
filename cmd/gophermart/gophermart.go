@@ -51,9 +51,13 @@ func runServer(server *http.Server) {
 	}
 }
 
+type contextValueType string
+
+var contextValue contextValueType = "2"
+
 func New(ctx context.Context, mux http.Handler, cfg *config.Config) *http.Server {
 	serverBaseCtxFunc := func(listener net.Listener) context.Context {
-		return context.WithValue(ctx, "context-name", "server-base-context")
+		return context.WithValue(ctx, "context-name", contextValue)
 	}
 	return &http.Server{
 		Addr:        cfg.RunAddress,

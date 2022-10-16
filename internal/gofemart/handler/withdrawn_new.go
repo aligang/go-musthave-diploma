@@ -42,13 +42,13 @@ func (h *ApiHandler) AddWithdraw(w http.ResponseWriter, r *http.Request) {
 	if RequestContextIsClosed(ctx, w) {
 		return
 	}
-	err = order.ValidateId(withdrawRequest.Order)
+	err = order.ValidateID(withdrawRequest.Order)
 	if err != nil {
 		logging.Warn("Invalid order format: %s", withdrawRequest.Order)
 		http.Error(w, "Invalid order format", http.StatusBadRequest)
 		return
 	}
-	err = order.ValidateIdFormat(withdrawRequest.Order)
+	err = order.ValidateIDFormat(withdrawRequest.Order)
 	if err != nil {
 		logging.Warn("Invalid orderID checksum: %s", withdrawRequest.Order)
 		http.Error(w, "Invalid orderID checksum", http.StatusUnprocessableEntity)

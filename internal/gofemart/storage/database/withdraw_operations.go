@@ -18,7 +18,8 @@ func (s *Storage) RegisterWithdrawn(ctx context.Context, userID string, withdraw
 		logging.Warn("Error During statement creation %s", query)
 		return err
 	}
-	logging.Debug("Executing statement to modify order  Repository: %s ", query, args)
+	logging.Debug("Executing statement to modify order  Repository: %s with %s, %s, %s, %s ",
+		query, args[0], args[1], args[2], args[3])
 	_, err = statement.Exec(args...)
 	if err != nil {
 		logging.Warn("Error During statement Execution %s with %d, %f, %s,",

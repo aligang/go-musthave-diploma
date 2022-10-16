@@ -37,7 +37,7 @@ func (s *Storage) modifyCustomerAccount(ctx context.Context, customerAccount *ac
 	logging.Debug("Executing statement to update customer account to Repository: %+v", customerAccount)
 	_, err = statement.Exec(args...)
 	if err != nil {
-		logging.Warn("Error During statement Execution %s with %s, %s, %s, $s",
+		logging.Warn("Error During statement Execution %s with %s, %s, %s, %s",
 			query, args[0], args[1], args[2], args[3])
 		return err
 	}

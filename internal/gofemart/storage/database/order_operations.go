@@ -33,11 +33,11 @@ func (s *Storage) modifyOrder(ctx context.Context, order *order.Order, query str
 	logging.Debug("Executing statement to modify order  Repository: %s %s", query, args)
 	_, err = statement.Exec(args...)
 	if err != nil {
-		logging.Warn("Error During statement Execution %s with %s, %s, %s, $s",
+		logging.Warn("Error During statement Execution %s with %s, %s, %s, %s",
 			query, args[0], args[1], args[2], args[3])
 		return err
 	}
-	logging.Debug("Order record update succseeded : %+s", order)
+	logging.Debug("Order record update succseeded : %s", order)
 	return nil
 }
 
@@ -167,7 +167,7 @@ func (s *Storage) GetPendingOrders(ctx context.Context) ([]string, error) {
 	rows, err := statement.Query(args...)
 	defer rows.Close()
 	if err != nil {
-		logging.Warn("Error During statement Execution %s with %s", query, args[0])
+		logging.Warn("Error During statement Execution %s", query)
 		return orders, err
 	}
 	if err = rows.Err(); err != nil {
