@@ -10,7 +10,7 @@ func ValidateID(orderID string) error {
 	var err error
 	_, err = strconv.ParseUint(orderID, 10, 64)
 	if err != nil {
-		errors.New("invalid orderID: invalid character set")
+		return errors.New("invalid orderID: invalid character set")
 	}
 	return err
 }

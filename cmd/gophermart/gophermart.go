@@ -51,9 +51,11 @@ func runServer(server *http.Server) {
 	}
 }
 
-type contextValueType string
+type contextValueType struct {
+	Value string
+}
 
-var contextValue contextValueType = "2"
+var contextValue contextValueType = contextValueType{"2"}
 
 func New(ctx context.Context, mux http.Handler, cfg *config.Config) *http.Server {
 	serverBaseCtxFunc := func(listener net.Listener) context.Context {

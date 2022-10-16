@@ -28,7 +28,7 @@ func New(s storage.Storage, cfg *config.Config) *Tracker {
 func (t *Tracker) RunInBackground(parentCtx context.Context) {
 	ctx, cancel := context.WithCancel(parentCtx)
 	go func() {
-		ticker := time.NewTicker(TRACKING_INTERVALL)
+		ticker := time.NewTicker(trackingInterval)
 		for {
 			<-ticker.C
 			t.Sync(ctx)
@@ -56,68 +56,68 @@ func (t *Tracker) Sync(ctx context.Context) {
 	case <-ctx.Done():
 		return
 	}
-	orderIdsRecords, dbErr := t.storage.GetPendingOrders(ctx)
+	orderIDsRecords, dbErr := t.storage.GetPendingOrders(ctx)
 	if dbErr != nil {
 		logging.Warn("Tracker failed to fetch list of pending orders from DB")
 		return
 	}
-	if len(orderIdsRecords) == 0 {
+	if len(orderIDsRecords) == 0 {
 		logging.Debug("Tracker has nothing to check: Pending list is empty")
 		return
 	}
 
-	orderIds := make([]string, len(orderIdsRecords))
+	orderIDs := make([]string, len(orderIDsRecords))
 	var updatedOrdersCounter uint64
 	var proceededOrdersCounter uint64
-	copy(orderIds, orderIdsRecords)
-	logging.Debug("There %d record(s) in pending list", len(orderIds))
+	copy(orderIDs, orderIDsRecords)
+	logging.Debug("There %d record(s) in pending list", len(orderIDs))
 
-	for _, orderId := range orderIds {
+	for _, orderID := range orderIDs {
 		select {
 		default:
 		case <-ctx.Done():
 			return
 		}
-		accuralRecord, err := accural.FetchOrderInfo(ctx, orderId, t.config)
+		accuralRecord, err := accural.FetchOrderInfo(ctx, orderID, t.config)
 		if err != nil {
-			logging.Warn("Tracker failed to fetch accural info for order %s", orderId)
+			logging.Warn("Tracker failed to fetch accural info for order %s", orderID)
 			continue
 		}
-		order, dbErr := t.storage.GetOrderWithinTransaction(ctx, orderId)
+		order, dbErr := t.storage.GetOrderWithinTransaction(ctx, orderID)
 		if dbErr != nil {
-			logging.Warn("Tracker failed to fetch order info from DB %s", orderId)
+			logging.Warn("Tracker failed to fetch order info from DB %s", orderID)
 			return
 		}
 		if order.Status != accuralRecord.Status {
-			logging.Warn("Order %s status needs to be updated", orderId)
+			logging.Warn("Order %s status needs to be updated", orderID)
 			order.Status = accuralRecord.Status
 			dbErr = t.storage.UpdateOrder(ctx, order)
 			if dbErr != nil {
-				logging.Warn("Could not update order record %s", orderId)
+				logging.Warn("Could not update order record %s", orderID)
 				return
 			}
 			updatedOrdersCounter += 1
 		}
 		if order.Status == status.PROCESSED {
-			userId, dbErr := t.storage.GetOrderOwner(ctx, orderId)
+			userID, dbErr := t.storage.GetOrderOwner(ctx, orderID)
 			if dbErr != nil {
-				logging.Warn("Tracker could not fetch owner of order: %s", orderId)
+				logging.Warn("Tracker could not fetch owner of order: %s", orderID)
 				return
 			}
-			accountInfo, dbErr := t.storage.GetCustomerAccount(userId)
+			accountInfo, dbErr := t.storage.GetCustomerAccount(userID)
 			if dbErr != nil {
-				logging.Warn("Tracker could not fetch account info of : %s", userId)
+				logging.Warn("Tracker could not fetch account info of : %s", userID)
 				return
 			}
-			dbErr = t.storage.RemoveOrderFromPendingList(ctx, orderId)
+			dbErr = t.storage.RemoveOrderFromPendingList(ctx, orderID)
 			if dbErr != nil {
-				logging.Warn("Tracker failed to remove order from pending list : %s", orderId)
+				logging.Warn("Tracker failed to remove order from pending list : %s", orderID)
 				return
 			}
 			accountInfo.Current += order.Accural
 			dbErr = t.storage.UpdateCustomerAccount(ctx, accountInfo)
 			if dbErr != nil {
-				logging.Warn("Tracker failed to update account info : %s", userId)
+				logging.Warn("Tracker failed to update account info : %s", userID)
 				return
 			}
 			proceededOrdersCounter += 1
