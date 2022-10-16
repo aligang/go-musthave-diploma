@@ -165,11 +165,11 @@ func (s *Storage) GetPendingOrders(ctx context.Context) ([]string, error) {
 	}
 	logging.Debug("Executing statement to fetch pending orders from Repository")
 	rows, err := statement.Query(args...)
-	defer rows.Close()
 	if err != nil {
 		logging.Warn("Error During statement Execution %s", query)
 		return orders, err
 	}
+	defer rows.Close()
 	if err = rows.Err(); err != nil {
 		logging.Warn("No records were returned from database")
 		return orders, err

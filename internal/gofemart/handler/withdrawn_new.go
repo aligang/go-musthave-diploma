@@ -54,7 +54,7 @@ func (h *ApiHandler) AddWithdraw(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid orderID checksum", http.StatusUnprocessableEntity)
 		return
 	}
-	logging.Debug("Withdraw ID is %d", withdrawRequest.Order)
+	logging.Debug("Withdraw ID is %s", withdrawRequest.Order)
 
 	if RequestContextIsClosed(ctx, w) {
 		return

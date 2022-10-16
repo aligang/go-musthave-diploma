@@ -23,6 +23,11 @@ func (h *ApiHandler) ListPendingOrders(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	ordersPayload, err := json.Marshal(orderIDs)
+	if err != nil {
+		http.Error(w, "", http.StatusInternalServerError)
+		logging.Warn("Error during fetching pending orders list")
+		return
+	}
 	logging.Debug("forming response %s", string(ordersPayload))
 	if RequestContextIsClosed(ctx, w) {
 		return
