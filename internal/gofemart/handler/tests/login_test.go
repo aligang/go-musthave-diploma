@@ -7,7 +7,7 @@ import (
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/auth"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/handler"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/memory"
-	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/memory/orderRecord"
+	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/memory/orderrecord"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/tests_common"
 	"github.com/aligang/go-musthave-diploma/internal/withdrawn"
 	"github.com/stretchr/testify/assert"
@@ -41,7 +41,7 @@ func TestLogin(t *testing.T) {
 							},
 						},
 					},
-					orderRecord.Orders{},
+					orderrecord.Orders{},
 					withdrawn.Withdrawns{},
 					map[string]*struct{}{},
 					map[string][]string{},
@@ -68,7 +68,7 @@ func TestLogin(t *testing.T) {
 							},
 						},
 					},
-					orderRecord.Orders{},
+					orderrecord.Orders{},
 					withdrawn.Withdrawns{},
 					map[string]*struct{}{},
 					map[string][]string{},
@@ -95,7 +95,7 @@ func TestLogin(t *testing.T) {
 							},
 						},
 					},
-					orderRecord.Orders{},
+					orderrecord.Orders{},
 					withdrawn.Withdrawns{},
 					map[string]*struct{}{},
 					map[string][]string{},
@@ -126,7 +126,7 @@ func TestLogin(t *testing.T) {
 				},
 			},
 		},
-		orderRecord.Orders{},
+		orderrecord.Orders{},
 		withdrawn.Withdrawns{},
 		map[string]*struct{}{},
 		map[string][]string{},

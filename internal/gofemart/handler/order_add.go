@@ -7,7 +7,7 @@ import (
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/auth"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/order"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/order/status"
-	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/repository_errors"
+	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/repositoryerrors"
 	"github.com/aligang/go-musthave-diploma/internal/logging"
 	"io"
 	"net/http"
@@ -62,7 +62,7 @@ func (h *ApiHandler) AddOrder(w http.ResponseWriter, r *http.Request) {
 	}()
 	_, err = h.storage.GetOrderWithinTransaction(ctx, orderID)
 	switch {
-	case errors.Is(err, repository_errors.ErrNoContent):
+	case errors.Is(err, repositoryerrors.ErrNoContent):
 	case err != nil:
 		logging.Warn("error during fetching order with id: %s", orderID)
 		http.Error(w, "System error", http.StatusInternalServerError)
@@ -89,7 +89,7 @@ func (h *ApiHandler) AddOrder(w http.ResponseWriter, r *http.Request) {
 	}
 	_, err = h.storage.GetWithdrawnWithinTransaction(ctx, orderID)
 	switch {
-	case errors.Is(err, repository_errors.ErrNoContent):
+	case errors.Is(err, repositoryerrors.ErrNoContent):
 	case err != nil:
 		logging.Warn("error during fetching Withdraw %s", err.Error())
 		http.Error(w, "Account %s already exists", http.StatusInternalServerError)

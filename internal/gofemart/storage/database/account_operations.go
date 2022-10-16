@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/account"
-	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/repository_errors"
+	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/repositoryerrors"
 	"github.com/aligang/go-musthave-diploma/internal/logging"
 	"strconv"
 )
@@ -74,7 +74,7 @@ func (s *Storage) getCustomerAccountCommon(login string, prepareFunc func(query 
 	switch {
 	case errors.Is(err, sql.ErrNoRows):
 		logging.Warn("Database response is empty")
-		return nil, repository_errors.ErrNoContent
+		return nil, repositoryerrors.ErrNoContent
 	case err != nil:
 		logging.Warn("Error during decoding database response")
 		return nil, err

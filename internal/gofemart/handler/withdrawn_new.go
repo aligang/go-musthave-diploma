@@ -5,7 +5,7 @@ import (
 	"errors"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/auth"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/order"
-	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/repository_errors"
+	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/repositoryerrors"
 	"github.com/aligang/go-musthave-diploma/internal/logging"
 	"github.com/aligang/go-musthave-diploma/internal/withdrawn"
 	"io"
@@ -73,7 +73,7 @@ func (h *ApiHandler) AddWithdraw(w http.ResponseWriter, r *http.Request) {
 	}
 	_, err = h.storage.GetOrder(withdrawRequest.Order)
 	switch {
-	case errors.Is(err, repository_errors.ErrNoContent):
+	case errors.Is(err, repositoryerrors.ErrNoContent):
 	case err != nil:
 		logging.Warn("error during fetching order %s", err.Error())
 		if RequestContextIsClosed(ctx, w) {
@@ -95,7 +95,7 @@ func (h *ApiHandler) AddWithdraw(w http.ResponseWriter, r *http.Request) {
 	}
 	_, err = h.storage.GetWithdrawnWithinTransaction(ctx, withdrawRequest.Order)
 	switch {
-	case errors.Is(err, repository_errors.ErrNoContent):
+	case errors.Is(err, repositoryerrors.ErrNoContent):
 	case err != nil:
 		logging.Warn("error during fetching withdraw %s", err.Error())
 		if RequestContextIsClosed(ctx, w) {

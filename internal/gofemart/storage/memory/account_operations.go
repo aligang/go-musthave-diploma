@@ -5,13 +5,13 @@ import (
 	"errors"
 	"fmt"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/account"
-	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/repository_errors"
+	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/repositoryerrors"
 )
 
 func (s *Storage) GetCustomerAccount(login string) (*account.CustomerAccount, error) {
 	res, ok := s.CustomerAccounts[login]
 	if !ok {
-		return nil, repository_errors.ErrNoContent
+		return nil, repositoryerrors.ErrNoContent
 	}
 	return &res, nil
 }

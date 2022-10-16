@@ -4,7 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/repository_errors"
+	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/repositoryerrors"
 	"github.com/aligang/go-musthave-diploma/internal/logging"
 	"github.com/aligang/go-musthave-diploma/internal/withdrawn"
 )
@@ -54,7 +54,7 @@ func (s *Storage) GetWithdrawnWithinTransaction(ctx context.Context, orderID str
 	switch {
 	case errors.Is(err, sql.ErrNoRows):
 		logging.Warn("Database response is empty")
-		return nil, repository_errors.ErrNoContent
+		return nil, repositoryerrors.ErrNoContent
 	case err != nil:
 		logging.Warn("Error during decoding database response")
 		return nil, err

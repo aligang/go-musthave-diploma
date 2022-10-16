@@ -12,7 +12,7 @@ import (
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/handler"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/order"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/memory"
-	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/memory/orderRecord"
+	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/memory/orderrecord"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/tests_common"
 	"github.com/aligang/go-musthave-diploma/internal/withdrawn"
 	"github.com/stretchr/testify/assert"
@@ -56,8 +56,8 @@ func TestAddOrder(t *testing.T) {
 							},
 						},
 					},
-					orderRecord.Orders{
-						"18": orderRecord.Order{
+					orderrecord.Orders{
+						"18": orderrecord.Order{
 							Order: &order.Order{
 								Number:     "18",
 								Accural:    10.5,
@@ -101,8 +101,8 @@ func TestAddOrder(t *testing.T) {
 							},
 						},
 					},
-					orderRecord.Orders{
-						"18": orderRecord.Order{
+					orderrecord.Orders{
+						"18": orderrecord.Order{
 							Order: &order.Order{
 								Number:     "18",
 								Accural:    10.5,
@@ -111,7 +111,7 @@ func TestAddOrder(t *testing.T) {
 							},
 							Owner: "user1",
 						},
-						"26": orderRecord.Order{
+						"26": orderrecord.Order{
 							Order: &order.Order{
 								Number:     "26",
 								Accural:    10.5,
@@ -155,8 +155,8 @@ func TestAddOrder(t *testing.T) {
 							},
 						},
 					},
-					orderRecord.Orders{
-						"18": orderRecord.Order{
+					orderrecord.Orders{
+						"18": orderrecord.Order{
 							Order: &order.Order{
 								Number:     "18",
 								Accural:    10.5,
@@ -165,7 +165,7 @@ func TestAddOrder(t *testing.T) {
 							},
 							Owner: "user1",
 						},
-						"26": orderRecord.Order{
+						"26": orderrecord.Order{
 							Order: &order.Order{
 								Number:     "26",
 								Accural:    10.5,
@@ -174,7 +174,7 @@ func TestAddOrder(t *testing.T) {
 							},
 							Owner: "user1",
 						},
-						"34": orderRecord.Order{
+						"34": orderrecord.Order{
 							Order: &order.Order{
 								Number:     "34",
 								Accural:    10.5,
@@ -218,8 +218,8 @@ func TestAddOrder(t *testing.T) {
 							},
 						},
 					},
-					orderRecord.Orders{
-						"18": orderRecord.Order{
+					orderrecord.Orders{
+						"18": orderrecord.Order{
 							Order: &order.Order{
 								Number:     "18",
 								Accural:    10.5,
@@ -228,7 +228,7 @@ func TestAddOrder(t *testing.T) {
 							},
 							Owner: "user1",
 						},
-						"26": orderRecord.Order{
+						"26": orderrecord.Order{
 							Order: &order.Order{
 								Number:     "26",
 								Accural:    10.5,
@@ -237,7 +237,7 @@ func TestAddOrder(t *testing.T) {
 							},
 							Owner: "user1",
 						},
-						"34": orderRecord.Order{
+						"34": orderrecord.Order{
 							Order: &order.Order{
 								Number:     "34",
 								Accural:    10.5,
@@ -246,7 +246,7 @@ func TestAddOrder(t *testing.T) {
 							},
 							Owner: "user1",
 						},
-						"42": orderRecord.Order{
+						"42": orderrecord.Order{
 							Order: &order.Order{
 								Number:     "42",
 								Accural:    10.5,
@@ -290,8 +290,8 @@ func TestAddOrder(t *testing.T) {
 							},
 						},
 					},
-					orderRecord.Orders{
-						"18": orderRecord.Order{
+					orderrecord.Orders{
+						"18": orderrecord.Order{
 							Order: &order.Order{
 								Number:     "18",
 								Accural:    10.5,
@@ -335,8 +335,8 @@ func TestAddOrder(t *testing.T) {
 							},
 						},
 					},
-					orderRecord.Orders{
-						"18": orderRecord.Order{
+					orderrecord.Orders{
+						"18": orderrecord.Order{
 							Order: &order.Order{
 								Number:     "18",
 								Accural:    10.5,
@@ -380,8 +380,8 @@ func TestAddOrder(t *testing.T) {
 							},
 						},
 					},
-					orderRecord.Orders{
-						"1": orderRecord.Order{
+					orderrecord.Orders{
+						"1": orderrecord.Order{
 							Order: &order.Order{
 								Number:     "1",
 								Accural:    10.5,
@@ -425,8 +425,8 @@ func TestAddOrder(t *testing.T) {
 							},
 						},
 					},
-					orderRecord.Orders{
-						"18": orderRecord.Order{
+					orderrecord.Orders{
+						"18": orderrecord.Order{
 							Order: &order.Order{
 								Number:     "18",
 								Accural:    10.5,
@@ -499,7 +499,7 @@ func TestAddOrder(t *testing.T) {
 				},
 			},
 		},
-		orderRecord.Orders{},
+		orderrecord.Orders{},
 		withdrawn.Withdrawns{},
 		map[string]*struct{}{},
 		map[string][]string{},

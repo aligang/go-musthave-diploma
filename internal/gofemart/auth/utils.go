@@ -6,7 +6,7 @@ import (
 )
 
 func (a *Auth) junkCleaner() {
-	ticker := time.NewTicker(COOKIE_CHECK * time.Second)
+	ticker := time.NewTicker(CookieCheck * time.Second)
 	for {
 		<-ticker.C
 		func() {

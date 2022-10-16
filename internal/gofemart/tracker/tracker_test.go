@@ -9,7 +9,7 @@ import (
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/account"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/order"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/memory"
-	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/memory/orderRecord"
+	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/memory/orderrecord"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/tests_common"
 	"github.com/aligang/go-musthave-diploma/internal/withdrawn"
 	"github.com/stretchr/testify/assert"
@@ -42,8 +42,8 @@ func TestTracking(t *testing.T) {
 							},
 						},
 					},
-					orderRecord.Orders{
-						"19": orderRecord.Order{
+					orderrecord.Orders{
+						"19": orderrecord.Order{
 							Order: &order.Order{
 								Number:     "19",
 								Accural:    10.5,
@@ -52,7 +52,7 @@ func TestTracking(t *testing.T) {
 							},
 							Owner: "user1",
 						},
-						"20": orderRecord.Order{
+						"20": orderrecord.Order{
 							Order: &order.Order{
 								Number:     "20",
 								Accural:    10.5,
@@ -61,7 +61,7 @@ func TestTracking(t *testing.T) {
 							},
 							Owner: "user1",
 						},
-						"21": orderRecord.Order{
+						"21": orderrecord.Order{
 							Order: &order.Order{
 								Number:     "21",
 								Accural:    10.5,
@@ -70,7 +70,7 @@ func TestTracking(t *testing.T) {
 							},
 							Owner: "user1",
 						},
-						"22": orderRecord.Order{
+						"22": orderrecord.Order{
 							Order: &order.Order{
 								Number:     "22",
 								Accural:    10.5,
@@ -134,8 +134,8 @@ func TestTracking(t *testing.T) {
 				},
 			},
 		},
-		orderRecord.Orders{
-			"19": orderRecord.Order{
+		orderrecord.Orders{
+			"19": orderrecord.Order{
 				Order: &order.Order{
 					Number:     "19",
 					Accural:    10.5,
@@ -144,7 +144,7 @@ func TestTracking(t *testing.T) {
 				},
 				Owner: "user1",
 			},
-			"20": orderRecord.Order{
+			"20": orderrecord.Order{
 				Order: &order.Order{
 					Number:     "20",
 					Accural:    10.5,
@@ -153,7 +153,7 @@ func TestTracking(t *testing.T) {
 				},
 				Owner: "user1",
 			},
-			"21": orderRecord.Order{
+			"21": orderrecord.Order{
 				Order: &order.Order{
 					Number:     "21",
 					Accural:    10.5,
@@ -162,7 +162,7 @@ func TestTracking(t *testing.T) {
 				},
 				Owner: "user1",
 			},
-			"22": orderRecord.Order{
+			"22": orderrecord.Order{
 				Order: &order.Order{
 					Number:     "22",
 					Accural:    10.5,

@@ -32,12 +32,12 @@ func (a *Auth) CreateAuthCookie(account *account.CustomerAccount) *http.Cookie {
 	token := account.Login + account.Password
 	a.cookiesMeta[token] = cookieInfo{
 		login:     account.Login,
-		validTill: time.Now().Add(time.Second * time.Duration(COOKIE_LIFETIME)),
+		validTill: time.Now().Add(time.Second * time.Duration(CookieLifetime)),
 	}
 	return &http.Cookie{
 		Name:   "token",
 		Value:  token,
-		MaxAge: COOKIE_LIFETIME,
+		MaxAge: CookieLifetime,
 	}
 }
 

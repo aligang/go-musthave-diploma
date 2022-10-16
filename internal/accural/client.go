@@ -15,12 +15,12 @@ import (
 	"time"
 )
 
-func FetchOrderInfo(ctx context.Context, orderId string, config *config.Config) (*message.AccuralMessage, error) {
+func FetchOrderInfo(ctx context.Context, orderID string, config *config.Config) (*message.AccuralMessage, error) {
 	client := &http.Client{
 		Timeout: 5 * time.Second,
 	}
 	buf := &bytes.Buffer{}
-	URI := fmt.Sprintf("%s/api/orders/%s", config.AccuralSystemAddress, orderId)
+	URI := fmt.Sprintf("%s/api/orders/%s", config.AccuralSystemAddress, orderID)
 	request, err := http.NewRequest("GET", URI, buf)
 	request = request.WithContext(ctx)
 	if err != nil {
@@ -29,6 +29,10 @@ func FetchOrderInfo(ctx context.Context, orderId string, config *config.Config) 
 	}
 
 	requestDump, err := httputil.DumpRequestOut(request, true)
+	if err != nil {
+		logging.Warn("Error During Request Dump: %s", err.Error())
+		return nil, err
+	}
 	logging.Debug("Sending request to: URI: %s", URI)
 	logging.Debug("request content: %s", string(requestDump))
 	fmt.Println(string(requestDump))
@@ -44,7 +48,12 @@ func FetchOrderInfo(ctx context.Context, orderId string, config *config.Config) 
 		logging.Warn("Error During communication with: %s", URI)
 		return nil, err
 	}
+	defer response.Body.Close()
 	responseDump, err := httputil.DumpResponse(response, true)
+	if err != nil {
+		logging.Warn("Error During Response Dump: %s", err.Error())
+		return nil, err
+	}
 	logging.Debug("Response content: %s", string(responseDump))
 	fmt.Println(string(responseDump))
 	if response.StatusCode != http.StatusOK {

@@ -8,7 +8,7 @@ import (
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/handler"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/order"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/memory"
-	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/memory/orderRecord"
+	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/memory/orderrecord"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/tests_common"
 	"github.com/aligang/go-musthave-diploma/internal/withdrawn"
 	"github.com/stretchr/testify/assert"
@@ -55,8 +55,8 @@ func TestListOrders(t *testing.T) {
 							},
 						},
 					},
-					orderRecord.Orders{
-						"1": orderRecord.Order{
+					orderrecord.Orders{
+						"1": orderrecord.Order{
 							Order: &order.Order{
 								Number:     "1",
 								Accural:    10.5,
@@ -65,7 +65,7 @@ func TestListOrders(t *testing.T) {
 							},
 							Owner: "user1",
 						},
-						"2": orderRecord.Order{
+						"2": orderrecord.Order{
 							Order: &order.Order{
 								Number:     "2",
 								Accural:    10.5,
@@ -74,7 +74,7 @@ func TestListOrders(t *testing.T) {
 							},
 							Owner: "user1",
 						},
-						"3": orderRecord.Order{
+						"3": orderrecord.Order{
 							Order: &order.Order{
 								Number:     "3",
 								Accural:    10.5,
@@ -114,8 +114,8 @@ func TestListOrders(t *testing.T) {
 				},
 			},
 		},
-		orderRecord.Orders{
-			"1": orderRecord.Order{
+		orderrecord.Orders{
+			"1": orderrecord.Order{
 				Order: &order.Order{
 					Number:     "1",
 					Accural:    10.5,
@@ -124,7 +124,7 @@ func TestListOrders(t *testing.T) {
 				},
 				Owner: "user1",
 			},
-			"2": orderRecord.Order{
+			"2": orderrecord.Order{
 				Order: &order.Order{
 					Number:     "2",
 					Accural:    25.5,
@@ -133,7 +133,7 @@ func TestListOrders(t *testing.T) {
 				},
 				Owner: "user1",
 			},
-			"3": orderRecord.Order{
+			"3": orderrecord.Order{
 				Order: &order.Order{
 					Number:     "3",
 					Accural:    20.5,
@@ -212,7 +212,7 @@ func TestListEmptyOrders(t *testing.T) {
 							},
 						},
 					},
-					orderRecord.Orders{},
+					orderrecord.Orders{},
 					withdrawn.Withdrawns{},
 					map[string]*struct{}{},
 					map[string][]string{"user1": {"1", "2", "3"}},
@@ -243,7 +243,7 @@ func TestListEmptyOrders(t *testing.T) {
 				},
 			},
 		},
-		orderRecord.Orders{},
+		orderrecord.Orders{},
 		withdrawn.Withdrawns{},
 		map[string]*struct{}{},
 		map[string][]string{"user1": {}},

@@ -2,7 +2,7 @@ package memory
 
 import (
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/account"
-	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/memory/orderRecord"
+	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/memory/orderrecord"
 	"github.com/aligang/go-musthave-diploma/internal/logging"
 	"github.com/aligang/go-musthave-diploma/internal/withdrawn"
 	"sync"
@@ -10,7 +10,7 @@ import (
 
 type Storage struct {
 	CustomerAccounts   account.CustomerAccounts
-	Orders             orderRecord.Orders
+	Orders             orderrecord.Orders
 	Withdrawns         withdrawn.Withdrawns
 	PendingOrders      map[string]*struct{}
 	CustomerOrders     map[string][]string
@@ -22,7 +22,7 @@ func New() *Storage {
 	logging.Debug("Initialization In-Memory Storage Backend")
 	m := &Storage{
 		CustomerAccounts:   account.CustomerAccounts{},
-		Orders:             orderRecord.Orders{},
+		Orders:             orderrecord.Orders{},
 		Withdrawns:         withdrawn.Withdrawns{},
 		PendingOrders:      map[string]*struct{}{},
 		CustomerOrders:     map[string][]string{},
@@ -34,7 +34,7 @@ func New() *Storage {
 
 func Init(
 	customerAccounts account.CustomerAccounts,
-	orders orderRecord.Orders,
+	orders orderrecord.Orders,
 	withdrawns withdrawn.Withdrawns,
 	pendingOrders map[string]*struct{},
 	customerOrders map[string][]string,

@@ -4,13 +4,13 @@ import (
 	"context"
 	"fmt"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/order"
-	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/memory/orderRecord"
-	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/repository_errors"
+	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/memory/orderrecord"
+	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/repositoryerrors"
 	"github.com/aligang/go-musthave-diploma/internal/logging"
 )
 
 func (s *Storage) AddOrder(ctx context.Context, userID string, order *order.Order) error {
-	orderInstance := orderRecord.New(userID, order)
+	orderInstance := orderrecord.New(userID, order)
 	logging.Debug("order to be Stored: %+v", orderInstance)
 	s.Orders[order.Number] = orderInstance
 	s.CustomerOrders[userID] = append(s.CustomerOrders[userID], order.Number)
@@ -44,7 +44,7 @@ func (s *Storage) RemoveOrderFromPendingList(ctx context.Context, orderID string
 func (s *Storage) GetOrder(orderID string) (*order.Order, error) {
 	orderRecord, exists := s.Orders[orderID]
 	if !exists {
-		return nil, repository_errors.ErrNoContent
+		return nil, repositoryerrors.ErrNoContent
 	}
 	return orderRecord.Order, nil
 }

@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/account"
-	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/repository_errors"
+	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/repositoryerrors"
 	"github.com/aligang/go-musthave-diploma/internal/logging"
 	"io"
 	"net/http"
@@ -50,7 +50,7 @@ func (h *ApiHandler) RegisterCustomerAccount(w http.ResponseWriter, r *http.Requ
 	}
 	_, err = h.storage.GetCustomerAccountWithinTransaction(ctx, accountInfo.Login)
 	switch {
-	case errors.Is(err, repository_errors.ErrNoContent):
+	case errors.Is(err, repositoryerrors.ErrNoContent):
 	case err != nil:
 		logging.Warn("error during fetching Account %s", err.Error())
 		http.Error(w, "Account %s already exists", http.StatusInternalServerError)

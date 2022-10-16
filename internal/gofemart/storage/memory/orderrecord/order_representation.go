@@ -1,4 +1,4 @@
-package orderRecord
+package orderrecord
 
 import (
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/order"

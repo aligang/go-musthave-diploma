@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/order"
-	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/repository_errors"
+	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/repositoryerrors"
 	"github.com/aligang/go-musthave-diploma/internal/logging"
 )
 
@@ -71,7 +71,7 @@ func (s *Storage) getOrderCommon(orderID string, prepareFunc func(query string) 
 	switch {
 	case errors.Is(err, sql.ErrNoRows):
 		logging.Warn("Database response is empty")
-		return nil, repository_errors.ErrNoContent
+		return nil, repositoryerrors.ErrNoContent
 	case err != nil:
 		logging.Warn("Error during decoding database response")
 		return nil, err
