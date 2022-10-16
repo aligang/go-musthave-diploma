@@ -21,7 +21,8 @@ func FetchOrderInfo(ctx context.Context, orderId string, config *config.Config) 
 	}
 	buf := &bytes.Buffer{}
 	//URI := fmt.Sprintf("%s/api/orders/%s", strings.Split(config.AccuralSystemAddress, "/")[1], orderId)
-	URI := fmt.Sprintf("http://%s/api/orders/%s", config.AccuralSystemAddress, orderId)
+
+	URI := fmt.Sprintf("%s/api/orders/%s", config.AccuralSystemAddress, orderId)
 	request, err := http.NewRequest("GET", URI, buf)
 	request = request.WithContext(ctx)
 	if err != nil {

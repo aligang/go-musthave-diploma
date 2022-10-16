@@ -2,6 +2,7 @@ package handler
 
 import (
 	"errors"
+	"fmt"
 	"github.com/aligang/go-musthave-diploma/internal/accural"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/auth"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/order"
@@ -13,6 +14,7 @@ import (
 )
 
 func (h *ApiHandler) AddOrder(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("1")
 	logging.Warn("Processing order add request")
 	ctx := r.Context()
 	if RequestContextIsClosed(ctx, w) {

@@ -20,7 +20,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"reflect"
-	"strings"
 	"testing"
 	"time"
 )
@@ -475,7 +474,7 @@ func TestAddOrder(t *testing.T) {
 
 	//Starting Test ApplicationServer
 	cfg := &config.Config{
-		AccuralSystemAddress: strings.Split(accuralServer.URL, "/")[2],
+		AccuralSystemAddress: accuralServer.URL,
 		DatabaseURI:          "",
 		RunAddress:           "",
 	}
@@ -516,6 +515,9 @@ func TestAddOrder(t *testing.T) {
 
 			request, err := http.NewRequest(test.input.Method, ts.URL+test.input.Path,
 				bytes.NewBuffer([]byte(test.input.Payload)))
+			if err != nil {
+				fmt.Println(err.Error())
+			}
 			require.NoError(t, err)
 			request.AddCookie(&http.Cookie{Name: "username", Value: test.input.Account, MaxAge: 1000})
 			request.Header.Add("Content-Type", test.input.ContentType)
