@@ -17,8 +17,8 @@ func New() *Storage {
 	return &Storage{AccuralMessageMap: message.AccuralMessageMap{}}
 }
 
-func (s *Storage) Get(orderId string) (*message.AccuralMessage, error) {
-	res, ok := s.AccuralMessageMap[orderId]
+func (s *Storage) Get(orderID string) (*message.AccuralMessage, error) {
+	res, ok := s.AccuralMessageMap[orderID]
 	if !ok {
 		return nil, fmt.Errorf("record was not found")
 	}

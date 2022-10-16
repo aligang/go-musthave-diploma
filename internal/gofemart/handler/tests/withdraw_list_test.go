@@ -8,7 +8,7 @@ import (
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/handler"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/order"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/memory"
-	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/memory/internal_order"
+	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/memory/orderRecord"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/tests_common"
 	"github.com/aligang/go-musthave-diploma/internal/withdrawn"
 	"github.com/stretchr/testify/assert"
@@ -51,8 +51,8 @@ func TestListWithdrawns(t *testing.T) {
 				},
 			},
 		},
-		internal_order.Orders{
-			"1": internal_order.Order{
+		orderRecord.Orders{
+			"1": orderRecord.Order{
 				Order: &order.Order{
 					Number:     "1",
 					Accural:    10.5,
@@ -145,8 +145,8 @@ func TestListEmptyWithdrawns(t *testing.T) {
 				},
 			},
 		},
-		internal_order.Orders{
-			"1": internal_order.Order{
+		orderRecord.Orders{
+			"1": orderRecord.Order{
 				Order: &order.Order{
 					Number:     "1",
 					Accural:    10.5,

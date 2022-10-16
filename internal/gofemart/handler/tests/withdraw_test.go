@@ -8,7 +8,7 @@ import (
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/handler"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/order"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/memory"
-	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/memory/internal_order"
+	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/memory/orderRecord"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/tests_common"
 	"github.com/aligang/go-musthave-diploma/internal/withdrawn"
 	"github.com/stretchr/testify/assert"
@@ -44,8 +44,8 @@ func TestAddWithdraw(t *testing.T) {
 							},
 						},
 					},
-					internal_order.Orders{
-						"1": internal_order.Order{
+					orderRecord.Orders{
+						"1": orderRecord.Order{
 							Order: &order.Order{
 								Number:     "1",
 								Accural:    100,
@@ -88,8 +88,8 @@ func TestAddWithdraw(t *testing.T) {
 							},
 						},
 					},
-					internal_order.Orders{
-						"1": internal_order.Order{
+					orderRecord.Orders{
+						"1": orderRecord.Order{
 							Order: &order.Order{
 								Number:     "1",
 								Accural:    100,
@@ -132,8 +132,8 @@ func TestAddWithdraw(t *testing.T) {
 							},
 						},
 					},
-					internal_order.Orders{
-						"1": internal_order.Order{
+					orderRecord.Orders{
+						"1": orderRecord.Order{
 							Order: &order.Order{
 								Number:     "1",
 								Accural:    100,
@@ -172,8 +172,8 @@ func TestAddWithdraw(t *testing.T) {
 				},
 			},
 		},
-		internal_order.Orders{
-			"1": internal_order.Order{
+		orderRecord.Orders{
+			"1": orderRecord.Order{
 				Order: &order.Order{
 					Number:     "1",
 					Accural:    100,

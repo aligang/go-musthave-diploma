@@ -4,13 +4,13 @@ import (
 	"context"
 	"fmt"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/order"
-	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/memory/internal_order"
+	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/memory/orderRecord"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/repository_errors"
 	"github.com/aligang/go-musthave-diploma/internal/logging"
 )
 
 func (s *Storage) AddOrder(ctx context.Context, userID string, order *order.Order) error {
-	orderInstance := internal_order.New(userID, order)
+	orderInstance := orderRecord.New(userID, order)
 	logging.Debug("order to be Stored: %+v", orderInstance)
 	s.Orders[order.Number] = orderInstance
 	s.CustomerOrders[userID] = append(s.CustomerOrders[userID], order.Number)

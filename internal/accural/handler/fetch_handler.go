@@ -26,7 +26,7 @@ func (h *APIHandler) Fetch(w http.ResponseWriter, r *http.Request) {
 	logging.Debug("%s Sending Storage", string(j))
 	_, err = w.Write(j)
 	if err != nil {
-		logging.Warn("Error during data transfer", orderID)
+		logging.Warn("Error during data transfer: %s", orderID)
 		http.Error(w, "Record was not found", http.StatusUnsupportedMediaType)
 		return
 	}

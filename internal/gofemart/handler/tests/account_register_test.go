@@ -7,7 +7,7 @@ import (
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/auth"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/handler"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/memory"
-	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/memory/internal_order"
+	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/memory/orderRecord"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/tests_common"
 	"github.com/aligang/go-musthave-diploma/internal/withdrawn"
 	"github.com/stretchr/testify/assert"
@@ -42,7 +42,7 @@ func TestRegisterAccount(t *testing.T) {
 							},
 						},
 					},
-					internal_order.Orders{},
+					orderRecord.Orders{},
 					withdrawn.Withdrawns{},
 					map[string]*struct{}{},
 					map[string][]string{},
@@ -59,7 +59,7 @@ func TestRegisterAccount(t *testing.T) {
 				ContentType: "text/plain",
 				DbDump: memory.Init(
 					account.CustomerAccounts{},
-					internal_order.Orders{},
+					orderRecord.Orders{},
 					withdrawn.Withdrawns{},
 					map[string]*struct{}{},
 					map[string][]string{},
@@ -85,7 +85,7 @@ func TestRegisterAccount(t *testing.T) {
 							},
 						},
 					},
-					internal_order.Orders{},
+					orderRecord.Orders{},
 					withdrawn.Withdrawns{},
 					map[string]*struct{}{},
 					map[string][]string{},
@@ -99,7 +99,7 @@ func TestRegisterAccount(t *testing.T) {
 	Auth := auth.New()
 	storage := memory.Init(
 		account.CustomerAccounts{},
-		internal_order.Orders{},
+		orderRecord.Orders{},
 		withdrawn.Withdrawns{},
 		map[string]*struct{}{},
 		map[string][]string{},

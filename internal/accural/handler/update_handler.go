@@ -11,6 +11,9 @@ import (
 func (h *APIHandler) Update(w http.ResponseWriter, r *http.Request) {
 	m := message.AccuralMessage{}
 	payload, err := io.ReadAll(r.Body)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+	}
 	logging.Debug("Recieved JSON: %s", string(payload))
 	err = json.Unmarshal(payload, &m)
 	if err != nil {
