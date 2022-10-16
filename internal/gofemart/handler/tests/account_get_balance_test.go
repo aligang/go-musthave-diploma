@@ -8,7 +8,7 @@ import (
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/handler"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/memory"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/memory/orderrecord"
-	"github.com/aligang/go-musthave-diploma/internal/gofemart/tests_common"
+	"github.com/aligang/go-musthave-diploma/internal/gofemart/testscommon"
 	"github.com/aligang/go-musthave-diploma/internal/withdrawn"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -21,14 +21,14 @@ import (
 func TestGetBalanceAccount(t *testing.T) {
 	tests := []struct {
 		name     string
-		input    tests_common.Input
-		expected tests_common.Expected
+		input    testscommon.Input
+		expected testscommon.Expected
 	}{
 		{
 			name: "GET BALANCE CORRECT",
-			input: tests_common.Input{Method: http.MethodGet, Path: "/api/user/balance", ContentType: "application/json",
+			input: testscommon.Input{Method: http.MethodGet, Path: "/api/user/balance", ContentType: "application/json",
 				Payload: "", Account: "user1"},
-			expected: tests_common.Expected{
+			expected: testscommon.Expected{
 				Code:        200,
 				ContentType: "application/json",
 				Payload:     "{\"current\":100.5,\"withdrawn\":200.9}",

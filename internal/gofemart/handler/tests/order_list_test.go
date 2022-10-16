@@ -9,7 +9,7 @@ import (
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/order"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/memory"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/memory/orderrecord"
-	"github.com/aligang/go-musthave-diploma/internal/gofemart/tests_common"
+	"github.com/aligang/go-musthave-diploma/internal/gofemart/testscommon"
 	"github.com/aligang/go-musthave-diploma/internal/withdrawn"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -22,14 +22,14 @@ import (
 func TestListOrders(t *testing.T) {
 	tests := []struct {
 		name     string
-		input    tests_common.Input
-		expected tests_common.Expected
+		input    testscommon.Input
+		expected testscommon.Expected
 	}{
 		{
 			name: "ORDER LIST CORRECT",
-			input: tests_common.Input{Method: http.MethodGet, Path: "/api/user/orders", ContentType: "text/plain",
+			input: testscommon.Input{Method: http.MethodGet, Path: "/api/user/orders", ContentType: "text/plain",
 				Payload: "1", Account: "user1"},
-			expected: tests_common.Expected{
+			expected: testscommon.Expected{
 				Payload: "[" +
 					"{\"number\":\"3\",\"status\":\"NEW\",\"accrual\":20.5,\"uploaded_at\":\"2021-09-19T15:59:43+03:00\"}," +
 					"{\"number\":\"2\",\"status\":\"PROCESSING\",\"accrual\":25.5,\"uploaded_at\":\"2021-09-19T15:59:42+03:00\"}," +
@@ -61,7 +61,7 @@ func TestListOrders(t *testing.T) {
 								Number:     "1",
 								Accural:    10.5,
 								Status:     "PROCESSED",
-								UploadedAt: tests_common.GenTimeStamps()[0],
+								UploadedAt: testscommon.GenTimeStamps()[0],
 							},
 							Owner: "user1",
 						},
@@ -70,7 +70,7 @@ func TestListOrders(t *testing.T) {
 								Number:     "2",
 								Accural:    10.5,
 								Status:     "PROCESSING",
-								UploadedAt: tests_common.GenTimeStamps()[1],
+								UploadedAt: testscommon.GenTimeStamps()[1],
 							},
 							Owner: "user1",
 						},
@@ -79,7 +79,7 @@ func TestListOrders(t *testing.T) {
 								Number:     "3",
 								Accural:    10.5,
 								Status:     "NEW",
-								UploadedAt: tests_common.GenTimeStamps()[2],
+								UploadedAt: testscommon.GenTimeStamps()[2],
 							},
 							Owner: "user1",
 						},
@@ -120,7 +120,7 @@ func TestListOrders(t *testing.T) {
 					Number:     "1",
 					Accural:    10.5,
 					Status:     "PROCESSED",
-					UploadedAt: tests_common.GenTimeStamps()[0],
+					UploadedAt: testscommon.GenTimeStamps()[0],
 				},
 				Owner: "user1",
 			},
@@ -129,7 +129,7 @@ func TestListOrders(t *testing.T) {
 					Number:     "2",
 					Accural:    25.5,
 					Status:     "PROCESSING",
-					UploadedAt: tests_common.GenTimeStamps()[1],
+					UploadedAt: testscommon.GenTimeStamps()[1],
 				},
 				Owner: "user1",
 			},
@@ -138,7 +138,7 @@ func TestListOrders(t *testing.T) {
 					Number:     "3",
 					Accural:    20.5,
 					Status:     "NEW",
-					UploadedAt: tests_common.GenTimeStamps()[2],
+					UploadedAt: testscommon.GenTimeStamps()[2],
 				},
 				Owner: "user1",
 			},
@@ -182,14 +182,14 @@ func TestListOrders(t *testing.T) {
 func TestListEmptyOrders(t *testing.T) {
 	tests := []struct {
 		name     string
-		input    tests_common.Input
-		expected tests_common.Expected
+		input    testscommon.Input
+		expected testscommon.Expected
 	}{
 		{
 			name: "EMPTY ORDER LIST CORRECT",
-			input: tests_common.Input{Method: http.MethodGet, Path: "/api/user/orders", ContentType: "text/plain",
+			input: testscommon.Input{Method: http.MethodGet, Path: "/api/user/orders", ContentType: "text/plain",
 				Payload: "1", Account: "user1"},
-			expected: tests_common.Expected{
+			expected: testscommon.Expected{
 				Payload:     "",
 				Code:        204,
 				ContentType: "application/json",

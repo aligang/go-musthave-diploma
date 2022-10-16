@@ -10,7 +10,7 @@ import (
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/order"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/memory"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/memory/orderrecord"
-	"github.com/aligang/go-musthave-diploma/internal/gofemart/tests_common"
+	"github.com/aligang/go-musthave-diploma/internal/gofemart/testscommon"
 	"github.com/aligang/go-musthave-diploma/internal/withdrawn"
 	"github.com/stretchr/testify/assert"
 	"net/http/httptest"
@@ -23,12 +23,12 @@ import (
 func TestTracking(t *testing.T) {
 	tests := []struct {
 		name     string
-		input    tests_common.Input
-		expected tests_common.Expected
+		input    testscommon.Input
+		expected testscommon.Expected
 	}{
 		{
 			name: "TEST TRACKER",
-			expected: tests_common.Expected{
+			expected: testscommon.Expected{
 				Code:        202,
 				ContentType: "text/plain",
 				DbDump: memory.Init(

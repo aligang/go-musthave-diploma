@@ -9,7 +9,7 @@ import (
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/order"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/memory"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/memory/orderrecord"
-	"github.com/aligang/go-musthave-diploma/internal/gofemart/tests_common"
+	"github.com/aligang/go-musthave-diploma/internal/gofemart/testscommon"
 	"github.com/aligang/go-musthave-diploma/internal/withdrawn"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -23,14 +23,14 @@ import (
 func TestAddWithdraw(t *testing.T) {
 	tests := []struct {
 		name     string
-		input    tests_common.Input
-		expected tests_common.Expected
+		input    testscommon.Input
+		expected testscommon.Expected
 	}{
 		{
 			name: "WITHDRAW REGISTRATION",
-			input: tests_common.Input{Method: http.MethodPost, Path: "/api/user/balance/withdrawn", ContentType: "application/json",
+			input: testscommon.Input{Method: http.MethodPost, Path: "/api/user/balance/withdrawn", ContentType: "application/json",
 				Payload: "{\"order\": \"67\", \"sum\": 1}", Account: "user1"},
-			expected: tests_common.Expected{
+			expected: testscommon.Expected{
 				Code:        200,
 				ContentType: "text/plain",
 				DbDump: memory.Init(
@@ -72,9 +72,9 @@ func TestAddWithdraw(t *testing.T) {
 		},
 		{
 			name: "WITHDRAW INSUFFICIENT FOUNDS",
-			input: tests_common.Input{Method: http.MethodPost, Path: "/api/user/balance/withdrawn", ContentType: "application/json",
+			input: testscommon.Input{Method: http.MethodPost, Path: "/api/user/balance/withdrawn", ContentType: "application/json",
 				Payload: "{\"order\": \"75\", \"sum\": 1000}", Account: "user1"},
-			expected: tests_common.Expected{
+			expected: testscommon.Expected{
 				Code:        402,
 				ContentType: "text/plain",
 				DbDump: memory.Init(
@@ -116,9 +116,9 @@ func TestAddWithdraw(t *testing.T) {
 		},
 		{
 			name: "WITHDRAW INCORRECT ID FORMAT",
-			input: tests_common.Input{Method: http.MethodPost, Path: "/api/user/balance/withdrawn", ContentType: "application/json",
+			input: testscommon.Input{Method: http.MethodPost, Path: "/api/user/balance/withdrawn", ContentType: "application/json",
 				Payload: "{\"order\": \"68\", \"sum\": 1}", Account: "user1"},
-			expected: tests_common.Expected{
+			expected: testscommon.Expected{
 				Code:        422,
 				ContentType: "text/plain",
 				DbDump: memory.Init(

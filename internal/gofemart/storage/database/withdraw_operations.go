@@ -43,7 +43,7 @@ func (s *Storage) GetWithdrawnWithinTransaction(ctx context.Context, orderID str
 	logging.Debug("Executing statement to fetch withdraw info from Repository: %s %s", query, orderID)
 	row := statement.QueryRow(args...)
 	if row.Err() != nil {
-		logging.Warn("rows check result: ", row.Err().Error())
+		logging.Warn("rows check result: %s", row.Err().Error())
 		return nil, row.Err()
 	}
 
@@ -77,11 +77,11 @@ func (s *Storage) ListWithdrawns(userID string) ([]withdrawn.WithdrawnRecord, er
 	}
 	logging.Debug("Executing statement to fetch withdrawns from Repository")
 	rows, err := statement.Query(args...)
-	defer rows.Close()
 	if err != nil {
 		logging.Warn("Error During statement Execution %s with %s", query, args[0])
 		return wthdrawns, err
 	}
+	defer rows.Close()
 	if err = rows.Err(); err != nil {
 		logging.Warn("No records were returned from database")
 		return wthdrawns, err

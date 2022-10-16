@@ -8,7 +8,7 @@ import (
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/handler"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/memory"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/memory/orderrecord"
-	"github.com/aligang/go-musthave-diploma/internal/gofemart/tests_common"
+	"github.com/aligang/go-musthave-diploma/internal/gofemart/testscommon"
 	"github.com/aligang/go-musthave-diploma/internal/withdrawn"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -20,14 +20,14 @@ import (
 func TestLogin(t *testing.T) {
 	tests := []struct {
 		name     string
-		input    tests_common.Input
-		expected tests_common.Expected
+		input    testscommon.Input
+		expected testscommon.Expected
 	}{
 		{
 			name: "AUTHENTICATION CORRECT",
-			input: tests_common.Input{Method: http.MethodPost, Path: "/api/user/login", ContentType: "application/json",
+			input: testscommon.Input{Method: http.MethodPost, Path: "/api/user/login", ContentType: "application/json",
 				Payload: "{\"login\":\"user1\",\"password\":\"pass1\"}"},
-			expected: tests_common.Expected{
+			expected: testscommon.Expected{
 				Code:        200,
 				ContentType: "text/plain",
 				DbDump: memory.Init(
@@ -52,9 +52,9 @@ func TestLogin(t *testing.T) {
 
 		{
 			name: "AUTHENTICATION FAILED: WRONG REQUEST FORMAT",
-			input: tests_common.Input{Method: http.MethodPost, Path: "/api/user/login", ContentType: "application/json",
+			input: testscommon.Input{Method: http.MethodPost, Path: "/api/user/login", ContentType: "application/json",
 				Payload: "{\"notalogin\":\"user1\",\"notapassword\":\"pass1\"}"},
-			expected: tests_common.Expected{
+			expected: testscommon.Expected{
 				Code:        400,
 				ContentType: "text/plain",
 				DbDump: memory.Init(
@@ -79,9 +79,9 @@ func TestLogin(t *testing.T) {
 
 		{
 			name: "AUTHENTICATION CORRECT",
-			input: tests_common.Input{Method: http.MethodPost, Path: "/api/user/login", ContentType: "application/json",
+			input: testscommon.Input{Method: http.MethodPost, Path: "/api/user/login", ContentType: "application/json",
 				Payload: "{\"login\":\"wronguser\",\"password\":\"wrongpassword\"}"},
-			expected: tests_common.Expected{
+			expected: testscommon.Expected{
 				Code:        401,
 				ContentType: "text/plain",
 				DbDump: memory.Init(

@@ -37,7 +37,7 @@ func (s *Storage) modifyOrder(ctx context.Context, order *order.Order, query str
 			query, args[0], args[1], args[2], args[3])
 		return err
 	}
-	logging.Debug("Order record update succseeded : %s", order)
+	logging.Debug("Order record update succseeded : %s", order.Number)
 	return nil
 }
 
@@ -93,11 +93,11 @@ func (s *Storage) ListOrders(userID string) ([]order.Order, error) {
 	}
 	logging.Debug("Executing statement to fetch orders from Repository")
 	rows, err := statement.Query(args...)
-	defer rows.Close()
 	if err != nil {
 		logging.Warn("Error During statement Execution %s with %s", query, args[0])
 		return orders, err
 	}
+	defer rows.Close()
 	if err = rows.Err(); err != nil {
 		logging.Warn("No records were returned from database")
 		return orders, err

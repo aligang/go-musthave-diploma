@@ -13,7 +13,7 @@ import (
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/order"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/memory"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/memory/orderrecord"
-	"github.com/aligang/go-musthave-diploma/internal/gofemart/tests_common"
+	"github.com/aligang/go-musthave-diploma/internal/gofemart/testscommon"
 	"github.com/aligang/go-musthave-diploma/internal/withdrawn"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -27,14 +27,14 @@ import (
 func TestAddOrder(t *testing.T) {
 	tests := []struct {
 		name     string
-		input    tests_common.Input
-		expected tests_common.Expected
+		input    testscommon.Input
+		expected testscommon.Expected
 	}{
 		{
 			name: "PROCESSED ORDER REGISTRATION CORRECT",
-			input: tests_common.Input{Method: http.MethodPost, Path: "/api/user/orders", ContentType: "application/json",
+			input: testscommon.Input{Method: http.MethodPost, Path: "/api/user/orders", ContentType: "application/json",
 				Payload: "18", Account: "user1"},
-			expected: tests_common.Expected{
+			expected: testscommon.Expected{
 				Code:        202,
 				ContentType: "text/plain",
 				DbDump: memory.Init(
@@ -77,9 +77,9 @@ func TestAddOrder(t *testing.T) {
 
 		{
 			name: "PROCESSING ORDER REGISTRATION CORRECT",
-			input: tests_common.Input{Method: http.MethodPost, Path: "/api/user/orders", ContentType: "application/json",
+			input: testscommon.Input{Method: http.MethodPost, Path: "/api/user/orders", ContentType: "application/json",
 				Payload: "26", Account: "user1"},
-			expected: tests_common.Expected{
+			expected: testscommon.Expected{
 				Code:        202,
 				ContentType: "text/plain",
 				DbDump: memory.Init(
@@ -131,9 +131,9 @@ func TestAddOrder(t *testing.T) {
 
 		{
 			name: "NEW ORDER REGISTRATION CORRECT",
-			input: tests_common.Input{Method: http.MethodPost, Path: "/api/user/orders", ContentType: "application/json",
+			input: testscommon.Input{Method: http.MethodPost, Path: "/api/user/orders", ContentType: "application/json",
 				Payload: "34", Account: "user1"},
-			expected: tests_common.Expected{
+			expected: testscommon.Expected{
 				Code:        202,
 				ContentType: "text/plain",
 				DbDump: memory.Init(
@@ -194,9 +194,9 @@ func TestAddOrder(t *testing.T) {
 
 		{
 			name: "INVALID ORDER REGISTRATION CORRECT",
-			input: tests_common.Input{Method: http.MethodPost, Path: "/api/user/orders", ContentType: "application/json",
+			input: testscommon.Input{Method: http.MethodPost, Path: "/api/user/orders", ContentType: "application/json",
 				Payload: "42", Account: "user1"},
-			expected: tests_common.Expected{
+			expected: testscommon.Expected{
 				Code:        202,
 				ContentType: "text/plain",
 				DbDump: memory.Init(
@@ -266,9 +266,9 @@ func TestAddOrder(t *testing.T) {
 
 		{
 			name: "ORDER REAPPLY",
-			input: tests_common.Input{Method: http.MethodPost, Path: "/api/user/orders", ContentType: "application/json",
+			input: testscommon.Input{Method: http.MethodPost, Path: "/api/user/orders", ContentType: "application/json",
 				Payload: "18", Account: "user1"},
-			expected: tests_common.Expected{
+			expected: testscommon.Expected{
 				Code:        200,
 				ContentType: "text/plain",
 				DbDump: memory.Init(
@@ -311,9 +311,9 @@ func TestAddOrder(t *testing.T) {
 
 		{
 			name: "ORDER REGISTRATION INCORRECT REQUEST FORMAT",
-			input: tests_common.Input{Method: http.MethodPost, Path: "/api/user/orders", ContentType: "application/json",
+			input: testscommon.Input{Method: http.MethodPost, Path: "/api/user/orders", ContentType: "application/json",
 				Payload: "{\"aa\":\"bb\"}", Account: "user1"},
-			expected: tests_common.Expected{
+			expected: testscommon.Expected{
 				Code:        400,
 				ContentType: "text/plain",
 				DbDump: memory.Init(
@@ -356,9 +356,9 @@ func TestAddOrder(t *testing.T) {
 
 		{
 			name: "ORDER REGISTRATION INCORRECT ORDER ID FORMAT",
-			input: tests_common.Input{Method: http.MethodPost, Path: "/api/user/orders", ContentType: "application/json",
+			input: testscommon.Input{Method: http.MethodPost, Path: "/api/user/orders", ContentType: "application/json",
 				Payload: "20", Account: "user1"},
-			expected: tests_common.Expected{
+			expected: testscommon.Expected{
 				Code:        422,
 				ContentType: "text/plain",
 				DbDump: memory.Init(
@@ -401,9 +401,9 @@ func TestAddOrder(t *testing.T) {
 
 		{
 			name: "DUBLICATE ORDER",
-			input: tests_common.Input{Method: http.MethodPost, Path: "/api/user/orders", ContentType: "application/json",
+			input: testscommon.Input{Method: http.MethodPost, Path: "/api/user/orders", ContentType: "application/json",
 				Payload: "18", Account: "user2"},
-			expected: tests_common.Expected{
+			expected: testscommon.Expected{
 				Code:        409,
 				ContentType: "text/plain",
 				DbDump: memory.Init(

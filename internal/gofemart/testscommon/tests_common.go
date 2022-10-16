@@ -1,4 +1,4 @@
-package tests_common
+package testscommon
 
 import (
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/memory"

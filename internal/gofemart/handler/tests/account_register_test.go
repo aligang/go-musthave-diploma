@@ -8,7 +8,7 @@ import (
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/handler"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/memory"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/memory/orderrecord"
-	"github.com/aligang/go-musthave-diploma/internal/gofemart/tests_common"
+	"github.com/aligang/go-musthave-diploma/internal/gofemart/testscommon"
 	"github.com/aligang/go-musthave-diploma/internal/withdrawn"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -21,14 +21,14 @@ import (
 func TestRegisterAccount(t *testing.T) {
 	tests := []struct {
 		name     string
-		input    tests_common.Input
-		expected tests_common.Expected
+		input    testscommon.Input
+		expected testscommon.Expected
 	}{
 		{
 			name: "ACCOUNT REGISTRATION CORRECT",
-			input: tests_common.Input{Method: http.MethodPost, Path: "/api/user/register", ContentType: "text/plain",
+			input: testscommon.Input{Method: http.MethodPost, Path: "/api/user/register", ContentType: "text/plain",
 				Payload: "{\"login\":\"user1\",\"password\":\"pass1\"}"},
-			expected: tests_common.Expected{
+			expected: testscommon.Expected{
 				Code:        200,
 				ContentType: "text/plain",
 				DbDump: memory.Init(
@@ -51,10 +51,10 @@ func TestRegisterAccount(t *testing.T) {
 			},
 		},
 		{
-			name: "ACCOUNT REGISTRATION INCORRECT tests_common.Input ERROR",
-			input: tests_common.Input{Method: http.MethodPost, Path: "/api/user/register", ContentType: "text/plain",
+			name: "ACCOUNT REGISTRATION INCORRECT testscommon.Input ERROR",
+			input: testscommon.Input{Method: http.MethodPost, Path: "/api/user/register", ContentType: "text/plain",
 				Payload: "{\"login\":\"\",\"password\":\"aa\"}"},
-			expected: tests_common.Expected{
+			expected: testscommon.Expected{
 				Code:        400,
 				ContentType: "text/plain",
 				DbDump: memory.Init(
@@ -69,9 +69,9 @@ func TestRegisterAccount(t *testing.T) {
 		},
 		{
 			name: "DUBLICATE ACCOUNT ERROR",
-			input: tests_common.Input{Method: http.MethodPost, Path: "/api/user/register", ContentType: "text/plain",
+			input: testscommon.Input{Method: http.MethodPost, Path: "/api/user/register", ContentType: "text/plain",
 				Payload: "{\"login\":\"user1\",\"password\":\"pass1\"}"},
-			expected: tests_common.Expected{
+			expected: testscommon.Expected{
 				Code:        409,
 				ContentType: "text/plain",
 				DbDump: memory.Init(

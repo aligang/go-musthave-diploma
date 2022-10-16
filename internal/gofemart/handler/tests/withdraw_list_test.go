@@ -9,7 +9,7 @@ import (
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/order"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/memory"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/memory/orderrecord"
-	"github.com/aligang/go-musthave-diploma/internal/gofemart/tests_common"
+	"github.com/aligang/go-musthave-diploma/internal/gofemart/testscommon"
 	"github.com/aligang/go-musthave-diploma/internal/withdrawn"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -22,14 +22,14 @@ import (
 func TestListWithdrawns(t *testing.T) {
 	tests := []struct {
 		name     string
-		input    tests_common.Input
-		expected tests_common.Expected
+		input    testscommon.Input
+		expected testscommon.Expected
 	}{
 		{
 			name: "WITHDRAW LIST CORRECT",
-			input: tests_common.Input{Method: http.MethodGet, Path: "/api/user/balance/withdrawals", ContentType: "text/plain",
+			input: testscommon.Input{Method: http.MethodGet, Path: "/api/user/balance/withdrawals", ContentType: "text/plain",
 				Payload: "1", Account: "user1"},
-			expected: tests_common.Expected{
+			expected: testscommon.Expected{
 				Payload: "[{\"order\":\"222\",\"sum\":1,\"processed_at\":\"2021-09-19T15:59:42+03:00\"}," +
 					"{\"order\":\"111\",\"sum\":1,\"processed_at\":\"2021-09-19T15:59:41+03:00\"}]",
 				Code:        200,
@@ -57,7 +57,7 @@ func TestListWithdrawns(t *testing.T) {
 					Number:     "1",
 					Accural:    10.5,
 					Status:     "PROCESSED",
-					UploadedAt: tests_common.GenTimeStamps()[0],
+					UploadedAt: testscommon.GenTimeStamps()[0],
 				},
 				Owner: "user1",
 			},
@@ -68,14 +68,14 @@ func TestListWithdrawns(t *testing.T) {
 					Order: "111",
 					Sum:   1,
 				},
-				ProcessedAt: tests_common.GenTimeStamps()[0],
+				ProcessedAt: testscommon.GenTimeStamps()[0],
 			},
 			"222": withdrawn.WithdrawnRecord{
 				Withdrawn: &withdrawn.Withdrawn{
 					Order: "222",
 					Sum:   1,
 				},
-				ProcessedAt: tests_common.GenTimeStamps()[1],
+				ProcessedAt: testscommon.GenTimeStamps()[1],
 			},
 		},
 		map[string]*struct{}{},
@@ -117,14 +117,14 @@ func TestListWithdrawns(t *testing.T) {
 func TestListEmptyWithdrawns(t *testing.T) {
 	tests := []struct {
 		name     string
-		input    tests_common.Input
-		expected tests_common.Expected
+		input    testscommon.Input
+		expected testscommon.Expected
 	}{
 		{
 			name: "EMPTY WITHDRAW LIST CORRECT",
-			input: tests_common.Input{Method: http.MethodGet, Path: "/api/user/balance/withdrawals", ContentType: "text/plain",
+			input: testscommon.Input{Method: http.MethodGet, Path: "/api/user/balance/withdrawals", ContentType: "text/plain",
 				Payload: "1", Account: "user1"},
-			expected: tests_common.Expected{
+			expected: testscommon.Expected{
 				Payload:     "",
 				Code:        204,
 				ContentType: "application/json",
@@ -151,7 +151,7 @@ func TestListEmptyWithdrawns(t *testing.T) {
 					Number:     "1",
 					Accural:    10.5,
 					Status:     "PROCESSED",
-					UploadedAt: tests_common.GenTimeStamps()[0],
+					UploadedAt: testscommon.GenTimeStamps()[0],
 				},
 				Owner: "user1",
 			},
