@@ -32,7 +32,7 @@ func TestGetBalanceAccount(t *testing.T) {
 				Code:        200,
 				ContentType: "application/json",
 				Payload:     "{\"current\":100.5,\"withdrawn\":200.9}",
-				DbDump: memory.Init(
+				DBdump: memory.Init(
 					account.CustomerAccounts{
 						"user1": account.CustomerAccount{
 							Login:    "user1",
