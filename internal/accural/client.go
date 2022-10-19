@@ -56,23 +56,29 @@ func FetchOrderInfo(ctx context.Context, orderID string, config *config.Config) 
 	}
 	logging.Debug("Response content: %s", string(responseDump))
 	fmt.Println(string(responseDump))
-	if response.StatusCode != http.StatusOK {
+
+	accuralRecord := message.New()
+	switch {
+	case response.StatusCode == http.StatusNoContent:
+		accuralRecord.Order = orderID
+		accuralRecord.Status = "INVALID"
+	case response.StatusCode != http.StatusOK:
 		logging.Warn("Got response from %s with code: %d, Could not fetch order info",
 			config.AccuralSystemAddress, response.StatusCode)
 		return nil, errors.New("problem during fetching order info")
-	}
-
-	responsePayload, err := io.ReadAll(response.Body)
-	if err != nil {
-		logging.Warn("Could not read data from wire")
-		return nil, err
-	}
-	logging.Warn("got accural record %s", string(responsePayload))
-	accuralRecord := message.New()
-	err = json.Unmarshal(responsePayload, accuralRecord)
-	if err != nil {
-		logging.Warn("Could not decode json")
-		return nil, err
+	default:
+		responsePayload, err := io.ReadAll(response.Body)
+		if err != nil {
+			logging.Warn("Could not read data from wire")
+			return nil, err
+		}
+		logging.Warn("got accural record %s", string(responsePayload))
+		accuralRecord := message.New()
+		err = json.Unmarshal(responsePayload, accuralRecord)
+		if err != nil {
+			logging.Warn("Could not decode json")
+			return nil, err
+		}
 	}
 	return accuralRecord, nil
 }
