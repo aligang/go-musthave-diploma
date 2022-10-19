@@ -62,7 +62,7 @@ func FetchOrderInfo(ctx context.Context, orderID string, config *config.Config) 
 	case response.StatusCode == http.StatusNoContent:
 
 		accuralRecord.Order = orderID
-		accuralRecord.Status = "INVALID"
+		accuralRecord.Status = "NEW"
 	case response.StatusCode != http.StatusOK:
 		logging.Warn("Got response from %s with code: %d, Could not fetch order info",
 			config.AccuralSystemAddress, response.StatusCode)
