@@ -60,6 +60,7 @@ func FetchOrderInfo(ctx context.Context, orderID string, config *config.Config) 
 	accuralRecord := message.New()
 	switch {
 	case response.StatusCode == http.StatusNoContent:
+
 		accuralRecord.Order = orderID
 		accuralRecord.Status = "INVALID"
 	case response.StatusCode != http.StatusOK:
@@ -73,7 +74,6 @@ func FetchOrderInfo(ctx context.Context, orderID string, config *config.Config) 
 			return nil, err
 		}
 		logging.Warn("got accural record %s", string(responsePayload))
-		accuralRecord := message.New()
 		err = json.Unmarshal(responsePayload, accuralRecord)
 		if err != nil {
 			logging.Warn("Could not decode json")
