@@ -2,7 +2,10 @@ package database
 
 import (
 	"context"
+	"database/sql"
+	"errors"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/order"
+	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/repositoryerrors"
 	"github.com/aligang/go-musthave-diploma/internal/logging"
 	"github.com/jmoiron/sqlx"
 )
@@ -59,10 +62,14 @@ func (s *Storage) getOrderCommon(orderID string, prepareFunc func(query string) 
 	logging.Debug("Executing statement to fetch order info Repository: %s %s", query, orderID)
 	orderInstance := &order.Order{}
 	err = statement.Get(orderInstance, args...)
-	if err != nil {
+	switch {
+	case errors.Is(err, sql.ErrNoRows):
+		return nil, repositoryerrors.ErrNoContent
+	case err != nil:
 		logging.Warn("Error during decoding database response: %s", err.Error())
 		return nil, err
 	}
+
 	return orderInstance, nil
 }
 
