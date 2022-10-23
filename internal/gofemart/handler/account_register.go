@@ -11,6 +11,8 @@ import (
 )
 
 func (h *APIhandler) RegisterCustomerAccount(w http.ResponseWriter, r *http.Request) {
+	logger := logging.Logger.GetSubLogger("Method", "RegisterAccount")
+	logger.Debug("Processing request")
 	ctx := r.Context()
 	if RequestContextIsClosed(ctx, w) {
 		return
@@ -32,7 +34,8 @@ func (h *APIhandler) RegisterCustomerAccount(w http.ResponseWriter, r *http.Requ
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	logging.Debug("Registering new account for %s", accountInfo.Login)
+	logger = logger.GetSubLogger("userID", "accountInfo.Login")
+	logger.Debug("Registering new account")
 	if RequestContextIsClosed(ctx, w) {
 		return
 	}
@@ -52,11 +55,11 @@ func (h *APIhandler) RegisterCustomerAccount(w http.ResponseWriter, r *http.Requ
 	switch {
 	case errors.Is(err, repositoryerrors.ErrNoContent):
 	case err != nil:
-		logging.Warn("error during fetching Account %s", err.Error())
+		logger.Warn("error during fetching Account %s", err.Error())
 		http.Error(w, "Account %s already exists", http.StatusInternalServerError)
 		return
 	default:
-		logging.Warn("Account %s already exists", accountInfo.Login)
+		logger.Warn("Account %s already exists", accountInfo.Login)
 		http.Error(w, "Account %s already exists", http.StatusConflict)
 		return
 	}
@@ -65,7 +68,7 @@ func (h *APIhandler) RegisterCustomerAccount(w http.ResponseWriter, r *http.Requ
 	}
 	err = h.storage.AddCustomerAccount(ctx, accountInfo)
 	if err != nil {
-		logging.Warn("Could not store Account Data: %s", err.Error())
+		logger.Warn("Could not store Account Data: %s", err.Error())
 		http.Error(w, err.Error(), http.StatusConflict)
 		return
 	}
@@ -76,7 +79,7 @@ func (h *APIhandler) RegisterCustomerAccount(w http.ResponseWriter, r *http.Requ
 	http.SetCookie(w, cookie)
 	w.Header().Set("Content-Type", "text/plain")
 	w.WriteHeader(http.StatusOK)
-	logging.Debug("account for %s is created", accountInfo.Login)
+	logger.Debug("account for %s is created", accountInfo.Login)
 }
 
 //

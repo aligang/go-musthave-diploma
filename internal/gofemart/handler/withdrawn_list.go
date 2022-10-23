@@ -10,15 +10,17 @@ import (
 )
 
 func (h *APIhandler) ListWithdraws(w http.ResponseWriter, r *http.Request) {
-	logging.Warn("Processing withdraw list request")
+	logger := logging.Logger.GetSubLogger("Method", "Withdrawn List")
+	logger.Warn("Processing request")
 	ctx := r.Context()
 	if RequestContextIsClosed(ctx, w) {
 		return
 	}
 	userID, err := auth.ResolveUsername(r)
+	logger = logger.GetSubLogger("userID", userID)
 	if err != nil {
 		http.Error(w, "", http.StatusBadRequest)
-		logging.Warn("No user info were provided")
+		logger.Warn("No user info were provided")
 		return
 	}
 
@@ -30,7 +32,7 @@ func (h *APIhandler) ListWithdraws(w http.ResponseWriter, r *http.Request) {
 		h.storage.CommitTransaction(ctx)
 	}()
 
-	logging.Debug("Fetching withdraws registered for user=%s from repository", userID)
+	logger.Debug("Fetching withdraws  from repository", userID)
 	if RequestContextIsClosed(ctx, w) {
 		return
 	}
@@ -38,23 +40,23 @@ func (h *APIhandler) ListWithdraws(w http.ResponseWriter, r *http.Request) {
 	switch {
 	case err != nil:
 		http.Error(w, "", http.StatusInternalServerError)
-		logging.Warn("Error during fetching withdraws registered for user=%s: %s", userID, err.Error())
+		logger.Warn("Error during fetching withdraws registered for user: %s", err.Error())
 		return
 	case len(withdrawns) == 0:
 		http.Error(w, "there is now registered withdraws", http.StatusNoContent)
-		logging.Warn("User=%s has now registered withdraws", userID)
+		logger.Warn("User=%s has now registered withdraws", userID)
 		return
 	}
 
-	logging.Debug("user %s, has registered orders: %+v", userID, withdrawns)
+	logger.Debug("user has registered withdrawns: %+v", withdrawns)
 	sort.Sort(withdrawn.WithdrawnSlice(withdrawns))
 	withdrawsPayload, err := json.Marshal(withdrawns)
 	if err != nil {
 		http.Error(w, "error during Fetching orders", http.StatusInternalServerError)
-		logging.Warn("Could not decode json")
+		logger.Warn("Could not decode json")
 		return
 	}
-	logging.Debug("forming response %s", string(withdrawsPayload))
+	logger.Debug("forming response %s", string(withdrawsPayload))
 	if RequestContextIsClosed(ctx, w) {
 		return
 	}
@@ -62,7 +64,7 @@ func (h *APIhandler) ListWithdraws(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	_, err = w.Write(withdrawsPayload)
 	if err != nil {
-		logging.Debug("Error during writing data to wire")
+		logger.Debug("Error during writing data to wire")
 	}
-	logging.Debug("orders  list user=%s was sent", userID)
+	logger.Debug("orders list was sent")
 }

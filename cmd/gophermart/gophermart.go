@@ -13,6 +13,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"sync"
 	"syscall"
 )
 
@@ -23,32 +24,36 @@ func main() {
 	Storage := storage.New(cfg)
 	Auth := auth.New()
 	Tracker := tracker.New(Storage, cfg)
-	Tracker.RunInBackground(globalCtx)
+
 	mux := handler.New(Storage, Auth, cfg)
 	mux.ApplyProdConfig()
-	//mux.ApplyDebugConfig()
-
 	app := New(globalCtx, mux, cfg)
 
-	go runServer(app)
+	wg := sync.WaitGroup{}
+	go Tracker.RunPeriodically(globalCtx, wg)
+	go runServer(app, wg)
+
 	exitSignal := make(chan os.Signal, 1)
 	signal.Notify(exitSignal, syscall.SIGINT, syscall.SIGTERM)
 	<-exitSignal
 	cancel()
+	wg.Wait()
 	logging.Debug("Server stopped")
 }
 
-func runServer(server *http.Server) {
+func runServer(server *http.Server, wg sync.WaitGroup) {
 	logging.Debug("enable TCP listener on: %s", server.Addr)
 	listener, err := net.Listen("tcp", server.Addr)
 	if err != nil {
 		panic(err)
 	}
 	logging.Debug(" Starting Server on: %s", server.Addr)
+	wg.Add(1)
 	err = server.Serve(listener)
 	if err != nil {
 		panic(err)
 	}
+	wg.Add(-1)
 }
 
 type contextKeyType struct {

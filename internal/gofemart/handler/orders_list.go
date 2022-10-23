@@ -10,7 +10,8 @@ import (
 )
 
 func (h *APIhandler) ListOrders(w http.ResponseWriter, r *http.Request) {
-	logging.Warn("Processing order list request")
+	logger := logging.Logger.GetSubLogger("Method", "Order List")
+	logger.Warn("Processing request")
 	ctx := r.Context()
 	if RequestContextIsClosed(ctx, w) {
 		return
@@ -22,27 +23,28 @@ func (h *APIhandler) ListOrders(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	logger = logger.GetSubLogger("userID", userID)
 	h.storage.StartTransaction(ctx)
 	defer func() {
 		h.storage.CommitTransaction(ctx)
 	}()
 
-	logging.Debug("Fetching orders registered for user=%s from repository", userID)
+	logger.Debug("Fetching orders registered  from repository", userID)
 	if RequestContextIsClosed(ctx, w) {
 		return
 	}
 	orders, err := h.storage.ListOrders(userID)
 	if err != nil {
 		http.Error(w, "error during Fetching orders", http.StatusInternalServerError)
-		logging.Warn("Error during fetching orders register for user=%s: %s", userID, err.Error())
+		logger.Warn("Error during fetching orders register for user: %s", err.Error())
 		return
 	} else if len(orders) == 0 {
 		http.Error(w, "there is no registered orders", http.StatusNoContent)
-		logging.Warn("User=%s has no registered orders", userID)
+		logger.Warn("User has no registered orders")
 		return
 	}
 
-	logging.Debug("user %s, has registered orders: %+v", userID, orders)
+	logger.Debug("user %s, has registered orders: %+v", userID, orders)
 	if RequestContextIsClosed(ctx, w) {
 		return
 	}
@@ -50,15 +52,15 @@ func (h *APIhandler) ListOrders(w http.ResponseWriter, r *http.Request) {
 	ordersPayload, err := json.Marshal(orders)
 	if err != nil {
 		http.Error(w, "error during Fetching orders", http.StatusInternalServerError)
-		logging.Warn("Could not decode json")
+		logger.Warn("Could not decode json")
 		return
 	}
-	logging.Debug("forming response %s", string(ordersPayload))
+	logger.Debug("forming response %s", string(ordersPayload))
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	_, err = w.Write(ordersPayload)
 	if err != nil {
-		logging.Debug("Error during writing data to wire")
+		logger.Debug("Error during writing data to wire")
 	}
-	logging.Debug("orders  list user=%s was sent", userID)
+	logger.Debug("orders  list was sent")
 }

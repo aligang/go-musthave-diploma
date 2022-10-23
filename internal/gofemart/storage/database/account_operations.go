@@ -3,10 +3,12 @@ package database
 import (
 	"context"
 	"database/sql"
+
 	"errors"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/account"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/repositoryerrors"
 	"github.com/aligang/go-musthave-diploma/internal/logging"
+	"github.com/jmoiron/sqlx"
 	"strconv"
 )
 
@@ -45,14 +47,14 @@ func (s *Storage) modifyCustomerAccount(ctx context.Context, customerAccount *ac
 }
 
 func (s *Storage) GetCustomerAccount(login string) (*account.CustomerAccount, error) {
-	return s.getCustomerAccountCommon(login, s.DB.Prepare)
+	return s.getCustomerAccountCommon(login, s.DB.Preparex)
 }
 
 func (s *Storage) GetCustomerAccountWithinTransaction(ctx context.Context, login string) (*account.CustomerAccount, error) {
-	return s.getCustomerAccountCommon(login, s.Tx[ctx].Prepare)
+	return s.getCustomerAccountCommon(login, s.Tx[ctx].Preparex)
 }
 
-func (s *Storage) getCustomerAccountCommon(login string, prepareFunc func(query string) (*sql.Stmt, error)) (*account.CustomerAccount, error) {
+func (s *Storage) getCustomerAccountCommon(login string, prepareFunc func(query string) (*sqlx.Stmt, error)) (*account.CustomerAccount, error) {
 	query := "SELECT * FROM accounts WHERE Login = $1"
 	var args = []interface{}{login}
 	logging.Debug("Preparing statement to fetch customer account to Repository: %s", login)
@@ -62,14 +64,15 @@ func (s *Storage) getCustomerAccountCommon(login string, prepareFunc func(query 
 		return nil, err
 	}
 	logging.Debug("Executing statement to add customer account to Repository: %s", login)
-	row := statement.QueryRow(args...)
-
-	if row.Err() != nil {
-		logging.Warn("Error During statement Execution %s with %s", query, login)
-		return nil, err
-	}
+	//row := statement.QueryRowx(args...)
+	//
+	//if row.Err() != nil {
+	//	logging.Warn("Error During statement Execution %s with %s", query, login)
+	//	return nil, err
+	//}
 	a := &account.CustomerAccount{}
-	err = row.Scan(&a.Login, &a.Password, &a.Current, &a.Withdraw)
+
+	err = statement.Get(a, args)
 
 	switch {
 	case errors.Is(err, sql.ErrNoRows):
@@ -91,20 +94,15 @@ func (s *Storage) GetOrderOwner(ctx context.Context, orderID string) (string, er
 	query := "SELECT owner FROM orders WHERE number = $1"
 	var args = []interface{}{orderID}
 	logging.Debug("Preparing statement to fetch customer account to Repository: %s", query)
-	statement, err := s.Tx[ctx].Prepare(query)
+	statement, err := s.Tx[ctx].Preparex(query)
 	if err != nil {
 		logging.Warn("Error During statement creation %s", query)
 		return "", err
 	}
 	logging.Debug("Executing statement to add customer account to Repository: %s %s", query, args)
-	row := statement.QueryRow(args...)
-
-	if row.Err() != nil {
-		logging.Warn("Error During statement Execution %s with %s", query, orderID)
-		return "", err
-	}
 	var owner string
-	err = row.Scan(&owner)
+	err = statement.Get(&owner, args)
+
 	if err != nil {
 		logging.Warn("Could not decode Database Server response: %s", err.Error())
 		return "", err

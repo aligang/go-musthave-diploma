@@ -14,7 +14,6 @@ import (
 	"github.com/aligang/go-musthave-diploma/internal/withdrawn"
 	"github.com/stretchr/testify/assert"
 	"net/http/httptest"
-	"strings"
 	"testing"
 	"time"
 )
@@ -117,7 +116,7 @@ func TestTracking(t *testing.T) {
 
 	//Starting Test ApplicationServer
 	cfg := &config.Config{
-		AccuralSystemAddress: strings.Split(accuralServer.URL, "/")[2],
+		AccuralSystemAddress: accuralServer.URL,
 		DatabaseURI:          "",
 		RunAddress:           "",
 	}

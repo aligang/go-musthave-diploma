@@ -68,36 +68,19 @@ func (s *Storage) ListWithdrawns(userID string) ([]withdrawn.WithdrawnRecord, er
 	logging.Debug("Preparing statement to fetch orders from Repository")
 	query := "SELECT Order_Id, Sum, Processed_at FROM withdrawns WHERE Owner = $1"
 	args := []interface{}{userID}
-	var wthdrawns []withdrawn.WithdrawnRecord
+	var withdrawns []withdrawn.WithdrawnRecord
 
-	statement, err := s.DB.Prepare(query)
+	statement, err := s.DB.Preparex(query)
 	if err != nil {
 		logging.Warn("Error During statement creation %s", query)
-		return wthdrawns, err
+		return withdrawns, err
 	}
 	logging.Debug("Executing statement to fetch withdrawns from Repository")
-	rows, err := statement.Query(args...)
+
+	err = statement.Select(&withdrawns, args)
 	if err != nil {
 		logging.Warn("Error During statement Execution %s with %s", query, args[0])
-		return wthdrawns, err
+		return withdrawns, err
 	}
-	defer rows.Close()
-	if err = rows.Err(); err != nil {
-		logging.Warn("No records were returned from database")
-		return wthdrawns, err
-	}
-
-	for rows.Next() {
-		withdrawInstance := withdrawn.WithdrawnRecord{
-			Withdrawn: &withdrawn.Withdrawn{},
-		}
-		err = rows.Scan(&withdrawInstance.Order, &withdrawInstance.Sum, &withdrawInstance.ProcessedAt)
-		if err != nil {
-			logging.Warn("problem during parsing data from repository")
-			return wthdrawns, err
-		}
-		wthdrawns = append(wthdrawns, withdrawInstance)
-	}
-
-	return wthdrawns, nil
+	return withdrawns, nil
 }

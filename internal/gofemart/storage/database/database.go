@@ -2,7 +2,8 @@ package database
 
 import (
 	"context"
-	"database/sql"
+	"github.com/jmoiron/sqlx"
+
 	"fmt"
 	"github.com/aligang/go-musthave-diploma/internal/config"
 	"github.com/aligang/go-musthave-diploma/internal/logging"
@@ -11,44 +12,44 @@ import (
 import _ "github.com/jackc/pgx/v4/stdlib"
 
 type Storage struct {
-	DB   *sql.DB
-	Tx   map[context.Context]*sql.Tx
+	DB   *sqlx.DB
+	Tx   map[context.Context]*sqlx.Tx
 	Lock sync.Mutex
 }
 
 func New(conf *config.Config) *Storage {
 	logging.Debug("Initialisating SQL Repository")
-	db, err := sql.Open("pgx", conf.DatabaseURI)
+	db, err := sqlx.Open("pgx", conf.DatabaseURI)
 	if err != nil {
 		panic(err)
 	}
 	s := &Storage{
 		DB: db,
-		Tx: map[context.Context]*sql.Tx{},
+		Tx: map[context.Context]*sqlx.Tx{},
 	}
 	_, err = s.DB.Exec(
-		"create table if not exists accounts(Login text, Password text, Current double precision, Withdraw double precision)",
+		"create table if not exists accounts(Login text NOT NULL UNIQUE, Password text NOT NULL, Current double precision, Withdraw double precision)",
 	)
 	if err != nil {
 		msg, _ := fmt.Printf("Failure during initialisation of accounts table: %s\n", err.Error())
 		panic(msg)
 	}
 	_, err = s.DB.Exec(
-		"create table if not exists orders(Number bigint, Status text, Accural double precision, UploadedAt TIMESTAMP WITH TIME ZONE, Owner text)",
+		"create table if not exists orders(Number bigint NOT NULL UNIQUE, Status text NULL UNIQUE, Accural double precision, UploadedAt TIMESTAMP WITH TIME ZONE, Owner text)",
 	)
 	if err != nil {
 		msg, _ := fmt.Printf("Failure during initialisation of orders table: %s\n", err.Error())
 		panic(msg)
 	}
 	_, err = s.DB.Exec(
-		"create table if not exists pending_orders(order_id text)",
+		"create table if not exists pending_orders(order_id text NOT NULL UNIQUE)",
 	)
 	if err != nil {
 		msg, _ := fmt.Printf("Failure during initialisation of pending orders table: %s\n", err.Error())
 		panic(msg)
 	}
 	_, err = s.DB.Exec(
-		"create table if not exists withdrawns(Order_id bigint, Sum double precision, Processed_At TIMESTAMP WITH TIME ZONE, owner text)",
+		"create table if not exists withdrawns(Order_id bigint NOT NULL UNIQUE, Sum double precision, Processed_At TIMESTAMP WITH TIME ZONE, owner text)",
 	)
 	if err != nil {
 		msg, _ := fmt.Printf("Failure during initialisation of withdrawns table: %s\n", err.Error())

@@ -7,7 +7,7 @@ import (
 )
 
 func (s *Storage) StartTransaction(ctx context.Context) {
-	tx, err := s.DB.BeginTx(ctx, &sql.TxOptions{Isolation: sql.LevelSerializable, ReadOnly: false})
+	tx, err := s.DB.BeginTxx(ctx, &sql.TxOptions{Isolation: sql.LevelSerializable, ReadOnly: false})
 	if err != nil {
 		logging.Warn("Error during transaction creation: %s", err.Error())
 		//return err

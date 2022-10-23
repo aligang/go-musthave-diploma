@@ -7,35 +7,36 @@ import (
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/order/status"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage"
 	"github.com/aligang/go-musthave-diploma/internal/logging"
+	"sync"
 	"time"
 )
 
 type Tracker struct {
-	storage storage.Storage
-	config  *config.Config
+	storage       storage.Storage
+	config        *config.Config
+	accrualClient *accural.AccrualClient
 }
 
 func New(s storage.Storage, cfg *config.Config) *Tracker {
 	logging.Debug("Initializing pending list tracker")
 	tracker := Tracker{
-		storage: s,
-		config:  cfg,
+		storage:       s,
+		config:        cfg,
+		accrualClient: accural.New(cfg),
 	}
 	logging.Debug("Pending list tracker initialization succeeded")
 	return &tracker
 }
 
-func (t *Tracker) RunInBackground(parentCtx context.Context) {
-	ctx, cancel := context.WithCancel(parentCtx)
-	go func() {
-		ticker := time.NewTicker(trackingInterval)
-		for {
-			<-ticker.C
-			t.Sync(ctx)
-			<-parentCtx.Done()
-			cancel()
-		}
-	}()
+func (t *Tracker) RunPeriodically(ctx context.Context, wg sync.WaitGroup) {
+	wg.Add(1)
+	ticker := time.NewTicker(trackingInterval)
+	for {
+		<-ticker.C
+		t.Sync(ctx)
+		<-ctx.Done()
+		wg.Add(-1)
+	}
 }
 
 func (t *Tracker) Sync(ctx context.Context) {
@@ -78,7 +79,7 @@ func (t *Tracker) Sync(ctx context.Context) {
 		case <-ctx.Done():
 			return
 		}
-		accuralRecord, err := accural.FetchOrderInfo(ctx, orderID, t.config)
+		accuralRecord, err := t.accrualClient.FetchOrderInfo(ctx, orderID)
 		if err != nil {
 			logging.Warn("Tracker failed to fetch accural info for order %s", orderID)
 			continue
@@ -98,7 +99,7 @@ func (t *Tracker) Sync(ctx context.Context) {
 			}
 			updatedOrdersCounter += 1
 		}
-		if order.Status == status.PROCESSED {
+		if order.Status == status.PROCESSED || order.Status == status.INVALID {
 			userID, dbErr := t.storage.GetOrderOwner(ctx, orderID)
 			if dbErr != nil {
 				logging.Warn("Tracker could not fetch owner of order: %s", orderID)
@@ -114,11 +115,13 @@ func (t *Tracker) Sync(ctx context.Context) {
 				logging.Warn("Tracker failed to remove order from pending list : %s", orderID)
 				return
 			}
-			accountInfo.Current += order.Accural
-			dbErr = t.storage.UpdateCustomerAccount(ctx, accountInfo)
-			if dbErr != nil {
-				logging.Warn("Tracker failed to update account info : %s", userID)
-				return
+			if order.Status == status.PROCESSED {
+				accountInfo.Current += order.Accural
+				dbErr = t.storage.UpdateCustomerAccount(ctx, accountInfo)
+				if dbErr != nil {
+					logging.Warn("Tracker failed to update account info : %s", userID)
+					return
+				}
 			}
 			proceededOrdersCounter += 1
 		}

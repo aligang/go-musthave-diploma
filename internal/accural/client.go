@@ -15,19 +15,31 @@ import (
 	"time"
 )
 
-func FetchOrderInfo(ctx context.Context, orderID string, config *config.Config) (*message.AccuralMessage, error) {
-	client := &http.Client{
-		Timeout: 5 * time.Second,
+type AccrualClient struct {
+	http.Client
+	config *config.Config
+}
+
+func New(config *config.Config) *AccrualClient {
+	return &AccrualClient{
+		Client: http.Client{Timeout: 5 * time.Second},
+		config: config,
 	}
+}
+
+func (c *AccrualClient) FetchOrderInfo(ctx context.Context, orderID string) (*message.AccuralMessage, error) {
 	buf := &bytes.Buffer{}
-	URI := fmt.Sprintf("%s/api/orders/%s", config.AccuralSystemAddress, orderID)
+	URI := fmt.Sprintf("%s/api/orders/%s", c.config.AccuralSystemAddress, orderID)
 	request, err := http.NewRequest("GET", URI, buf)
+	fmt.Println(err)
+	fmt.Println(URI)
+
 	request = request.WithContext(ctx)
+
 	if err != nil {
 		logging.Warn("Error During Request preparation: %s", err.Error())
 		return nil, err
 	}
-
 	requestDump, err := httputil.DumpRequestOut(request, true)
 	if err != nil {
 		logging.Warn("Error During Request Dump: %s", err.Error())
@@ -43,7 +55,7 @@ func FetchOrderInfo(ctx context.Context, orderID string, config *config.Config) 
 		return nil, errors.New("context was stopped")
 	}
 	//request.Header.Add("Accept-Type", "application/json")
-	response, err := client.Do(request)
+	response, err := c.Do(request)
 	if err != nil {
 		logging.Warn("Error During communication with: %s", URI)
 		return nil, err
@@ -65,7 +77,7 @@ func FetchOrderInfo(ctx context.Context, orderID string, config *config.Config) 
 		accuralRecord.Status = "NEW"
 	case response.StatusCode != http.StatusOK:
 		logging.Warn("Got response from %s with code: %d, Could not fetch order info",
-			config.AccuralSystemAddress, response.StatusCode)
+			c.config.AccuralSystemAddress, response.StatusCode)
 		return nil, errors.New("problem during fetching order info")
 	default:
 		responsePayload, err := io.ReadAll(response.Body)

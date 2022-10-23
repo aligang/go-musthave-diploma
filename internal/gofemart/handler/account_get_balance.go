@@ -8,15 +8,17 @@ import (
 )
 
 func (h *APIhandler) GetAccountBalance(w http.ResponseWriter, r *http.Request) {
-	logging.Warn("Processing account balance request")
+	logger := logging.Logger.GetSubLogger("Method", "GetAccount Balance")
+	logging.Warn("Processing request")
 	ctx := r.Context()
 	if RequestContextIsClosed(ctx, w) {
 		return
 	}
 	userID, err := auth.ResolveUsername(r)
+	logger = logger.GetSubLogger("userID", userID)
 	if err != nil {
 		http.Error(w, "", http.StatusUnauthorized)
-		logging.Warn("No user info were provided")
+		logger.Warn("No user info were provided")
 		return
 	}
 	if RequestContextIsClosed(ctx, w) {
@@ -25,16 +27,16 @@ func (h *APIhandler) GetAccountBalance(w http.ResponseWriter, r *http.Request) {
 	accountInfo, err := h.storage.GetCustomerAccount(userID)
 	if err != nil {
 		http.Error(w, "Could not provide account balance info", http.StatusInternalServerError)
-		logging.Warn("Error during fetching account info from repository")
+		logger.Warn("Error during fetching account info from repository")
 		return
 	}
 	payload, err := json.Marshal(accountInfo.AccountBalance)
 	if err != nil {
 		http.Error(w, "Could not provide account balance info", http.StatusInternalServerError)
-		logging.Warn("Could not encode %+v", accountInfo.AccountBalance)
+		logger.Warn("Could not encode %+v", accountInfo.AccountBalance)
 		return
 	}
-	logging.Debug("Sending data to wire %s", string(payload))
+	logger.Debug("Sending data to wire %s", string(payload))
 	if RequestContextIsClosed(ctx, w) {
 		return
 	}
@@ -42,8 +44,8 @@ func (h *APIhandler) GetAccountBalance(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	_, err = w.Write(payload)
 	if err != nil {
-		logging.Warn("Could not write data to wire")
+		logger.Warn("Could not write data to wire")
 		return
 	}
-	logging.Warn("Account balance response successfully sent")
+	logger.Warn("Account balance response successfully sent")
 }

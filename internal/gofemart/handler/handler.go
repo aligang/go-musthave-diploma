@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"github.com/aligang/go-musthave-diploma/internal/accural"
 	"github.com/aligang/go-musthave-diploma/internal/config"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/auth"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/compress"
@@ -14,17 +15,19 @@ import (
 
 type APIhandler struct {
 	*chi.Mux
-	storage storage.Storage
-	auth    *auth.Auth
-	config  *config.Config
+	storage       storage.Storage
+	auth          *auth.Auth
+	config        *config.Config
+	accrualClient *accural.AccrualClient
 }
 
 func New(storage storage.Storage, auth *auth.Auth, cfg *config.Config) *APIhandler {
 	return &APIhandler{
-		Mux:     chi.NewMux(),
-		storage: storage,
-		auth:    auth,
-		config:  cfg,
+		Mux:           chi.NewMux(),
+		storage:       storage,
+		auth:          auth,
+		config:        cfg,
+		accrualClient: accural.New(cfg),
 	}
 }
 
