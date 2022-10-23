@@ -44,7 +44,7 @@ func (s *Storage) GetWithdrawnWithinTransaction(ctx context.Context, orderID str
 	withdrawnInstance := &withdrawn.WithdrawnRecord{
 		Withdrawn: &withdrawn.Withdrawn{},
 	}
-	err = statement.Select(withdrawnInstance, args...)
+	err = statement.Get(withdrawnInstance, args...)
 	if err != nil {
 		logging.Warn("Error During statement Execution %s with %s", query, args[0])
 		return nil, err
