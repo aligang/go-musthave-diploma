@@ -9,8 +9,8 @@ import (
 )
 
 func (s *Storage) RegisterWithdrawn(ctx context.Context, userID string, withdrawn *withdrawn.WithdrawnRecord) error {
-	s.Withdrawns[withdrawn.OrderId] = *withdrawn
-	s.CustomerWithdrawns[userID] = append(s.CustomerWithdrawns[userID], withdrawn.OrderId)
+	s.Withdrawns[withdrawn.OrderID] = *withdrawn
+	s.CustomerWithdrawns[userID] = append(s.CustomerWithdrawns[userID], withdrawn.OrderID)
 	return nil
 }
 

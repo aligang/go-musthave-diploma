@@ -5,7 +5,7 @@ import (
 )
 
 type Withdrawn struct {
-	OrderId string  `json:"order"`
+	OrderID string  `json:"order"`
 	Sum     float64 `json:"sum"`
 }
 

@@ -65,14 +65,14 @@ func TestListWithdrawns(t *testing.T) {
 		withdrawn.Withdrawns{
 			"111": withdrawn.WithdrawnRecord{
 				Withdrawn: &withdrawn.Withdrawn{
-					OrderId: "111",
+					OrderID: "111",
 					Sum:     1,
 				},
 				ProcessedAt: testscommon.GenTimeStamps()[0],
 			},
 			"222": withdrawn.WithdrawnRecord{
 				Withdrawn: &withdrawn.Withdrawn{
-					OrderId: "222",
+					OrderID: "222",
 					Sum:     1,
 				},
 				ProcessedAt: testscommon.GenTimeStamps()[1],
