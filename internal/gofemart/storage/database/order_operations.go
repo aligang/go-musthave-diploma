@@ -58,7 +58,7 @@ func (s *Storage) getOrderCommon(orderID string, prepareFunc func(query string) 
 	}
 	logging.Debug("Executing statement to fetch order info Repository: %s %s", query, orderID)
 	orderInstance := &order.Order{}
-	err = statement.Get(&orderInstance, args...)
+	err = statement.Get(orderInstance, args...)
 	if err != nil {
 		logging.Warn("Error during decoding database response: %s", err.Error())
 		return nil, err
@@ -136,7 +136,7 @@ func (s *Storage) GetPendingOrders(ctx context.Context) ([]string, error) {
 	}
 	logging.Debug("Executing statement to fetch pending orders from Repository")
 	err = statement.Select(&orders, args...)
-	
+
 	if err != nil {
 		logging.Warn("Error During statement Execution %s with %s", query, err.Error())
 		return orders, err
