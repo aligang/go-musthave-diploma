@@ -58,7 +58,7 @@ func (s *Storage) getOrderCommon(orderID string, prepareFunc func(query string) 
 	}
 	logging.Debug("Executing statement to fetch order info Repository: %s %s", query, orderID)
 	orderInstance := &order.Order{}
-	err = statement.Get(&orderInstance, args)
+	err = statement.Get(&orderInstance, args...)
 	if err != nil {
 		logging.Warn("Error during decoding database response")
 		return nil, err
@@ -78,7 +78,7 @@ func (s *Storage) ListOrders(userID string) ([]order.Order, error) {
 		return orders, err
 	}
 	logging.Debug("Executing statement to fetch orders from Repository")
-	err = statement.Select(&orders, args)
+	err = statement.Select(&orders, args...)
 	if err != nil {
 		logging.Warn("Error During statement Execution %s with %s", query, args[0])
 		return orders, err
@@ -91,7 +91,7 @@ func (s *Storage) AddOrderToPendingList(ctx context.Context, orderID string) err
 	query := "INSERT INTO pending_orders (order_id) VALUES($1)"
 	var args = []interface{}{orderID}
 
-	statement, err := s.Tx[ctx].Prepare(query)
+	statement, err := s.Tx[ctx].Preparex(query)
 	if err != nil {
 		logging.Warn("Error During statement creation %s", query)
 		return err
@@ -109,7 +109,7 @@ func (s *Storage) RemoveOrderFromPendingList(ctx context.Context, orderID string
 	query := "DELETE FROM pending_orders WHERE order_id = $1"
 	var args = []interface{}{orderID}
 
-	statement, err := s.Tx[ctx].Prepare(query)
+	statement, err := s.Tx[ctx].Preparex(query)
 	if err != nil {
 		logging.Warn("Error During statement creation %s", query)
 		return err
@@ -135,9 +135,9 @@ func (s *Storage) GetPendingOrders(ctx context.Context) ([]string, error) {
 		return orders, err
 	}
 	logging.Debug("Executing statement to fetch pending orders from Repository")
-	err = statement.Select(&orders, args)
+	err = statement.Select(&orders, args...)
 	if err != nil {
-		logging.Warn("Error During statement Execution %s with %s", query, args[0])
+		logging.Warn("Error During statement Execution %s with %s", query, err.Error())
 		return orders, err
 	}
 

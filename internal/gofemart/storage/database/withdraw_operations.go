@@ -13,7 +13,7 @@ func (s *Storage) RegisterWithdrawn(ctx context.Context, userID string, withdraw
 	logging.Debug("Preparing statement to add withdraw to Repository: %+v for user %s", withdraw, userID)
 	query := "INSERT INTO withdrawns (Order_Id, Sum, Processed_at, Owner) VALUES($1, $2, $3, $4)"
 	var args = []interface{}{withdraw.Order, withdraw.Sum, withdraw.ProcessedAt, userID}
-	statement, err := s.Tx[ctx].Prepare(query)
+	statement, err := s.Tx[ctx].Preparex(query)
 	if err != nil {
 		logging.Warn("Error During statement creation %s", query)
 		return err
@@ -35,23 +35,21 @@ func (s *Storage) GetWithdrawnWithinTransaction(ctx context.Context, orderID str
 	query := "SELECT Order_Id, Sum, Processed_at FROM withdrawns WHERE Order_Id = $1"
 	var args = []interface{}{orderID}
 	logging.Debug("Preparing statement to fetch order from Repository: %s", query)
-	statement, err := s.Tx[ctx].Prepare(query)
+	statement, err := s.Tx[ctx].Preparex(query)
 	if err != nil {
 		logging.Warn("Error During statement creation %s", query)
 		return nil, err
 	}
 	logging.Debug("Executing statement to fetch withdraw info from Repository: %s %s", query, orderID)
-	row := statement.QueryRow(args...)
-	if row.Err() != nil {
-		logging.Warn("rows check result: %s", row.Err().Error())
-		return nil, row.Err()
-	}
-
-	logging.Debug("Decoding database response of : %s %s", query, orderID)
 	withdrawnInstance := &withdrawn.WithdrawnRecord{
 		Withdrawn: &withdrawn.Withdrawn{},
 	}
-	err = row.Scan(&withdrawnInstance.Order, &withdrawnInstance.Sum, &withdrawnInstance.ProcessedAt)
+	err = statement.Select(&withdrawnInstance, args...)
+	if err != nil {
+		logging.Warn("Error During statement Execution %s with %s", query, args[0])
+		return nil, err
+	}
+
 	switch {
 	case errors.Is(err, sql.ErrNoRows):
 		logging.Warn("Database response is empty")
@@ -77,7 +75,7 @@ func (s *Storage) ListWithdrawns(userID string) ([]withdrawn.WithdrawnRecord, er
 	}
 	logging.Debug("Executing statement to fetch withdrawns from Repository")
 
-	err = statement.Select(&withdrawns, args)
+	err = statement.Select(&withdrawns, args...)
 	if err != nil {
 		logging.Warn("Error During statement Execution %s with %s", query, args[0])
 		return withdrawns, err

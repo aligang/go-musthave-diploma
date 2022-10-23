@@ -64,12 +64,6 @@ func (s *Storage) getCustomerAccountCommon(login string, prepareFunc func(query 
 		return nil, err
 	}
 	logging.Debug("Executing statement to add customer account to Repository: %s", login)
-	//row := statement.QueryRowx(args...)
-	//
-	//if row.Err() != nil {
-	//	logging.Warn("Error During statement Execution %s with %s", query, login)
-	//	return nil, err
-	//}
 	a := &account.CustomerAccount{}
 
 	err = statement.Get(a, args)
