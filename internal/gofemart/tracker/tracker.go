@@ -28,7 +28,7 @@ func New(s storage.Storage, cfg *config.Config) *Tracker {
 	return &tracker
 }
 
-func (t *Tracker) RunPeriodically(ctx context.Context, wg sync.WaitGroup) {
+func (t *Tracker) RunPeriodically(ctx context.Context, wg *sync.WaitGroup) {
 	wg.Add(1)
 	ticker := time.NewTicker(trackingInterval)
 	for {

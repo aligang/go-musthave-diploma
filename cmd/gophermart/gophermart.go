@@ -29,7 +29,7 @@ func main() {
 	mux.ApplyProdConfig()
 	app := New(globalCtx, mux, cfg)
 
-	wg := sync.WaitGroup{}
+	wg := &sync.WaitGroup{}
 	go Tracker.RunPeriodically(globalCtx, wg)
 	go runServer(app, wg)
 
@@ -41,7 +41,7 @@ func main() {
 	logging.Debug("Server stopped")
 }
 
-func runServer(server *http.Server, wg sync.WaitGroup) {
+func runServer(server *http.Server, wg *sync.WaitGroup) {
 	logging.Debug("enable TCP listener on: %s", server.Addr)
 	listener, err := net.Listen("tcp", server.Addr)
 	if err != nil {
