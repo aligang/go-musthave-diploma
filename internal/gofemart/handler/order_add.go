@@ -31,7 +31,7 @@ func (h *APIhandler) AddOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	orderID := string(payload)
-	logger = logger.GetSubLogger("orderId", orderID)
+	logger = logger.GetSubLogger("orderID", orderID)
 	if RequestContextIsClosed(ctx, w) {
 		return
 	}
