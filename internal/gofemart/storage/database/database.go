@@ -49,7 +49,7 @@ func New(conf *config.Config) *Storage {
 		panic(msg)
 	}
 	_, err = s.DB.Exec(
-		"create table if not exists withdrawns(Order_id bigint NOT NULL UNIQUE, Sum double precision, Processed_At TIMESTAMP WITH TIME ZONE, owner text)",
+		"create table if not exists withdrawns(OrderId bigint NOT NULL UNIQUE, Sum double precision, ProcessedAt TIMESTAMP WITH TIME ZONE, owner text)",
 	)
 	if err != nil {
 		msg, _ := fmt.Printf("Failure during initialisation of withdrawns table: %s\n", err.Error())

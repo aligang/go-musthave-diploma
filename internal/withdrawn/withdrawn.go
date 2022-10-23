@@ -5,8 +5,8 @@ import (
 )
 
 type Withdrawn struct {
-	Order string  `json:"order"`
-	Sum   float64 `json:"sum"`
+	OrderId string  `json:"order"`
+	Sum     float64 `json:"sum"`
 }
 
 func New() *Withdrawn {

@@ -11,8 +11,8 @@ import (
 
 func (s *Storage) RegisterWithdrawn(ctx context.Context, userID string, withdraw *withdrawn.WithdrawnRecord) error {
 	logging.Debug("Preparing statement to add withdraw to Repository: %+v for user %s", withdraw, userID)
-	query := "INSERT INTO withdrawns (Order_Id, Sum, Processed_at, Owner) VALUES($1, $2, $3, $4)"
-	var args = []interface{}{withdraw.Order, withdraw.Sum, withdraw.ProcessedAt, userID}
+	query := "INSERT INTO withdrawns (OrderId, Sum, ProcessedAt, Owner) VALUES($1, $2, $3, $4)"
+	var args = []interface{}{withdraw.OrderId, withdraw.Sum, withdraw.ProcessedAt, userID}
 	statement, err := s.Tx[ctx].Preparex(query)
 	if err != nil {
 		logging.Warn("Error During statement creation %s", query)
@@ -32,7 +32,7 @@ func (s *Storage) RegisterWithdrawn(ctx context.Context, userID string, withdraw
 }
 
 func (s *Storage) GetWithdrawnWithinTransaction(ctx context.Context, orderID string) (*withdrawn.WithdrawnRecord, error) {
-	query := "SELECT Order_Id, Sum, Processed_at FROM withdrawns WHERE Order_Id = $1"
+	query := "SELECT OrderId, Sum, ProcessedAt FROM withdrawns WHERE OrderId = $1"
 	var args = []interface{}{orderID}
 	logging.Debug("Preparing statement to fetch order from Repository: %s", query)
 	statement, err := s.Tx[ctx].Preparex(query)
@@ -45,17 +45,13 @@ func (s *Storage) GetWithdrawnWithinTransaction(ctx context.Context, orderID str
 		Withdrawn: &withdrawn.Withdrawn{},
 	}
 	err = statement.Get(withdrawnInstance, args...)
-	if err != nil {
-		logging.Warn("Error During statement Execution %s with %s", query, args[0])
-		return nil, err
-	}
 
 	switch {
 	case errors.Is(err, sql.ErrNoRows):
 		logging.Warn("Database response is empty")
 		return nil, repositoryerrors.ErrNoContent
 	case err != nil:
-		logging.Warn("Error during decoding database response")
+		logging.Warn("Error During statement Execution %s with %s", query, args[0])
 		return nil, err
 	default:
 		return withdrawnInstance, nil
@@ -64,7 +60,7 @@ func (s *Storage) GetWithdrawnWithinTransaction(ctx context.Context, orderID str
 
 func (s *Storage) ListWithdrawns(userID string) ([]withdrawn.WithdrawnRecord, error) {
 	logging.Debug("Preparing statement to fetch orders from Repository")
-	query := "SELECT Order_Id, Sum, Processed_at FROM withdrawns WHERE Owner = $1"
+	query := "SELECT OrderId, Sum, ProcessedAt FROM withdrawns WHERE Owner = $1"
 	args := []interface{}{userID}
 	var withdrawns []withdrawn.WithdrawnRecord
 

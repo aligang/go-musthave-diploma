@@ -41,17 +41,17 @@ func (h *APIhandler) AddWithdraw(w http.ResponseWriter, r *http.Request) {
 		logger.Warn("Could not decode Json: %s", err.Error())
 		return
 	}
-	logger = logger.GetSubLogger("withdrawId", withdrawRequest.Order)
+	logger = logger.GetSubLogger("withdrawId", withdrawRequest.OrderId)
 	if RequestContextIsClosed(ctx, w) {
 		return
 	}
-	err = order.ValidateID(withdrawRequest.Order)
+	err = order.ValidateID(withdrawRequest.OrderId)
 	if err != nil {
 		logger.Warn("Invalid order format")
 		http.Error(w, "Invalid order format", http.StatusBadRequest)
 		return
 	}
-	err = order.ValidateIDFormat(withdrawRequest.Order)
+	err = order.ValidateIDFormat(withdrawRequest.OrderId)
 	if err != nil {
 		logger.Warn("Invalid checksum")
 		http.Error(w, "Invalid withdraw checksum", http.StatusUnprocessableEntity)
@@ -73,7 +73,7 @@ func (h *APIhandler) AddWithdraw(w http.ResponseWriter, r *http.Request) {
 	if RequestContextIsClosed(ctx, w) {
 		return
 	}
-	_, err = h.storage.GetOrder(withdrawRequest.Order)
+	_, err = h.storage.GetOrder(withdrawRequest.OrderId)
 	switch {
 	case errors.Is(err, repositoryerrors.ErrNoContent):
 	case err != nil:
@@ -84,7 +84,7 @@ func (h *APIhandler) AddWithdraw(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "System Error", http.StatusInternalServerError)
 		return
 	default:
-		logger.Warn("Withdraw was already registered within order database", withdrawRequest.Order)
+		logger.Warn("Withdraw was already registered within order database", withdrawRequest.OrderId)
 		if RequestContextIsClosed(ctx, w) {
 			return
 		}
@@ -95,7 +95,7 @@ func (h *APIhandler) AddWithdraw(w http.ResponseWriter, r *http.Request) {
 	if RequestContextIsClosed(ctx, w) {
 		return
 	}
-	_, err = h.storage.GetWithdrawnWithinTransaction(ctx, withdrawRequest.Order)
+	_, err = h.storage.GetWithdrawnWithinTransaction(ctx, withdrawRequest.OrderId)
 	switch {
 	case errors.Is(err, repositoryerrors.ErrNoContent):
 	case err != nil:
@@ -106,7 +106,7 @@ func (h *APIhandler) AddWithdraw(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "System Error", http.StatusInternalServerError)
 		return
 	default:
-		logger.Warn("Withdraw was already registered in withdraw database: %s", withdrawRequest.Order)
+		logger.Warn("Withdraw was already registered in withdraw database: %s", withdrawRequest.OrderId)
 		if RequestContextIsClosed(ctx, w) {
 			return
 		}
@@ -114,7 +114,7 @@ func (h *APIhandler) AddWithdraw(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	logger.Debug("Trying to register withdrawn", withdrawRequest.Order, userID)
+	logger.Debug("Trying to register withdrawn", withdrawRequest.OrderId, userID)
 	logger.Debug("Fetching account info for user-account")
 	if RequestContextIsClosed(ctx, w) {
 		return
@@ -148,7 +148,7 @@ func (h *APIhandler) AddWithdraw(w http.ResponseWriter, r *http.Request) {
 	err = h.storage.RegisterWithdrawn(ctx, userID, withdrawn.NewRecord(withdrawRequest))
 	if err != nil {
 		logger.Warn("error during registering new withdrawn",
-			withdrawRequest.Order, accountData.Login, err.Error())
+			withdrawRequest.OrderId, accountData.Login, err.Error())
 		http.Error(w, "error during withDraw registration", http.StatusInternalServerError)
 		return
 	}
@@ -156,5 +156,5 @@ func (h *APIhandler) AddWithdraw(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.WriteHeader(http.StatusOK)
-	logger.Debug("New Withdraw is successfully registered", withdrawRequest.Order)
+	logger.Debug("New Withdraw is successfully registered", withdrawRequest.OrderId)
 }
