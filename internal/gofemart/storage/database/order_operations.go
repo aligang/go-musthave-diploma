@@ -136,6 +136,7 @@ func (s *Storage) GetPendingOrders(ctx context.Context) ([]string, error) {
 	}
 	logging.Debug("Executing statement to fetch pending orders from Repository")
 	err = statement.Select(&orders, args...)
+	
 	if err != nil {
 		logging.Warn("Error During statement Execution %s with %s", query, err.Error())
 		return orders, err
