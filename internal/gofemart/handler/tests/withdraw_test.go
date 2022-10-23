@@ -57,8 +57,8 @@ func TestAddWithdraw(t *testing.T) {
 					withdrawn.Withdrawns{
 						"67": withdrawn.WithdrawnRecord{
 							Withdrawn: &withdrawn.Withdrawn{
-								Order: "67",
-								Sum:   1,
+								OrderId: "67",
+								Sum:     1,
 							},
 							ProcessedAt: time.Now().Round(time.Second),
 						},
@@ -101,8 +101,8 @@ func TestAddWithdraw(t *testing.T) {
 					withdrawn.Withdrawns{
 						"62": withdrawn.WithdrawnRecord{
 							Withdrawn: &withdrawn.Withdrawn{
-								Order: "75",
-								Sum:   1,
+								OrderId: "75",
+								Sum:     1,
 							},
 							ProcessedAt: time.Now().Round(time.Second),
 						},
@@ -145,8 +145,8 @@ func TestAddWithdraw(t *testing.T) {
 					withdrawn.Withdrawns{
 						"67": withdrawn.WithdrawnRecord{
 							Withdrawn: &withdrawn.Withdrawn{
-								Order: "67",
-								Sum:   1,
+								OrderId: "67",
+								Sum:     1,
 							},
 							ProcessedAt: time.Now().Round(time.Second),
 						},

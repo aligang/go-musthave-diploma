@@ -29,7 +29,7 @@ func (h *APIhandler) ListOrders(w http.ResponseWriter, r *http.Request) {
 		h.storage.CommitTransaction(ctx)
 	}()
 
-	logger.Debug("Fetching orders registered  from repository", userID)
+	logger.Debug("Fetching orders registered  from repository")
 	if RequestContextIsClosed(ctx, w) {
 		return
 	}

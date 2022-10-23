@@ -43,7 +43,7 @@ func (h *APIhandler) AddOrder(w http.ResponseWriter, r *http.Request) {
 	}
 	err = order.ValidateIDFormat(orderID)
 	if err != nil {
-		logger.Warn("Invalid orderID checksum", orderID)
+		logger.Warn("Invalid orderID checksum")
 		http.Error(w, "Invalid orderID checksum", http.StatusUnprocessableEntity)
 		return
 	}
@@ -62,7 +62,7 @@ func (h *APIhandler) AddOrder(w http.ResponseWriter, r *http.Request) {
 	switch {
 	case errors.Is(err, repositoryerrors.ErrNoContent):
 	case err != nil:
-		logger.Warn("error during fetching order", orderID)
+		logger.Warn("error during fetching order")
 		http.Error(w, "System error", http.StatusInternalServerError)
 		return
 	default:
@@ -93,7 +93,7 @@ func (h *APIhandler) AddOrder(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Order %s already exists", http.StatusInternalServerError)
 		return
 	default:
-		logger.Warn("Order=%s was already registered in withdraw database")
+		logger.Warn("Order was already registered in withdraw database")
 		http.Error(w, "Order was already registered", http.StatusConflict)
 		return
 	}
@@ -104,7 +104,7 @@ func (h *APIhandler) AddOrder(w http.ResponseWriter, r *http.Request) {
 	}
 	accuralRecord, err := h.accrualClient.FetchOrderInfo(ctx, orderID)
 	if err != nil {
-		logger.Warn("Failed to fecth accural Info", err.Error())
+		logger.Warn("Failed to fecth accural Info: %s", err.Error())
 		http.Error(w, "error during registering order", http.StatusInternalServerError)
 		return
 	}
@@ -159,5 +159,5 @@ func (h *APIhandler) AddOrder(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Header().Set("Content-Type", "text/plain")
 	w.WriteHeader(http.StatusAccepted)
-	logger.Debug("New Order is successfully registered", orderID)
+	logger.Debug("New Order is successfully registered")
 }

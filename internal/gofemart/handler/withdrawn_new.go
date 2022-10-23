@@ -84,7 +84,7 @@ func (h *APIhandler) AddWithdraw(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "System Error", http.StatusInternalServerError)
 		return
 	default:
-		logger.Warn("Withdraw was already registered within order database", withdrawRequest.OrderId)
+		logger.Warn("Withdraw was already registered within order database")
 		if RequestContextIsClosed(ctx, w) {
 			return
 		}
@@ -114,7 +114,7 @@ func (h *APIhandler) AddWithdraw(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	logger.Debug("Trying to register withdrawn", withdrawRequest.OrderId, userID)
+	logger.Debug("Trying to register withdrawn")
 	logger.Debug("Fetching account info for user-account")
 	if RequestContextIsClosed(ctx, w) {
 		return
@@ -127,7 +127,7 @@ func (h *APIhandler) AddWithdraw(w http.ResponseWriter, r *http.Request) {
 	}
 	logger.Debug("Fetched account info=%+v", accountData)
 	if accountData.Current < withdrawRequest.Sum {
-		logger.Warn("error during using balance: %s, unsufficent balance")
+		logger.Warn("error during using balance: unsufficent balance")
 		http.Error(w, "unsufficent balance", http.StatusPaymentRequired)
 		return
 	}
@@ -147,8 +147,7 @@ func (h *APIhandler) AddWithdraw(w http.ResponseWriter, r *http.Request) {
 	}
 	err = h.storage.RegisterWithdrawn(ctx, userID, withdrawn.NewRecord(withdrawRequest))
 	if err != nil {
-		logger.Warn("error during registering new withdrawn",
-			withdrawRequest.OrderId, accountData.Login, err.Error())
+		logger.Warn("error during registering new withdrawn: %s", err.Error())
 		http.Error(w, "error during withDraw registration", http.StatusInternalServerError)
 		return
 	}
@@ -156,5 +155,5 @@ func (h *APIhandler) AddWithdraw(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.WriteHeader(http.StatusOK)
-	logger.Debug("New Withdraw is successfully registered", withdrawRequest.OrderId)
+	logger.Debug("New Withdraw is successfully registered")
 }
