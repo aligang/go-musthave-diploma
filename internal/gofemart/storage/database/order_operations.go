@@ -60,7 +60,7 @@ func (s *Storage) getOrderCommon(orderID string, prepareFunc func(query string) 
 	orderInstance := &order.Order{}
 	err = statement.Get(&orderInstance, args...)
 	if err != nil {
-		logging.Warn("Error during decoding database response")
+		logging.Warn("Error during decoding database response: %s", err.Error())
 		return nil, err
 	}
 	return orderInstance, nil
