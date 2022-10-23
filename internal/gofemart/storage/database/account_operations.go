@@ -66,7 +66,7 @@ func (s *Storage) getCustomerAccountCommon(login string, prepareFunc func(query 
 	logging.Debug("Executing statement to add customer account to Repository: %s", login)
 	a := &account.CustomerAccount{}
 
-	err = statement.Get(a, args)
+	err = statement.Get(a, args...)
 
 	switch {
 	case errors.Is(err, sql.ErrNoRows):
@@ -95,7 +95,7 @@ func (s *Storage) GetOrderOwner(ctx context.Context, orderID string) (string, er
 	}
 	logging.Debug("Executing statement to add customer account to Repository: %s %s", query, args)
 	var owner string
-	err = statement.Get(&owner, args)
+	err = statement.Get(&owner, args...)
 
 	if err != nil {
 		logging.Warn("Could not decode Database Server response: %s", err.Error())
