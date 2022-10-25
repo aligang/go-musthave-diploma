@@ -12,9 +12,6 @@ func (h *APIhandler) Login(w http.ResponseWriter, r *http.Request) {
 	logger := logging.Logger.GetSubLogger("Method", "login")
 	logger.Warn("Processing request")
 	ctx := r.Context()
-	if RequestContextIsClosed(ctx, w) {
-		return
-	}
 	accountInfo := account.New()
 	payload, err := io.ReadAll(r.Body)
 	if err != nil {
@@ -34,16 +31,10 @@ func (h *APIhandler) Login(w http.ResponseWriter, r *http.Request) {
 	}
 	logger = logger.GetSubLogger("userID", accountInfo.Login)
 	logger.Debug("Authenticating user")
-	if RequestContextIsClosed(ctx, w) {
-		return
-	}
-	account, err := h.storage.GetCustomerAccount(accountInfo.Login)
+	account, err := h.storage.GetCustomerAccount(ctx, accountInfo.Login, nil)
 	if err != nil || accountInfo.Password != account.Password {
 		http.Error(w, "Authentication Failure", http.StatusUnauthorized)
 		logger.Debug("Could not authenticate user")
-		return
-	}
-	if RequestContextIsClosed(ctx, w) {
 		return
 	}
 	cookie := h.auth.CreateAuthCookie(accountInfo)

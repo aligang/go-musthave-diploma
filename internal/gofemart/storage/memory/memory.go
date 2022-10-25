@@ -17,11 +17,12 @@ type Storage struct {
 	PendingOrders      map[string]*struct{}
 	CustomerOrders     map[string][]string
 	CustomerWithdrawns map[string][]string
+	log                *logging.InternalLogger
 	Lock               sync.Mutex
 }
 
 func New() *Storage {
-	logging.Debug("Initialization In-Memory Storage Backend")
+	logging.Debug("Initialization Storage Backend")
 	m := &Storage{
 		CustomerAccounts:   account.CustomerAccounts{},
 		Orders:             orderrecord.Orders{},
@@ -29,8 +30,9 @@ func New() *Storage {
 		PendingOrders:      map[string]*struct{}{},
 		CustomerOrders:     map[string][]string{},
 		CustomerWithdrawns: map[string][]string{},
+		log:                logging.Logger.GetSubLogger("repository", "IN-Memory"),
 	}
-	logging.Debug("Initialization In-Memory Storage Backend is Finished")
+	logging.Debug("Initialization Storage Backend is Finished")
 	return m
 }
 

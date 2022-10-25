@@ -2,46 +2,28 @@ package database
 
 import (
 	"context"
-	"database/sql"
-	"github.com/aligang/go-musthave-diploma/internal/logging"
+	"fmt"
+	"github.com/jmoiron/sqlx"
 )
 
-func (s *Storage) StartTransaction(ctx context.Context) {
-	tx, err := s.DB.BeginTxx(ctx, &sql.TxOptions{Isolation: sql.LevelSerializable, ReadOnly: false})
+func (s *Storage) WithinTransaction(ctx context.Context, fn func(context.Context, *sqlx.Tx) error) error {
+	tx, err := s.DB.BeginTxx(ctx, nil)
 	if err != nil {
-		logging.Warn("Error during transaction creation: %s", err.Error())
-		//return err
+		return fmt.Errorf("begin trx: %w", err)
 	}
-	s.Lock.Lock()
-	s.Tx[ctx] = tx
-	s.Lock.Unlock()
-}
 
-func (s *Storage) CommitTransaction(ctx context.Context) {
-	select {
-	default:
-		err := s.Tx[ctx].Commit()
-		if err != nil {
-			logging.Warn("Error during transaction commit: %s", err.Error())
+	if err := fn(ctx, tx); err != nil {
+		if err := tx.Rollback(); err != nil {
+			s.log.Warn("rollback tx: %s", err.Error())
 		}
-	case <-ctx.Done():
+		return fmt.Errorf("run tx: %w", err)
 	}
-	s.Lock.Lock()
-	delete(s.Tx, ctx)
-	s.Lock.Unlock()
-}
 
-func (s *Storage) RollbackTransaction(ctx context.Context) {
-	select {
-	default:
-		err := s.Tx[ctx].Rollback()
-		if err != nil {
-			logging.Warn("Error during transaction rollback: %s", err.Error())
-
+	if err := tx.Commit(); err != nil {
+		if err := tx.Rollback(); err != nil {
+			s.log.Warn("rollback tx: %s", err.Error())
 		}
-	case <-ctx.Done():
+		return fmt.Errorf("commit tx: %w", err)
 	}
-	s.Lock.Lock()
-	delete(s.Tx, ctx)
-	s.Lock.Unlock()
+	return nil
 }

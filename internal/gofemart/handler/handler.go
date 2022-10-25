@@ -59,7 +59,6 @@ func (h *APIhandler) ApplyProdConfig() {
 
 func (h *APIhandler) ApplyDebugConfig() {
 	h.Get("/api/internal/accounts", h.ListCustomerAccounts)
-	h.Get("/api/internal/pending-orders", h.ListPendingOrders)
 }
 
 func RequestContextIsClosed(ctx context.Context, w http.ResponseWriter) bool {

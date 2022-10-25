@@ -1,20 +1,17 @@
 package database
 
 import (
-	"context"
 	"github.com/jmoiron/sqlx"
 
 	"fmt"
 	"github.com/aligang/go-musthave-diploma/internal/config"
 	"github.com/aligang/go-musthave-diploma/internal/logging"
-	"sync"
 )
 import _ "github.com/jackc/pgx/v4/stdlib"
 
 type Storage struct {
-	DB   *sqlx.DB
-	Tx   map[context.Context]*sqlx.Tx
-	Lock sync.Mutex
+	DB  *sqlx.DB
+	log *logging.InternalLogger
 }
 
 func New(conf *config.Config) *Storage {
@@ -24,8 +21,8 @@ func New(conf *config.Config) *Storage {
 		panic(err)
 	}
 	s := &Storage{
-		DB: db,
-		Tx: map[context.Context]*sqlx.Tx{},
+		DB:  db,
+		log: logging.Logger.GetSubLogger("repository", "sql"),
 	}
 	_, err = s.DB.Exec(
 		"create table if not exists accounts(Login text NOT NULL UNIQUE, Password text NOT NULL, Current double precision, Withdraw double precision)",

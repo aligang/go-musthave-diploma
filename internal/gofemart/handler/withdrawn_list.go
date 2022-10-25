@@ -27,16 +27,12 @@ func (h *APIhandler) ListWithdraws(w http.ResponseWriter, r *http.Request) {
 	if RequestContextIsClosed(ctx, w) {
 		return
 	}
-	h.storage.StartTransaction(ctx)
-	defer func() {
-		h.storage.CommitTransaction(ctx)
-	}()
 
 	logger.Debug("Fetching withdraws  from repository")
 	if RequestContextIsClosed(ctx, w) {
 		return
 	}
-	withdrawns, err := h.storage.ListWithdrawns(userID)
+	withdrawns, err := h.storage.ListWithdrawns(ctx, userID)
 	switch {
 	case err != nil:
 		http.Error(w, "", http.StatusInternalServerError)

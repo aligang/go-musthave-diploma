@@ -1,16 +1,16 @@
 package memory
 
-import "context"
+import (
+	"context"
+	"github.com/jmoiron/sqlx"
+)
 
-func (s *Storage) StartTransaction(ctx context.Context) {
+func (s *Storage) WithinTransaction(ctx context.Context, fn func(context.Context, *sqlx.Tx) error) error {
 	s.Lock.Lock()
-
-}
-
-func (s *Storage) CommitTransaction(ctx context.Context) {
+	err := fn(ctx, nil)
+	if err != nil {
+		return err
+	}
 	s.Lock.Unlock()
-}
-
-func (s *Storage) RollbackTransaction(ctx context.Context) {
-	s.Lock.Unlock()
+	return nil
 }

@@ -24,16 +24,12 @@ func (h *APIhandler) ListOrders(w http.ResponseWriter, r *http.Request) {
 	}
 
 	logger = logger.GetSubLogger("userID", userID)
-	h.storage.StartTransaction(ctx)
-	defer func() {
-		h.storage.CommitTransaction(ctx)
-	}()
 
 	logger.Debug("Fetching orders registered  from repository")
 	if RequestContextIsClosed(ctx, w) {
 		return
 	}
-	orders, err := h.storage.ListOrders(userID)
+	orders, err := h.storage.ListOrders(ctx, userID)
 	if err != nil {
 		http.Error(w, "error during Fetching orders", http.StatusInternalServerError)
 		logger.Warn("Error during fetching orders register for user: %s", err.Error())

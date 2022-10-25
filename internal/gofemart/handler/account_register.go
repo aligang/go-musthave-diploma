@@ -1,11 +1,13 @@
 package handler
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/account"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/repositoryerrors"
 	"github.com/aligang/go-musthave-diploma/internal/logging"
+	"github.com/jmoiron/sqlx"
 	"io"
 	"net/http"
 )
@@ -14,9 +16,6 @@ func (h *APIhandler) RegisterCustomerAccount(w http.ResponseWriter, r *http.Requ
 	logger := logging.Logger.GetSubLogger("Method", "RegisterAccount")
 	logger.Debug("Processing request")
 	ctx := r.Context()
-	if RequestContextIsClosed(ctx, w) {
-		return
-	}
 	accountInfo := account.New()
 	payload, err := io.ReadAll(r.Body)
 	if err != nil {
@@ -40,41 +39,32 @@ func (h *APIhandler) RegisterCustomerAccount(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	var dBerr error
-	h.storage.StartTransaction(ctx)
-	defer func() {
-		if dBerr != nil {
-			h.storage.RollbackTransaction(ctx)
+	err = h.storage.WithinTransaction(ctx, func(ctx context.Context, tx *sqlx.Tx) error {
+		_, err = h.storage.GetCustomerAccount(ctx, accountInfo.Login, tx)
+		switch {
+		case errors.Is(err, repositoryerrors.ErrNoContent):
+		case err != nil:
+			logger.Warn("error during fetching Account %s", err.Error())
+			http.Error(w, "Account %s already exists", http.StatusInternalServerError)
+			return err
+		default:
+			logger.Warn("Account %s already exists", accountInfo.Login)
+			http.Error(w, "Account %s already exists", http.StatusConflict)
+			return err
 		}
-		h.storage.CommitTransaction(ctx)
-	}()
-	if RequestContextIsClosed(ctx, w) {
-		return
-	}
-	_, err = h.storage.GetCustomerAccountWithinTransaction(ctx, accountInfo.Login)
-	switch {
-	case errors.Is(err, repositoryerrors.ErrNoContent):
-	case err != nil:
-		logger.Warn("error during fetching Account %s", err.Error())
-		http.Error(w, "Account %s already exists", http.StatusInternalServerError)
-		return
-	default:
-		logger.Warn("Account %s already exists", accountInfo.Login)
-		http.Error(w, "Account %s already exists", http.StatusConflict)
-		return
-	}
-	if RequestContextIsClosed(ctx, w) {
-		return
-	}
-	err = h.storage.AddCustomerAccount(ctx, accountInfo)
+		err = h.storage.AddCustomerAccount(ctx, accountInfo, tx)
+		if err != nil {
+			logger.Warn("Could not store Account Data: %s", err.Error())
+			http.Error(w, err.Error(), http.StatusConflict)
+			return err
+		}
+		return nil
+	})
 	if err != nil {
-		logger.Warn("Could not store Account Data: %s", err.Error())
-		http.Error(w, err.Error(), http.StatusConflict)
+		logger.Warn("account creation failed")
 		return
 	}
-	if RequestContextIsClosed(ctx, w) {
-		return
-	}
+
 	cookie := h.auth.CreateAuthCookie(accountInfo)
 	http.SetCookie(w, cookie)
 	w.Header().Set("Content-Type", "text/plain")

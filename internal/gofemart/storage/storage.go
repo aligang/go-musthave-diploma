@@ -8,6 +8,7 @@ import (
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/database"
 	"github.com/aligang/go-musthave-diploma/internal/logging"
 	"github.com/aligang/go-musthave-diploma/internal/withdrawn"
+	"github.com/jmoiron/sqlx"
 )
 import "github.com/aligang/go-musthave-diploma/internal/gofemart/storage/memory"
 
@@ -16,30 +17,26 @@ type Test interface {
 }
 
 type Storage interface {
-	StartTransaction(ctx context.Context)
-	RollbackTransaction(ctx context.Context)
-	CommitTransaction(ctx context.Context)
+	WithinTransaction(ctx context.Context, fn func(context.Context, *sqlx.Tx) error) error
 
-	AddCustomerAccount(ctx context.Context, customerAccount *account.CustomerAccount) error
-	UpdateCustomerAccount(ctx context.Context, customerAccount *account.CustomerAccount) error
-	GetCustomerAccount(login string) (*account.CustomerAccount, error)
-	GetCustomerAccountWithinTransaction(ctx context.Context, login string) (*account.CustomerAccount, error)
+	AddCustomerAccount(ctx context.Context, customerAccount *account.CustomerAccount, tx *sqlx.Tx) error
+	UpdateCustomerAccount(ctx context.Context, customerAccount *account.CustomerAccount, tx *sqlx.Tx) error
+	GetCustomerAccount(ctx context.Context, login string, tx *sqlx.Tx) (*account.CustomerAccount, error)
 	GetCustomerAccounts() (account.CustomerAccounts, error)
 
-	AddOrder(ctx context.Context, userID string, order *order.Order) error
-	GetOrder(orderID string) (*order.Order, error)
-	GetOrderWithinTransaction(ctx context.Context, orderID string) (*order.Order, error)
-	ListOrders(userID string) ([]order.Order, error)
-	GetOrderOwner(ctx context.Context, orderID string) (string, error)
-	UpdateOrder(ctx context.Context, order *order.Order) error
+	AddOrder(ctx context.Context, userID string, order *order.Order, tx *sqlx.Tx) error
+	GetOrder(ctx context.Context, orderID string, tx *sqlx.Tx) (*order.Order, error)
+	ListOrders(ctx context.Context, userID string) ([]order.Order, error)
+	GetOrderOwner(ctx context.Context, orderID string, tx *sqlx.Tx) (string, error)
+	UpdateOrder(ctx context.Context, order *order.Order, tx *sqlx.Tx) error
 
-	AddOrderToPendingList(ctx context.Context, orderID string) error
-	GetPendingOrders(ctx context.Context) ([]string, error)
-	RemoveOrderFromPendingList(ctx context.Context, orderID string) error
+	AddOrderToPendingList(ctx context.Context, orderID string, tx *sqlx.Tx) error
+	GetPendingOrders(ctx context.Context, tx *sqlx.Tx) ([]string, error)
+	RemoveOrderFromPendingList(ctx context.Context, orderID string, tx *sqlx.Tx) error
 
-	RegisterWithdrawn(ctx context.Context, userID string, withdraw *withdrawn.WithdrawnRecord) error
-	GetWithdrawnWithinTransaction(ctx context.Context, orderID string) (*withdrawn.WithdrawnRecord, error)
-	ListWithdrawns(orderID string) ([]withdrawn.WithdrawnRecord, error)
+	RegisterWithdrawn(ctx context.Context, userID string, withdraw *withdrawn.WithdrawnRecord, tx *sqlx.Tx) error
+	GetWithdrawn(ctx context.Context, orderID string, tx *sqlx.Tx) (*withdrawn.WithdrawnRecord, error)
+	ListWithdrawns(ctx context.Context, orderID string) ([]withdrawn.WithdrawnRecord, error)
 }
 
 func New(config *config.Config) Storage {

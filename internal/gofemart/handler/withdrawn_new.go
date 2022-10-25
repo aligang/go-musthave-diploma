@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/auth"
@@ -8,6 +9,7 @@ import (
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage/repositoryerrors"
 	"github.com/aligang/go-musthave-diploma/internal/logging"
 	"github.com/aligang/go-musthave-diploma/internal/withdrawn"
+	"github.com/jmoiron/sqlx"
 	"io"
 	"net/http"
 )
@@ -58,100 +60,64 @@ func (h *APIhandler) AddWithdraw(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if RequestContextIsClosed(ctx, w) {
-		return
-	}
-	var dBerr error
-	h.storage.StartTransaction(ctx)
-	defer func() {
-		if dBerr != nil {
-			h.storage.RollbackTransaction(ctx)
+	err = h.storage.WithinTransaction(ctx, func(ctx context.Context, tx *sqlx.Tx) error {
+		_, err = h.storage.GetOrder(ctx, withdrawRequest.OrderID, tx)
+		switch {
+		case errors.Is(err, repositoryerrors.ErrNoContent):
+		case err != nil:
+			logger.Warn("error during fetching order %s", err.Error())
+			http.Error(w, "System Error", http.StatusInternalServerError)
+			return err
+		default:
+			logger.Warn("Withdraw was already registered within order database")
+			http.Error(w, "Withdraw was already registered", http.StatusConflict)
+			return err
 		}
-		h.storage.CommitTransaction(ctx)
-	}()
+		_, err = h.storage.GetWithdrawn(ctx, withdrawRequest.OrderID, tx)
+		switch {
+		case errors.Is(err, repositoryerrors.ErrNoContent):
+		case err != nil:
+			logger.Warn("error during fetching withdraw %s", err.Error())
+			http.Error(w, "System Error", http.StatusInternalServerError)
+			return err
+		default:
+			logger.Warn("Withdraw was already registered in withdraw database: %s", withdrawRequest.OrderID)
+			http.Error(w, "Withdraw was already registered", http.StatusConflict)
+			return err
+		}
 
-	if RequestContextIsClosed(ctx, w) {
-		return
-	}
-	_, err = h.storage.GetOrder(withdrawRequest.OrderID)
-	switch {
-	case errors.Is(err, repositoryerrors.ErrNoContent):
-	case err != nil:
-		logger.Warn("error during fetching order %s", err.Error())
-		if RequestContextIsClosed(ctx, w) {
-			return
+		logger.Debug("Trying to register withdrawn")
+		logger.Debug("Fetching account info for user-account")
+		accountData, err := h.storage.GetCustomerAccount(ctx, userID, tx)
+		if err != nil {
+			logger.Warn("error during fetching account info: %s", err.Error())
+			http.Error(w, "error during add accural to balance", http.StatusInternalServerError)
+			return err
 		}
-		http.Error(w, "System Error", http.StatusInternalServerError)
-		return
-	default:
-		logger.Warn("Withdraw was already registered within order database")
-		if RequestContextIsClosed(ctx, w) {
-			return
+		logger.Debug("Fetched account info=%+v", accountData)
+		if accountData.Current < withdrawRequest.Sum {
+			logger.Warn("error during using balance: unsufficent balance")
+			http.Error(w, "unsufficent balance", http.StatusPaymentRequired)
+			return err
 		}
-		http.Error(w, "Withdraw was already registered", http.StatusConflict)
-		return
-	}
-
-	if RequestContextIsClosed(ctx, w) {
-		return
-	}
-	_, err = h.storage.GetWithdrawnWithinTransaction(ctx, withdrawRequest.OrderID)
-	switch {
-	case errors.Is(err, repositoryerrors.ErrNoContent):
-	case err != nil:
-		logger.Warn("error during fetching withdraw %s", err.Error())
-		if RequestContextIsClosed(ctx, w) {
-			return
+		accountData.Current -= withdrawRequest.Sum
+		accountData.Withdraw += withdrawRequest.Sum
+		err = h.storage.UpdateCustomerAccount(ctx, accountData, tx)
+		if err != nil {
+			logger.Warn("error during updating account info: %s", err.Error())
+			http.Error(w, "error during withDraw registration", http.StatusInternalServerError)
+			return err
 		}
-		http.Error(w, "System Error", http.StatusInternalServerError)
-		return
-	default:
-		logger.Warn("Withdraw was already registered in withdraw database: %s", withdrawRequest.OrderID)
-		if RequestContextIsClosed(ctx, w) {
-			return
+		err = h.storage.RegisterWithdrawn(ctx, userID, withdrawn.NewRecord(withdrawRequest), tx)
+		if err != nil {
+			logger.Warn("error during registering new withdrawn: %s", err.Error())
+			http.Error(w, "error during withDraw registration", http.StatusInternalServerError)
+			return err
 		}
-		http.Error(w, "Withdraw was already registered", http.StatusConflict)
-		return
-	}
-
-	logger.Debug("Trying to register withdrawn")
-	logger.Debug("Fetching account info for user-account")
-	if RequestContextIsClosed(ctx, w) {
-		return
-	}
-	accountData, err := h.storage.GetCustomerAccountWithinTransaction(ctx, userID)
+		return nil
+	})
 	if err != nil {
-		logger.Warn("error during fetching account info: %s", err.Error())
-		http.Error(w, "error during add accural to balance", http.StatusInternalServerError)
-		return
-	}
-	logger.Debug("Fetched account info=%+v", accountData)
-	if accountData.Current < withdrawRequest.Sum {
-		logger.Warn("error during using balance: unsufficent balance")
-		http.Error(w, "unsufficent balance", http.StatusPaymentRequired)
-		return
-	}
-	accountData.Current -= withdrawRequest.Sum
-	accountData.Withdraw += withdrawRequest.Sum
-	if RequestContextIsClosed(ctx, w) {
-		return
-	}
-	err = h.storage.UpdateCustomerAccount(ctx, accountData)
-	if err != nil {
-		logger.Warn("error during updating account info: %s", err.Error())
-		http.Error(w, "error during withDraw registration", http.StatusInternalServerError)
-		return
-	}
-	if RequestContextIsClosed(ctx, w) {
-		return
-	}
-	err = h.storage.RegisterWithdrawn(ctx, userID, withdrawn.NewRecord(withdrawRequest))
-	if err != nil {
-		logger.Warn("error during registering new withdrawn: %s", err.Error())
-		http.Error(w, "error during withDraw registration", http.StatusInternalServerError)
-		return
-	}
-	if RequestContextIsClosed(ctx, w) {
+		logger.Warn("New Withdraw registeration failed")
 		return
 	}
 	w.WriteHeader(http.StatusOK)
