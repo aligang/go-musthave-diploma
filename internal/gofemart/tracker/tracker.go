@@ -8,7 +8,6 @@ import (
 	"github.com/aligang/go-musthave-diploma/internal/gofemart/storage"
 	"github.com/aligang/go-musthave-diploma/internal/logging"
 	"github.com/jmoiron/sqlx"
-	"sync"
 	"time"
 )
 
@@ -29,14 +28,12 @@ func New(s storage.Storage, cfg *config.Config) *Tracker {
 	return &tracker
 }
 
-func (t *Tracker) RunPeriodically(ctx context.Context, wg *sync.WaitGroup) {
-	wg.Add(1)
+func (t *Tracker) RunPeriodically(ctx context.Context) {
 	ticker := time.NewTicker(trackingInterval)
 	for {
 		<-ticker.C
 		t.Sync(ctx)
 		<-ctx.Done()
-		wg.Add(-1)
 	}
 }
 

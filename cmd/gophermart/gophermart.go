@@ -30,8 +30,16 @@ func main() {
 	app := New(globalCtx, mux, cfg)
 
 	wg := &sync.WaitGroup{}
-	go Tracker.RunPeriodically(globalCtx, wg)
-	go runServer(app, wg)
+	go func() {
+		wg.Add(1)
+		Tracker.RunPeriodically(globalCtx)
+		wg.Add(-1)
+	}()
+	go func() {
+		wg.Add(1)
+		runServer(app)
+		wg.Add(-1)
+	}()
 
 	exitSignal := make(chan os.Signal, 1)
 	signal.Notify(exitSignal, syscall.SIGINT, syscall.SIGTERM)
@@ -41,19 +49,17 @@ func main() {
 	logging.Debug("Server stopped")
 }
 
-func runServer(server *http.Server, wg *sync.WaitGroup) {
+func runServer(server *http.Server) {
 	logging.Debug("enable TCP listener on: %s", server.Addr)
 	listener, err := net.Listen("tcp", server.Addr)
 	if err != nil {
 		panic(err)
 	}
 	logging.Debug(" Starting Server on: %s", server.Addr)
-	wg.Add(1)
 	err = server.Serve(listener)
 	if err != nil {
 		panic(err)
 	}
-	wg.Add(-1)
 }
 
 type contextKeyType struct {
