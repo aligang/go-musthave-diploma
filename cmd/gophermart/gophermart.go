@@ -30,13 +30,14 @@ func main() {
 	app := New(globalCtx, mux, cfg)
 
 	wg := &sync.WaitGroup{}
+	wg.Add(1)
 	go func() {
-		wg.Add(1)
+
 		Tracker.RunPeriodically(globalCtx)
 		wg.Add(-1)
 	}()
+	wg.Add(1)
 	go func() {
-		wg.Add(1)
 		runServer(app)
 		wg.Add(-1)
 	}()
