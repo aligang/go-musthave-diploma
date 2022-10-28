@@ -42,7 +42,7 @@ func (t *Tracker) Sync(ctx context.Context) {
 	var updatedOrdersCounter uint64
 	var proceededOrdersCounter uint64
 
-	t.storage.WithinTransaction(ctx, func(ctx context.Context, tx *sqlx.Tx) error {
+	err := t.storage.WithinTransaction(ctx, func(ctx context.Context, tx *sqlx.Tx) error {
 		orderIDsRecords, err := t.storage.GetPendingOrders(ctx, tx)
 		if err != nil {
 			logging.Warn("Tracker failed to fetch list of pending orders from DB")
@@ -115,4 +115,7 @@ func (t *Tracker) Sync(ctx context.Context) {
 		logging.Warn("%d  new order record(s) are now in PROCEEDED status", proceededOrdersCounter)
 		return nil
 	})
+	if err != nil {
+		logging.Warn(err.Error())
+	}
 }
